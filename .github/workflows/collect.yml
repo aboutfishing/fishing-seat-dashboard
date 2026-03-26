@@ -6,6 +6,9 @@ on:
     - cron: '0 16 * * *'
   workflow_dispatch:  # 수동 실행
 
+permissions:
+  contents: write   # data/latest.json 커밋 & 푸시 허용
+
 jobs:
   collect:
     runs-on: ubuntu-latest
