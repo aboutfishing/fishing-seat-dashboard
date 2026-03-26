@@ -1,0 +1,39 @@
+name: 선상24 좌석 데이터 수집
+
+on:
+  schedule:
+    # 매일 오전 1시 KST = UTC 16:00 (전날)
+    - cron: '0 16 * * *'
+  workflow_dispatch:  # 수동 실행 허용
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run data collection
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: python scripts/collect.py
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-log
+          path: '*.log'
+          if-no-files-found: ignore
