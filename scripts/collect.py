@@ -247,11 +247,31 @@ async def collect_all_async() -> list:
 
 
 # ── DB 저장 ─────────────────────────────────────────────────
+def deduplicate_rows(rows: list) -> list:
+    """
+    고유 제약 조건 (ship_name, fishing_date, depart_time, schedule_no) 기준으로 중복 제거.
+    동일 키가 여러 번 등장하면 마지막(최신) 값을 유지.
+    인덱스: ship_name=1, fishing_date=4, depart_time=5, schedule_no=15
+    """
+    seen = {}
+    for row in rows:
+        key = (row[1], row[4], row[5], row[15])
+        seen[key] = row  # 동일 키 있으면 마지막 값으로 덮어씀
+    deduped = list(seen.values())
+    if len(deduped) < len(rows):
+        log.info(f"중복 제거: {len(rows)}행 → {len(deduped)}행 ({len(rows) - len(deduped)}개 중복 제거)")
+    return deduped
+
+
 def save_to_postgres(rows: list, conn):
     """PostgreSQL에 배치 UPSERT (pg8000 다중 VALUES 방식 — 1 SQL per batch)"""
     if not rows:
         log.warning("저장할 데이터가 없습니다.")
         return 0
+
+    # ── 중복 제거 (동일 배치 내 같은 고유 키 → ON CONFLICT 에러 방지) ──
+    original_count = len(rows)
+    rows = deduplicate_rows(rows)
 
     BATCH_SIZE = 500
     COLS = 16
@@ -279,7 +299,14 @@ def save_to_postgres(rows: list, conn):
                     remain_seats   = EXCLUDED.remain_seats,
                     reserved_seats = EXCLUDED.reserved_seats,
                     status_code    = EXCLUDED.status_code,
-                    status_name    = EXCLUDED.status_name
+                    status_name    = EXCLUDED.status_name,
+                    area_name      = EXCLUDED.area_name,
+                    port_name      = EXCLUDED.port_name,
+                    return_time    = EXCLUDED.return_time,
+                    fish_types     = EXCLUDED.fish_types,
+                    fishing_methods = EXCLUDED.fishing_methods,
+                    price          = EXCLUDED.price,
+                    total_seats    = EXCLUDED.total_seats
                 """,
                 flat_params,
             )
@@ -289,13 +316,28 @@ def save_to_postgres(rows: list, conn):
         cur.execute(
             "INSERT INTO fishing_collect_history (collected_at, row_count, status, note) "
             "VALUES (NOW(), %s, %s, %s)",
-            (len(rows), "성공", f"오늘 포함 {DAYS_AHEAD}일치"),
+            (len(rows), "성공", f"수집 {original_count}행, 중복제거 후 {len(rows)}행, {DAYS_AHEAD}일치"),
         )
         conn.commit()
+    except Exception as e:
+        conn.rollback()
+        log.error(f"DB 저장 실패: {e}")
+        # 실패 이력도 기록
+        cur2 = conn.cursor()
+        try:
+            cur2.execute(
+                "INSERT INTO fishing_collect_history (collected_at, row_count, status, note) "
+                "VALUES (NOW(), %s, %s, %s)",
+                (0, "실패", str(e)[:200]),
+            )
+            conn.commit()
+        finally:
+            cur2.close()
+        raise
     finally:
         cur.close()
 
-    log.info(f"PostgreSQL 저장 완료: {len(rows)}행 UPSERT")
+    log.info(f"PostgreSQL 저장 완료: {len(rows)}행 UPSERT (수집 원본: {original_count}행)")
     return len(rows)
 
 
