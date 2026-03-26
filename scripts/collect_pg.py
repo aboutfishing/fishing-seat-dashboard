@@ -14,8 +14,7 @@ import logging
 from datetime import datetime, date, timedelta
 
 import aiohttp
-import psycopg2
-from psycopg2.extras import execute_values
+import pg8000.dbapi
 from google.cloud.sql.connector import Connector
 
 # ── 로깅 설정 ─────────────────────────────────────────────
@@ -89,22 +88,6 @@ CREATE INDEX IF NOT EXISTS idx_area ON fishing_seat_status (area_name);
 CREATE INDEX IF NOT EXISTS idx_remain ON fishing_seat_status (remain_seats);
 """
 
-UPSERT_SQL = """
-INSERT INTO fishing_seat_status (
-    collected_at, ship_name, area_name, port_name, fishing_date,
-    depart_time, return_time, fish_types, fishing_methods, price,
-    total_seats, reserved_seats, remain_seats,
-    status_code, status_name, schedule_no
-) VALUES %s
-ON CONFLICT (ship_name, fishing_date, depart_time, schedule_no)
-DO UPDATE SET
-    collected_at    = EXCLUDED.collected_at,
-    remain_seats    = EXCLUDED.remain_seats,
-    reserved_seats  = EXCLUDED.reserved_seats,
-    status_code     = EXCLUDED.status_code,
-    status_name     = EXCLUDED.status_name;
-"""
-
 # ── 수집 이력 테이블 ────────────────────────────────────────
 CREATE_HISTORY_SQL = """
 CREATE TABLE IF NOT EXISTS fishing_collect_history (
@@ -119,7 +102,7 @@ CREATE TABLE IF NOT EXISTS fishing_collect_history (
 
 # ── DB 연결 ─────────────────────────────────────────────────
 def get_db_connection():
-    """Cloud SQL Python Connector로 안전하게 연결 (IP 허용 불필요)"""
+    """Cloud SQL Python Connector + pg8000으로 안전하게 연결 (IP 허용 불필요)"""
     global _connector
     if not DB_PASSWORD:
         log.error("DB_PASSWORD 환경변수가 설정되지 않았습니다.")
@@ -127,21 +110,31 @@ def get_db_connection():
     _connector = Connector()
     conn = _connector.connect(
         INSTANCE_CONNECTION_NAME,
-        "psycopg2",
+        "pg8000",
         user=DB_USER,
         password=DB_PASSWORD,
         db=DB_NAME,
     )
-    log.info(f"Cloud SQL Connector 연결 성공: {INSTANCE_CONNECTION_NAME}")
+    log.info(f"Cloud SQL Connector(pg8000) 연결 성공: {INSTANCE_CONNECTION_NAME}")
     return conn
 
 
 def setup_db(conn):
-    """테이블이 없으면 생성"""
-    with conn.cursor() as cur:
-        cur.execute(CREATE_TABLE_SQL)
-        cur.execute(CREATE_HISTORY_SQL)
-    conn.commit()
+    """테이블이 없으면 생성 (pg8000 호환)"""
+    cur = conn.cursor()
+    try:
+        # pg8000은 세미콜론 포함 multi-statement 불가 → 각각 실행
+        for stmt in CREATE_TABLE_SQL.strip().split(";"):
+            stmt = stmt.strip()
+            if stmt:
+                cur.execute(stmt)
+        for stmt in CREATE_HISTORY_SQL.strip().split(";"):
+            stmt = stmt.strip()
+            if stmt:
+                cur.execute(stmt)
+        conn.commit()
+    finally:
+        cur.close()
     log.info("DB 테이블 준비 완료")
 
 
@@ -255,24 +248,52 @@ async def collect_all_async() -> list:
 
 # ── DB 저장 ─────────────────────────────────────────────────
 def save_to_postgres(rows: list, conn):
-    """PostgreSQL에 배치 UPSERT"""
+    """PostgreSQL에 배치 UPSERT (pg8000 호환)"""
     if not rows:
         log.warning("저장할 데이터가 없습니다.")
         return 0
 
-    with conn.cursor() as cur:
-        execute_values(cur, UPSERT_SQL, rows, page_size=500)
-        affected = cur.rowcount
+    BATCH_SIZE = 500
+    total_affected = 0
 
-    # 수집 이력 저장
-    with conn.cursor() as cur:
+    cur = conn.cursor()
+    try:
+        # 500행씩 나눠서 배치 UPSERT
+        for i in range(0, len(rows), BATCH_SIZE):
+            batch = rows[i:i + BATCH_SIZE]
+            # pg8000은 executemany 사용
+            cur.executemany(
+                """
+                INSERT INTO fishing_seat_status (
+                    collected_at, ship_name, area_name, port_name, fishing_date,
+                    depart_time, return_time, fish_types, fishing_methods, price,
+                    total_seats, reserved_seats, remain_seats,
+                    status_code, status_name, schedule_no
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (ship_name, fishing_date, depart_time, schedule_no)
+                DO UPDATE SET
+                    collected_at   = EXCLUDED.collected_at,
+                    remain_seats   = EXCLUDED.remain_seats,
+                    reserved_seats = EXCLUDED.reserved_seats,
+                    status_code    = EXCLUDED.status_code,
+                    status_name    = EXCLUDED.status_name
+                """,
+                batch,
+            )
+            total_affected += len(batch)
+            log.info(f"  배치 저장: {i+len(batch)}/{len(rows)}행")
+
+        # 수집 이력 저장
         cur.execute(
             "INSERT INTO fishing_collect_history (collected_at, row_count, status, note) "
             "VALUES (NOW(), %s, %s, %s)",
             (len(rows), "성공", f"오늘 포함 {DAYS_AHEAD}일치"),
         )
-    conn.commit()
-    log.info(f"PostgreSQL 저장 완료: {len(rows)}행 UPSERT → 실제 변경 {affected}행")
+        conn.commit()
+    finally:
+        cur.close()
+
+    log.info(f"PostgreSQL 저장 완료: {len(rows)}행 UPSERT")
     return len(rows)
 
 
