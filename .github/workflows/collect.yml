@@ -9,7 +9,7 @@ on:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # 기존 30분 → 15분으로 단축 (asyncio 덕분)
+    timeout-minutes: 15  # asyncio 병렬 수집으로 2~3분 예상
 
     steps:
       - name: 코드 체크아웃
@@ -24,10 +24,14 @@ jobs:
       - name: 의존성 설치
         run: pip install -r scripts/requirements_pg.txt
 
+      - name: GCP 서비스 계정 인증 설정
+        run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
       - name: 좌석 데이터 수집 (PostgreSQL 저장)
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
+          INSTANCE_CONNECTION_NAME: ${{ secrets.INSTANCE_CONNECTION_NAME }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

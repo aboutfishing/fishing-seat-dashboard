@@ -16,6 +16,7 @@ from datetime import datetime, date, timedelta
 import aiohttp
 import psycopg2
 from psycopg2.extras import execute_values
+from google.cloud.sql.connector import Connector
 
 # ── 로깅 설정 ─────────────────────────────────────────────
 logging.basicConfig(
@@ -47,11 +48,17 @@ MAX_CONCURRENT = 10
 
 # ── DB 연결 정보 ────────────────────────────────────────────
 # GitHub Actions Secrets 또는 환경변수로 주입
-DB_HOST = os.environ.get("DB_HOST", "34.47.87.149")
-DB_PORT = int(os.environ.get("DB_PORT", "5432"))
+# Cloud SQL Python Connector 사용 (IP 허용 불필요, 서비스 계정 IAM 인증)
+INSTANCE_CONNECTION_NAME = os.environ.get(
+    "INSTANCE_CONNECTION_NAME",
+    "aboutfishingproduct:asia-northeast3:aboutfishing-svc-postgres-v2"
+)
 DB_NAME = os.environ.get("DB_NAME", "aboutfishing_db")
 DB_USER = os.environ.get("DB_USER", "fisherman")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")  # GitHub Actions Secret
+
+# 전역 Connector 인스턴스
+_connector: Connector = None
 
 # ── DB 테이블 DDL ───────────────────────────────────────────
 CREATE_TABLE_SQL = """
@@ -112,18 +119,21 @@ CREATE TABLE IF NOT EXISTS fishing_collect_history (
 
 # ── DB 연결 ─────────────────────────────────────────────────
 def get_db_connection():
+    """Cloud SQL Python Connector로 안전하게 연결 (IP 허용 불필요)"""
+    global _connector
     if not DB_PASSWORD:
         log.error("DB_PASSWORD 환경변수가 설정되지 않았습니다.")
         sys.exit(1)
-    return psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME,
+    _connector = Connector()
+    conn = _connector.connect(
+        INSTANCE_CONNECTION_NAME,
+        "psycopg2",
         user=DB_USER,
         password=DB_PASSWORD,
-        connect_timeout=10,
-        sslmode="prefer",
+        db=DB_NAME,
     )
+    log.info(f"Cloud SQL Connector 연결 성공: {INSTANCE_CONNECTION_NAME}")
+    return conn
 
 
 def setup_db(conn):
@@ -271,7 +281,7 @@ def main():
     log.info("=" * 60)
     log.info("선상24 좌석 데이터 수집 시작 (PostgreSQL + asyncio v2)")
     log.info(f"날짜 범위: 오늘({date.today()}) ~ +{DAYS_AHEAD}일")
-    log.info(f"DB: {DB_HOST}:{DB_PORT}/{DB_NAME}")
+    log.info(f"DB: {INSTANCE_CONNECTION_NAME}/{DB_NAME}")
     log.info("=" * 60)
 
     start = datetime.now()
@@ -286,6 +296,8 @@ def main():
     # PostgreSQL 저장
     save_to_postgres(rows, conn)
     conn.close()
+    if _connector:
+        _connector.close()
 
     elapsed = (datetime.now() - start).total_seconds()
     log.info("=" * 60)
