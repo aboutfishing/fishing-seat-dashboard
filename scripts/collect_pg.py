@@ -342,6 +342,39 @@ def save_to_postgres(rows: list, conn):
 
 
 # ── 메인 ──────────────────────────────────────────────────
+# ── JSON 내보내기 ────────────────────────────────────────
+def save_to_json(rows: list, output_path: str):
+    """
+    수집 데이터를 JSON 파일로 저장 (GitHub Pages 대시보드용).
+    rows 컬럼 순서: collected_at(0), ship_name(1), area_name(2), port_name(3),
+                   fishing_date(4), depart_time(5), return_time(6), fish_types(7),
+                   fishing_methods(8), price(9), total_seats(10), reserved_seats(11),
+                   remain_seats(12), status_code(13), status_name(14), schedule_no(15)
+    """
+    import json
+
+    def serialize(val):
+        if hasattr(val, "isoformat"):
+            return val.isoformat()
+        return val
+
+    json_rows = []
+    for row in rows:
+        json_rows.append([serialize(v) for v in row])
+
+    payload = {
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "row_count": len(json_rows),
+        "rows": json_rows,
+    }
+
+    os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
+
+    log.info(f"JSON 저장 완료: {output_path} ({len(json_rows)}행)")
+
+
 def main():
     log.info("=" * 60)
     log.info("선상24 좌석 데이터 수집 시작 (PostgreSQL + asyncio v2)")
@@ -359,10 +392,15 @@ def main():
     rows = asyncio.run(collect_all_async())
 
     # PostgreSQL 저장
-    save_to_postgres(rows, conn)
+    saved_count = save_to_postgres(rows, conn)
     conn.close()
     if _connector:
         _connector.close()
+
+    # JSON 파일 내보내기 (중복 제거된 최종 rows 기준)
+    deduped = deduplicate_rows(rows)
+    json_path = os.environ.get("JSON_OUTPUT_PATH", "data/latest.json")
+    save_to_json(deduped, json_path)
 
     elapsed = (datetime.now() - start).total_seconds()
     log.info("=" * 60)

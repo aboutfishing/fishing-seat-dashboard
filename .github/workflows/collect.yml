@@ -35,4 +35,13 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JSON_OUTPUT_PATH: data/latest.json
         run: python scripts/collect_pg.py
+
+      - name: JSON 데이터 파일 커밋 & 푸시 (GitHub Pages용)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/latest.json
+          git diff --staged --quiet || git commit -m "chore: 데이터 자동 갱신 $(date +'%Y-%m-%d %H:%M KST' -d '+9 hours')"
+          git push

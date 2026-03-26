@@ -317,12 +317,8 @@
 
 <script>
 // ── 설정 ────────────────────────────────────────────────
-const SPREADSHEET_ID = "1u9IxoLV4U0cxGCTL5ApOqbs30my_DB0fg7TmhJZsEdU";
-const SHEET_NAME     = "실시간좌석현황";
-const ROWS_PER_PAGE  = 50;
-
-// Google Sheets CSV 공개 URL
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+const JSON_URL      = "data/latest.json";
+const ROWS_PER_PAGE = 50;
 
 // ── 상태 ────────────────────────────────────────────────
 let allData      = [];
@@ -338,13 +334,17 @@ async function loadData() {
     <div class="loading"><div class="loading-spinner"></div><div>데이터를 불러오는 중...</div></div>`;
 
   try {
-    const resp = await fetch(CSV_URL + "&t=" + Date.now(), { cache: "no-store" });
+    const resp = await fetch(JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
     if (!resp.ok) throw new Error("네트워크 오류: " + resp.status);
-    const text = await resp.text();
-    allData = parseCSV(text);
+    const payload = await resp.json();
 
-    // 날짜 필터 옵션 채우기
-    const dates = [...new Set(allData.map(r => r[4]))].sort();
+    // rows: [[collected_at, ship_name, area_name, port_name, fishing_date,
+    //         depart_time, return_time, fish_types, fishing_methods, price,
+    //         total_seats, reserved_seats, remain_seats, status_code, status_name, schedule_no], ...]
+    allData = payload.rows || [];
+
+    // 날짜 필터 옵션 채우기 (fishing_date = index 4)
+    const dates = [...new Set(allData.map(r => r[4]))].filter(Boolean).sort();
     const sel = document.getElementById("filter-date");
     sel.innerHTML = '<option value="">전체 날짜</option>';
     dates.forEach(d => {
@@ -356,38 +356,18 @@ async function loadData() {
     updateSummary();
     applyFilters();
 
-    const ts = allData[0]?.[0] || "";
-    document.getElementById("updated-at").textContent = "최종 수집: " + (ts || "알 수 없음");
+    document.getElementById("updated-at").textContent =
+      "최종 수집: " + (payload.updated_at || "알 수 없음");
+    document.getElementById("total-count").textContent =
+      `${allData.length}건 / ${dates.length}일`;
   } catch (e) {
     document.getElementById("table-container").innerHTML = `
       <div class="empty">
         <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
         <div>데이터 로드 실패: ${e.message}</div>
-        <div style="margin-top:8px;font-size:0.8rem">스프레드시트 공유 설정을 확인해주세요.</div>
+        <div style="margin-top:8px;font-size:0.8rem">GitHub Actions 수집이 완료된 후 이용 가능합니다.</div>
       </div>`;
   }
-}
-
-function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  const result = [];
-  for (let i = 1; i < lines.length; i++) {  // 헤더 제외
-    const row = parseCSVRow(lines[i]);
-    if (row.length > 1) result.push(row);
-  }
-  return result;
-}
-
-function parseCSVRow(line) {
-  const result = []; let cur = ""; let inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (c === '"') { inQ = !inQ; }
-    else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ""; }
-    else { cur += c; }
-  }
-  result.push(cur.trim());
-  return result;
 }
 
 // ── 요약 통계 ────────────────────────────────────────────
