@@ -248,28 +248,31 @@ async def collect_all_async() -> list:
 
 # ── DB 저장 ─────────────────────────────────────────────────
 def save_to_postgres(rows: list, conn):
-    """PostgreSQL에 배치 UPSERT (pg8000 호환)"""
+    """PostgreSQL에 배치 UPSERT (pg8000 다중 VALUES 방식 — 1 SQL per batch)"""
     if not rows:
         log.warning("저장할 데이터가 없습니다.")
         return 0
 
     BATCH_SIZE = 500
-    total_affected = 0
+    COLS = 16
 
     cur = conn.cursor()
     try:
-        # 500행씩 나눠서 배치 UPSERT
         for i in range(0, len(rows), BATCH_SIZE):
             batch = rows[i:i + BATCH_SIZE]
-            # pg8000은 executemany 사용
-            cur.executemany(
-                """
+            # 단일 INSERT + 다중 VALUES (executemany 대비 ~100배 빠름)
+            placeholders = ",".join(
+                ["(" + ",".join(["%s"] * COLS) + ")"] * len(batch)
+            )
+            flat_params = [v for row in batch for v in row]
+            cur.execute(
+                f"""
                 INSERT INTO fishing_seat_status (
                     collected_at, ship_name, area_name, port_name, fishing_date,
                     depart_time, return_time, fish_types, fishing_methods, price,
                     total_seats, reserved_seats, remain_seats,
                     status_code, status_name, schedule_no
-                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ) VALUES {placeholders}
                 ON CONFLICT (ship_name, fishing_date, depart_time, schedule_no)
                 DO UPDATE SET
                     collected_at   = EXCLUDED.collected_at,
@@ -278,9 +281,8 @@ def save_to_postgres(rows: list, conn):
                     status_code    = EXCLUDED.status_code,
                     status_name    = EXCLUDED.status_name
                 """,
-                batch,
+                flat_params,
             )
-            total_affected += len(batch)
             log.info(f"  배치 저장: {i+len(batch)}/{len(rows)}행")
 
         # 수집 이력 저장
