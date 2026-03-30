@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 # ── 설정 ──────────────────────────────────────────────────────────────────
 GCS_BUCKET   = "booking-redirect-aboutfishing-kr"
 GCS_PREFIX   = "seat-data"
-DAYS_AHEAD   = 14          # 오늘 포함 14일치
+DAYS_AHEAD   = int(os.environ.get("DAYS_AHEAD", "14"))  # 오늘 포함 N일치 (기본 14일)
 MAX_CONC     = 10
 
 # sunsang24 API

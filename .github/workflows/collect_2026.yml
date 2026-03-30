@@ -1,22 +1,24 @@
 name: 어바웃피싱 2026 전체 데이터 수집
 
 on:
-  workflow_dispatch:       # 수동 실행 (오늘 밤 즉시 실행)
+  workflow_dispatch:       # 수동 실행
+    inputs:
+      days_ahead:
+        description: '수집 기간 (일수, 기본 90일)'
+        required: false
+        default: '90'
   schedule:
-    # 매일 오전 2시 KST (UTC 17:00) — 기존 1시 수집 완료 후
+    # 매일 오전 2시 KST (UTC 17:00) — 기본 14일 수집(collect.yml) 완료 후 확장 수집
     - cron: '0 17 * * *'
 
 permissions:
   contents: write
 
-env:
-  JSON_OUTPUT_PATH: data/latest.json
-
 jobs:
   collect_2026:
-    name: 2026 전체 좌석 데이터 수집
+    name: 2026 전체 좌석 데이터 수집 (90일)
     runs-on: ubuntu-latest
-    timeout-minutes: 90     # 280+ 일치 수집 — 넉넉하게 90분
+    timeout-minutes: 60
 
     steps:
       - name: 코드 체크아웃
@@ -29,40 +31,35 @@ jobs:
           cache: 'pip'
 
       - name: 의존성 설치
-        run: |
-          pip install -r scripts/requirements_pg.txt
-          pip install sqlalchemy  # collect_2026_full.py에서 사용
+        run: pip install -r scripts/requirements_unified.txt
 
       - name: GCP 서비스 계정 인증 설정
         run: |
           echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
 
-      - name: 2026 전체 데이터 수집
+      - name: 좌석 데이터 수집 (선상24 + 더피싱, 90일치)
         env:
-          INSTANCE_CONNECTION_NAME: ${{ secrets.INSTANCE_CONNECTION_NAME }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           JSON_OUTPUT_PATH: data/latest.json
+          DAYS_AHEAD: ${{ github.event.inputs.days_ahead || '90' }}
         run: |
-          echo "수집 시작: $(date +'%Y-%m-%d %H:%M:%S KST' -d '+9 hours')"
-          python scripts/collect_2026_full.py
-          echo "수집 완료: $(date +'%Y-%m-%d %H:%M:%S KST' -d '+9 hours')"
+          echo "수집 시작: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST') / 수집기간: ${DAYS_AHEAD}일"
+          python scripts/collect_unified.py
+          echo "수집 완료: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST')"
 
-      - name: JSON 데이터 파일 커밋 & 푸시
+      - name: JSON 데이터 파일 커밋 & 푸시 (GitHub Pages용)
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/latest.json
           git diff --staged --quiet || git commit -m \
-            "chore: 2026 전체 데이터 갱신 $(date +'%Y-%m-%d %H:%M KST' -d '+9 hours')"
+            "chore: 데이터 자동 갱신 $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')"
           git push
 
       - name: 수집 결과 요약
         if: always()
         run: |
-          echo "=== 수집 결과 ==="
+          echo "=== 2026 수집 결과 ==="
           if [ -f data/latest.json ]; then
             python3 -c "
           import json
@@ -74,6 +71,16 @@ jobs:
           if rows:
               dates = sorted(set(r[4] for r in rows if r[4]))
               print(f'날짜 범위: {dates[0]} ~ {dates[-1]} ({len(dates)}일)')
+              sources = {}
+              af_matched = 0
+              for r in rows:
+                  src = r[17] if len(r) > 17 else 'unknown'
+                  sources[src] = sources.get(src, 0) + 1
+                  if len(r) > 16 and r[16]:
+                      af_matched += 1
+              for src, cnt in sorted(sources.items()):
+                  print(f'  {src}: {cnt:,}건')
+              print(f'어바웃피싱 매칭: {af_matched:,}건 / {len(rows):,}건 ({af_matched/len(rows)*100:.1f}%)')
           "
           else
             echo "data/latest.json 없음"
