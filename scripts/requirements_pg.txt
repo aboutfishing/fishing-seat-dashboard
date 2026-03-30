@@ -1,3 +1,4 @@
 aiohttp==3.9.5
 pg8000==1.31.1
 cloud-sql-python-connector[pg8000]==1.9.0
+sqlalchemy==2.0.36
