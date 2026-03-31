@@ -37,12 +37,12 @@ jobs:
           wc -c booking_deploy.html
           echo "✅ booking.html 다운로드 완료"
 
-      - name: booking.html → gs://aboutfishing-kr 업로드
+      - name: booking.html → GCS 업로드
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:public, max-age=300" \
-                 cp booking_deploy.html gs://aboutfishing-kr/booking.html
+                 cp booking_deploy.html gs://booking-redirect-aboutfishing-kr/booking.html
           echo "✅ 배포 완료: https://aboutfishing.kr/booking.html"
 
       - name: 배포 확인
-        run: gsutil ls -la gs://aboutfishing-kr/booking.html
+        run: gsutil ls -la gs://booking-redirect-aboutfishing-kr/booking.html
