@@ -294,7 +294,10 @@ function switchView(v) {
   document.getElementById('map-view').style.display   = v === 'map'   ? '' : 'none';
   document.getElementById('btn-table').classList.toggle('active', v === 'table');
   document.getElementById('btn-map').classList.toggle('active',   v === 'map');
-  if (v === 'map') initMap();
+  if (v === 'map') {
+    // 브라우저가 컨테이너를 렌더링한 후 지도 초기화 (0px 방지)
+    requestAnimationFrame(() => requestAnimationFrame(() => initMap()));
+  }
 }
 
 // ── 지도 초기화 ──────────────────────────────────
@@ -304,6 +307,8 @@ function initMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors', maxZoom: 17
     }).addTo(mapObj);
+  } else {
+    mapObj.invalidateSize();
   }
   renderMapMarkers();
 }
