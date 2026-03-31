@@ -1,0 +1,48 @@
+name: booking.html 배포 (aboutfishing.kr)
+
+# aboutfishing-kr-html 레포에 GCP_CREDENTIALS 시크릿이 없어
+# GCS 인증이 가능한 이 레포에서 배포를 수행합니다.
+
+on:
+  workflow_dispatch:   # 수동 실행
+  # 아래 주석 해제 시 이 레포 main 브랜치 푸시마다 자동 배포:
+  # push:
+  #   branches: [main]
+  #   paths: ['booking.html']  # booking.html 변경 시에만
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: GCP 서비스 계정 인증
+        run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
+      - name: gsutil 설치
+        run: pip install gsutil --quiet
+
+      - name: aboutfishing-kr-html 레포에서 booking.html 가져오기
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sL \
+            -H "Authorization: token ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github.v3.raw" \
+            "https://api.github.com/repos/aboutfishing/aboutfishing-kr-html/contents/booking.html?ref=main" \
+            -o booking_deploy.html
+          wc -c booking_deploy.html
+          echo "✅ booking.html 다운로드 완료"
+
+      - name: booking.html → gs://aboutfishing-kr 업로드
+        run: |
+          gsutil -h "Content-Type:text/html; charset=utf-8" \
+                 -h "Cache-Control:public, max-age=300" \
+                 cp booking_deploy.html gs://aboutfishing-kr/booking.html
+          echo "✅ 배포 완료: https://aboutfishing.kr/booking.html"
+
+      - name: 배포 확인
+        run: gsutil ls -la gs://aboutfishing-kr/booking.html
