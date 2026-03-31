@@ -194,11 +194,11 @@ ul{list-style:none}
 .hero-inner{
   width:100%;max-width:var(--max-w);
   margin:0 auto;padding:28px 16px;
-  display:flex;align-items:center;gap:32px;
+  display:flex;align-items:flex-end;gap:32px;
 }
-.hero-content{flex:1;min-width:0}
-.hero-visual{display:none;flex:0 0 380px}
-.hero-visual img{width:100%;border-radius:20px;object-fit:cover;aspect-ratio:4/3;box-shadow:var(--shadow-l)}
+.hero-content{flex:1;min-width:0;padding-bottom:28px}
+.hero-visual{display:none;flex:0 0 360px;align-self:flex-end}
+.hero-visual img{width:100%;object-fit:contain;object-position:bottom center;filter:drop-shadow(0 8px 24px rgba(0,82,255,.12))}
 .hero-badge{
   display:inline-flex;align-items:center;gap:6px;
   padding:6px 14px;background:rgba(0,82,255,.08);
@@ -470,7 +470,7 @@ ul{list-style:none}
   .hero h1{font-size:44px}
   .hero-stats{gap:48px}
   .hero-stat-n{font-size:32px}
-  .hero-visual{flex:0 0 440px}
+  .hero-visual{flex:0 0 400px}
   .boats-g{grid-template-columns:repeat(3,1fr);gap:24px}
   .bc:hover{transform:translateY(-4px);box-shadow:var(--shadow-l);border-color:var(--c-blue)}
   .bc:hover .bc-img img{transform:scale(1.05)}
@@ -614,7 +614,7 @@ ul{list-style:none}
   <div class="hero-inner">
     <div class="hero-content">
       <div class="hero-badge"><span class="dot"></span> 실시간 잔여석 확인 가능</div>
-      <h1><em>인천배낚시 체험</em><br>봄 쭈꾸미 낚시 시즌 예약 할인<br>어바웃피싱이 쉽게</h1>
+      <h1><em>인천배낚시 체험</em><br>쭈꾸미낚시 예약<br>어바웃피싱이 쉽게</h1>
       <p class="hero-sub">남항·연안부두 출항 낚시배를 한눈에 비교하고,<br>할인 쿠폰으로 저렴하게 예약하세요.</p>
       <div class="hero-search">
         <input type="text" placeholder="지역, 어종, 선박명 검색" aria-label="검색" id="searchInput">
@@ -635,7 +635,7 @@ ul{list-style:none}
       </div>
     </div>
     <div class="hero-visual">
-      <img src="https://aboutfishing.kr/images/incheon-webfoot-octopus-cuttlefish-fishing-tour.jpg"
+      <img src="https://booking.aboutfishing.kr/img/home/grandpa-search.webp"
            alt="인천배낚시 쭈꾸미낚시 체험 예약" loading="eager">
     </div>
   </div>
