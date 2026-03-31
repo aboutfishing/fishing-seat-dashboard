@@ -4,6 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 
+<!-- ═══════════════════════════════════════════════════════════
+     SEO/AEO/GEO 색인 유지 + 실제 사용자 booking 사이트 이동
+     ▸ 구글·네이버 크롤러 → 이 페이지 전체 콘텐츠 색인
+     ▸ 실제 방문자  → booking.aboutfishing.kr 즉시 이동
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  var ua = (navigator.userAgent || '').toLowerCase();
+  /* 주요 검색엔진·SNS·AI 크롤러 패턴 */
+  var bots = [
+    'googlebot','bingbot','yeti','naverbot','daumoa',        /* 구글·빙·네이버·다음 */
+    'slurp','baidu','duckduckbot','teoma','sogou',           /* 기타 검색엔진 */
+    'facebookexternalhit','twitterbot','linkedinbot',        /* SNS */
+    'kakaotalk','whatsapp','telegram','line',                /* 메신저 프리뷰 */
+    'gptbot','claudebot','anthropic','perplexity',           /* AI 크롤러 AEO */
+    'semrushbot','ahrefsbot','mj12bot','dotbot',             /* SEO 툴 */
+    'bot','spider','crawl','curl','wget','python-requests'   /* 일반 봇 */
+  ];
+  var isBot = bots.some(function(b){ return ua.indexOf(b) !== -1; });
+  if (!isBot) {
+    /* 사용자: booking 사이트로 즉시 이동 (뒤로가기 방지) */
+    window.location.replace('https://booking.aboutfishing.kr');
+  }
+  /* 크롤러: 이 파일의 전체 SEO/AEO/GEO 콘텐츠를 그대로 색인 */
+})();
+</script>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0RER617PJF"></script>
 <script>
