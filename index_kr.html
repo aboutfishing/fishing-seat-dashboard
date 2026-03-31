@@ -103,9 +103,9 @@
    RESET & VARIABLES
    ═══════════════════════════════════════════════════ */
 :root {
-  --c-blue: #2563EB;
-  --c-blue-dk: #1D4ED8;
-  --c-blue-lt: #EFF6FF;
+  --c-blue: #0052FF;
+  --c-blue-dk: #003FCC;
+  --c-blue-lt: #EEF4FF;
   --c-orange: #F97316;
   --c-orange-dk: #EA580C;
   --c-bg: #F8FAFC;
@@ -188,51 +188,46 @@ ul{list-style:none}
    HERO
    ═══════════════════════════════════════════════════ */
 .hero{
-  margin-top:var(--hdr);position:relative;overflow:hidden;
-  padding:0;min-height:420px;display:flex;align-items:flex-end;
-}
-.hero-bg{
-  position:absolute;inset:0;z-index:0;
-  background:linear-gradient(150deg,#1D4ED8 0%,#2563EB 50%,#3B82F6 100%);
-}
-.hero-bg::before{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);
-  background-size:30px 30px;
-}
-.hero-bg::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 80% 10%,rgba(255,255,255,.13) 0%,transparent 48%),
-             radial-gradient(ellipse at 12% 88%,rgba(249,115,22,.22) 0%,transparent 42%);
+  margin-top:var(--hdr);background:#F8FAFC;
+  min-height:460px;display:flex;align-items:center;
 }
 .hero-inner{
-  position:relative;z-index:1;width:100%;max-width:var(--max-w);
-  margin:0 auto;padding:48px 16px 56px;
+  width:100%;max-width:var(--max-w);
+  margin:0 auto;padding:48px 16px;
+  display:flex;align-items:center;gap:32px;
 }
+.hero-content{flex:1;min-width:0}
+.hero-visual{display:none;flex:0 0 380px}
+.hero-visual img{width:100%;border-radius:20px;object-fit:cover;aspect-ratio:4/3;box-shadow:var(--shadow-l)}
 .hero-badge{
   display:inline-flex;align-items:center;gap:6px;
-  padding:6px 14px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
-  border-radius:100px;color:rgba(255,255,255,.9);font-size:12px;font-weight:500;
-  margin-bottom:16px;border:1px solid rgba(255,255,255,.2);
+  padding:6px 14px;background:rgba(0,82,255,.08);
+  border-radius:100px;color:var(--c-blue);font-size:12px;font-weight:600;
+  margin-bottom:16px;border:1px solid rgba(0,82,255,.18);
 }
 .hero-badge .dot{width:6px;height:6px;background:#4ADE80;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero h1{font-size:clamp(24px,6vw,44px);font-weight:900;color:#fff;line-height:1.25;margin-bottom:12px;letter-spacing:-.02em}
-.hero h1 em{font-style:normal;color:#FBBF24}
-.hero-sub{font-size:clamp(14px,3.5vw,18px);color:rgba(255,255,255,.85);font-weight:400;line-height:1.5;margin-bottom:24px;max-width:520px}
+.hero h1{font-size:clamp(24px,6vw,42px);font-weight:900;color:var(--c-text);line-height:1.25;margin-bottom:12px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--c-blue)}
+.hero-sub{font-size:clamp(14px,3.5vw,17px);color:var(--c-sub);font-weight:400;line-height:1.6;margin-bottom:20px;max-width:520px}
 .hero-search{display:flex;gap:8px;max-width:520px}
 .hero-search input{
   flex:1;padding:14px 16px;border-radius:var(--r-m);
-  border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);
-  color:#fff;font-size:15px;font-family:inherit;backdrop-filter:blur(8px);outline:none;transition:var(--ease);
+  border:2px solid var(--c-border);background:#fff;
+  color:var(--c-text);font-size:15px;font-family:inherit;outline:none;transition:var(--ease);
 }
-.hero-search input::placeholder{color:rgba(255,255,255,.5)}
-.hero-search input:focus{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.15)}
-.hero-search-btn{padding:14px 24px;background:var(--c-orange);color:#fff;font-size:15px;font-weight:700;border-radius:var(--r-m);transition:var(--ease);white-space:nowrap}
-.hero-stats{display:flex;gap:24px;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15)}
+.hero-search input::placeholder{color:var(--c-muted)}
+.hero-search input:focus{border-color:var(--c-blue);box-shadow:0 0 0 3px rgba(0,82,255,.1)}
+.hero-search-btn{padding:14px 24px;background:var(--c-blue);color:#fff;font-size:15px;font-weight:700;border-radius:var(--r-m);transition:var(--ease);white-space:nowrap}
+.hero-search-btn:hover{background:var(--c-blue-dk)}
+.hero-popular{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.pop-label{font-size:12px;color:var(--c-muted);white-space:nowrap;font-weight:500}
+.pop-tag{padding:5px 14px;background:#fff;border:1px solid var(--c-border);border-radius:100px;font-size:13px;color:var(--c-sub);transition:var(--ease);white-space:nowrap}
+.pop-tag:hover{border-color:var(--c-blue);color:var(--c-blue);background:var(--c-blue-lt)}
+.hero-stats{display:flex;gap:24px;margin-top:28px;padding-top:20px;border-top:1px solid var(--c-border)}
 .hero-stat{text-align:center}
-.hero-stat-n{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700;color:#fff}
-.hero-stat-l{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.hero-stat-n{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700;color:var(--c-blue)}
+.hero-stat-l{font-size:12px;color:var(--c-sub);margin-top:2px}
 
 /* ═══════════════════════════════════════════════════
    QUICK TAGS
@@ -298,7 +293,7 @@ ul{list-style:none}
   border:1px solid #FED7AA;border-radius:var(--r-xl);padding:24px 20px;
   position:relative;overflow:hidden;
 }
-.season::after{content:'🐙';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.15;transform:rotate(15deg)}
+.season::after{display:none}
 .season-t{font-size:18px;font-weight:700;color:var(--c-orange-dk);margin-bottom:8px}
 .season-d{font-size:14px;color:var(--c-sub);margin-bottom:16px;max-width:280px}
 .fish-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
@@ -439,10 +434,11 @@ ul{list-style:none}
 @media(min-width:768px){
   :root{--hdr:64px}
   .hero{min-height:480px}
-  .hero-inner{padding:64px 24px 72px}
+  .hero-inner{padding:64px 24px;gap:48px}
   .hero h1{font-size:36px}
   .hero-stats{gap:40px}
   .hero-stat-n{font-size:28px}
+  .hero-visual{display:block}
   .boats-g{grid-template-columns:repeat(2,1fr);gap:20px}
   .bc-img{aspect-ratio:16/9}
   .feat-g{grid-template-columns:repeat(4,1fr);gap:16px}
@@ -467,10 +463,11 @@ ul{list-style:none}
   .btn-coupon-hdr{display:block}
   .btn-coupon-hdr:hover{background:var(--c-orange-dk)}
   .hero{min-height:520px}
-  .hero-inner{padding:80px 40px 96px}
+  .hero-inner{padding:80px 40px;gap:64px}
   .hero h1{font-size:44px}
   .hero-stats{gap:48px}
   .hero-stat-n{font-size:32px}
+  .hero-visual{flex:0 0 440px}
   .boats-g{grid-template-columns:repeat(3,1fr);gap:24px}
   .bc:hover{transform:translateY(-4px);box-shadow:var(--shadow-l);border-color:var(--c-blue)}
   .bc:hover .bc-img img{transform:scale(1.05)}
@@ -569,8 +566,7 @@ ul{list-style:none}
 <!-- ═══ COUPON STRIP ═══ -->
 <div class="coupon-strip">
   <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8">
-    <span class="blink">🎫</span>
-     전국 선상낚시 예약 할인 쿠폰
+    전국 선상낚시 예약 할인 쿠폰
     <span class="pill">쿠폰 받기 →</span>
   </a>
 </div>
@@ -578,8 +574,8 @@ ul{list-style:none}
 <!-- ═══ HEADER ═══ -->
 <header class="hdr" id="hdr">
   <div class="hdr-in">
-    <a href="https://aboutfishing.kr" class="logo">
-      <img src="https://aboutfishing.kr/aboutfishing_logo.jpg" alt="어바웃피싱 인천배낚시 체험 쭈꾸미낚시 시즌" height="28">
+    <a href="https://aboutfishing.kr" class="logo" aria-label="어바웃피싱 홈">
+      <img src="./images/logo-brand.png" alt="어바웃피싱" height="32" style="border-radius:6px">
     </a>
     <nav class="nav-pc">
       <a href="#boats">인천배낚시</a>
@@ -590,7 +586,7 @@ ul{list-style:none}
       <a href="#faq">FAQ</a>
     </nav>
     <div class="hdr-acts">
-      <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="btn-coupon-hdr">🎫 인천배낚시 체험 할인 쿠폰 다운로드</a>
+      <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="btn-coupon-hdr">인천배낚시 체험 할인 쿠폰 다운로드</a>
       <button class="ham" id="ham" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -599,33 +595,45 @@ ul{list-style:none}
 <!-- Drawer -->
 <div class="drawer" id="drawer">
   <div class="drawer-body">
-    <a href="#boats">🚢 인천 배낚시</a>
-    <a href="#taean">⚓ 태안 배낚시</a>
-    <a href="#namhae">🌊 남해 배낚시</a>
-    <a href="#season">🐙 시즌 어종</a>
-    <a href="#price">💰 요금 비교</a>
-    <a href="#reviews">⭐ 이용 후기</a>
-    <a href="#faq">❓ 자주 묻는 질문</a>
-    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="drawer-cta">🎫 전국 선상낚시 할인 쿠폰 받고 예약하기</a>
+    <a href="#boats">인천 배낚시</a>
+    <a href="#taean">태안 배낚시</a>
+    <a href="#namhae">남해 배낚시</a>
+    <a href="#season">시즌 어종</a>
+    <a href="#price">요금 비교</a>
+    <a href="#reviews">이용 후기</a>
+    <a href="#faq">자주 묻는 질문</a>
+    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="drawer-cta">전국 선상낚시 할인 쿠폰 받고 예약하기</a>
   </div>
 </div>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-inner">
-    <div class="hero-badge"><span class="dot"></span> 실시간 잔여석 확인 가능</div>
-    <h1><em>인천배낚시 체험</em><br>봄 쭈꾸미 낚시 시즌 예약 할인<br>어바웃피싱이 쉽게</h1>
-    <p class="hero-sub">남항·연안부두 출항 낚시배를 한눈에 비교하고,<br>할인 쿠폰으로 저렴하게 예약하세요.</p>
-    <div class="hero-search">
-      <input type="text" placeholder="지역, 어종, 선박명 검색" aria-label="검색" id="searchInput">
-      <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="hero-search-btn" id="searchBtn">검색</a>
+    <div class="hero-content">
+      <div class="hero-badge"><span class="dot"></span> 실시간 잔여석 확인 가능</div>
+      <h1><em>인천배낚시 체험</em><br>봄 쭈꾸미 낚시 시즌 예약 할인<br>어바웃피싱이 쉽게</h1>
+      <p class="hero-sub">남항·연안부두 출항 낚시배를 한눈에 비교하고,<br>할인 쿠폰으로 저렴하게 예약하세요.</p>
+      <div class="hero-search">
+        <input type="text" placeholder="지역, 어종, 선박명 검색" aria-label="검색" id="searchInput">
+        <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="hero-search-btn" id="searchBtn">검색</a>
+      </div>
+      <div class="hero-popular">
+        <span class="pop-label">인기검색어</span>
+        <a href="https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미" class="pop-tag">쭈꾸미</a>
+        <a href="https://booking.aboutfishing.kr/search/list?keyword=갑오징어" class="pop-tag">갑오징어</a>
+        <a href="https://booking.aboutfishing.kr/search/list?keyword=광어" class="pop-tag">광어</a>
+        <a href="https://booking.aboutfishing.kr/search/list?keyword=우럭" class="pop-tag">우럭</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-n">1,300+</div><div class="hero-stat-l">등록 선박</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">25만+</div><div class="hero-stat-l">회원수</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">50만+</div><div class="hero-stat-l">다운로드</div></div>
+        <div class="hero-stat"><div class="hero-stat-n">4.9</div><div class="hero-stat-l">평균평점 (Apple)</div></div>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-n">1,300+</div><div class="hero-stat-l">등록 선박</div></div>
-      <div class="hero-stat"><div class="hero-stat-n">25만+</div><div class="hero-stat-l">회원수</div></div>
-      <div class="hero-stat"><div class="hero-stat-n">50만+</div><div class="hero-stat-l">다운로드</div></div>
-      <div class="hero-stat"><div class="hero-stat-n">4.9</div><div class="hero-stat-l">평균평점 (Apple)</div></div>
+    <div class="hero-visual">
+      <img src="https://aboutfishing.kr/images/incheon-webfoot-octopus-cuttlefish-fishing-tour.jpg"
+           alt="인천배낚시 쭈꾸미낚시 체험 예약" loading="eager">
     </div>
   </div>
 </section>
@@ -633,13 +641,13 @@ ul{list-style:none}
 <!-- ═══ QUICK TAGS ═══ -->
 <div class="qtags">
   <div class="qtags-row">
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="qtag on"><span class="qtag-e">🎣</span> 인천배낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미" class="qtag"><span class="qtag-e">🐙</span> 쭈꾸미낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=갑오징어" class="qtag"><span class="qtag-e">🦑</span> 갑오징어낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=우럭" class="qtag"><span class="qtag-e">🐟</span> 우럭낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=태안" class="qtag"><span class="qtag-e">⛵</span> 태안배낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=군산" class="qtag"><span class="qtag-e">🏖️</span> 군산배낚시</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=제주" class="qtag"><span class="qtag-e">🏝️</span> 제주배낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="qtag on">인천배낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미" class="qtag">쭈꾸미낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=갑오징어" class="qtag">갑오징어낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=우럭" class="qtag">우럭낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=태안" class="qtag">태안배낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=군산" class="qtag">군산배낚시</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=제주" class="qtag">제주배낚시</a>
   </div>
 </div>
 
@@ -667,7 +675,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">킹콩2호</div>
-        <div class="bc-info"><span>👥 최대 47명</span><span>🕐 오전 06:30 오후 12:10</span></div>
+        <div class="bc-info"><span>최대 47명</span><span>오전 06:30 오후 12:10</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c">(312)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">45,000</span><span class="p-unit">원~</span></div>
@@ -685,7 +693,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">킹콩6호</div>
-        <div class="bc-info"><span>👥 최대 50명</span><span>🕐 오전 06:30 오후 12:10</span></div>
+        <div class="bc-info"><span>최대 50명</span><span>오전 06:30 오후 12:10</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c">(187)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">45,000</span><span class="p-unit">원~</span></div>
@@ -703,7 +711,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">화인호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🕐 06:00 ~ 16:00</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>06:00 ~ 16:00</span></div>
         <div class="bc-rating"><span class="stars">★★★★☆</span><span class="r-n">4.9</span><span class="r-c">(156)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
@@ -721,7 +729,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">은아호</div>
-        <div class="bc-info"><span>👥 최대 65명</span><span>🕐 오전 06:20 오후 12:00</span></div>
+        <div class="bc-info"><span>최대 65명</span><span>오전 06:20 오후 12:00</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c">(203)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
@@ -739,7 +747,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 연안부두</div>
         <div class="bc-name">에프원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🕐 05:30 출항</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>05:30 출항</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c">(289)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -757,7 +765,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 웅진군</div>
         <div class="bc-name">뉴승진호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🕐 07:00 출항</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>07:00 출항</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c">(178)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">74,000</span><span class="p-unit">원~</span></div>
@@ -775,7 +783,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">킹콩8호</div>
-        <div class="bc-info"><span>🕐 06:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -793,7 +801,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">드래곤호</div>
-        <div class="bc-info"><span>🕐 06:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -811,7 +819,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">자이언트2호</div>
-        <div class="bc-info"><span>🕐 06:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -829,7 +837,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">반가워호</div>
-        <div class="bc-info"><span>🕐 06:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">45,000</span><span class="p-unit">원~</span></div>
@@ -847,7 +855,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">은아3호</div>
-        <div class="bc-info"><span>🕐 06:20 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:20 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">45,000</span><span class="p-unit">원~</span></div>
@@ -865,7 +873,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">성주산호</div>
-        <div class="bc-info"><span>🕐 06:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">45,000</span><span class="p-unit">원~</span></div>
@@ -883,7 +891,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 남항</div>
         <div class="bc-name">썬스타호</div>
-        <div class="bc-info"><span>🕐 06:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
@@ -901,7 +909,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 축항</div>
         <div class="bc-name">나라호</div>
-        <div class="bc-info"><span>🕐 06:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>06:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -919,7 +927,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 잠진도</div>
         <div class="bc-name">K세븐호</div>
-        <div class="bc-info"><span>🕐 05:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>05:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -937,7 +945,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 잠진도</div>
         <div class="bc-name">세븐호</div>
-        <div class="bc-info"><span>🕐 05:30 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>05:30 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -955,7 +963,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">해진호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -973,7 +981,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">은하1호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -991,7 +999,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">용진3호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -1009,7 +1017,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">뉴청운호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -1027,7 +1035,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">영진5호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.9</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
@@ -1045,7 +1053,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 영흥</div>
         <div class="bc-name">야호</div>
-        <div class="bc-info"><span>🕐 07:00 출항</span><span>🎫 쿠폰할인</span></div>
+        <div class="bc-info"><span>07:00 출항</span><span>쿠폰할인</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">4.8</span><span class="r-c"></span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
@@ -1063,7 +1071,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">인천 연안부두</div>
         <div class="bc-name">에프투호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🕐 04:30 출항</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>04:30 출항</span></div>
         <div class="bc-rating"><span class="stars">★★★★★</span><span class="r-n">5.0</span><span class="r-c">(245)</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
@@ -1091,14 +1099,14 @@ ul{list-style:none}
 
   <!-- 대회 개요 -->
   <div class="contest-meta">
-    <div class="cmeta-item"><span class="cmeta-ic">📅</span><span>2026년 4월 25일(토)</span></div>
-    <div class="cmeta-item"><span class="cmeta-ic">⚓</span><span>충남 마검포항 출항</span></div>
-    <div class="cmeta-item"><span class="cmeta-ic">🐟</span><span>광어 다운샷 낚시대회</span></div>
-    <div class="cmeta-item"><span class="cmeta-ic">🏆</span><span>총 상금 2,000만원 상당</span></div>
+    <div class="cmeta-item"><span>2026년 4월 25일(토)</span></div>
+    <div class="cmeta-item"><span>충남 마검포항 출항</span></div>
+    <div class="cmeta-item"><span>광어 다운샷 낚시대회</span></div>
+    <div class="cmeta-item"><span>총 상금 2,000만원 상당</span></div>
   </div>
 
   <!-- 대회 참가 선박 그리드 -->
-  <div class="contest-boats-hd">🚢 대회 참가 선박 (14척)</div>
+  <div class="contest-boats-hd">대회 참가 선박 (14척)</div>
   <div class="boats-g">
 
     <a href="https://booking.aboutfishing.kr/boats/69" class="bc bc-contest" data-r="all">
@@ -1109,7 +1117,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">뉴정원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1125,7 +1133,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">정원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1141,7 +1149,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">세원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1157,7 +1165,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">뉴패밀리호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1173,7 +1181,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">바다사랑호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1189,7 +1197,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">해원호</div>
-        <div class="bc-info"><span>👥 최대 21명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 21명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1205,7 +1213,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">만선호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1221,7 +1229,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">태백8호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1237,7 +1245,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">낚시광호</div>
-        <div class="bc-info"><span>👥 최대 16명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 16명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1253,7 +1261,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">동백호</div>
-        <div class="bc-info"><span>👥 최대 15명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 15명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1269,7 +1277,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">성진호</div>
-        <div class="bc-info"><span>👥 최대 13명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 13명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1285,7 +1293,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">힐링피싱호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1301,7 +1309,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">플라이호</div>
-        <div class="bc-info"><span>👥 최대 15명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 15명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1317,7 +1325,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포항</div>
         <div class="bc-name">레드호</div>
-        <div class="bc-info"><span>👥 최대 15명</span><span>🏆 대회참가선박</span></div>
+        <div class="bc-info"><span>최대 15명</span><span>대회참가선박</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res btn-contest">참가신청</span>
@@ -1329,7 +1337,7 @@ ul{list-style:none}
 
   <div style="text-align:center;margin-top:16px;">
     <a href="https://booking.aboutfishing.kr/goods/42" class="season-cta" style="background:linear-gradient(90deg,#7C3AED,#5B21B6);display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;color:#fff;font-weight:700;font-size:15px;text-decoration:none;">
-      🏆 2026 어바웃피싱 챔피언십 전체 선박 보기
+      2026 어바웃피싱 챔피언십 전체 선박 보기
     </a>
   </div>
 </section>
@@ -1358,7 +1366,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">나르샤호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1373,7 +1381,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">낚시광호</div>
-        <div class="bc-info"><span>👥 최대 16명</span><span>🐟 광어</span></div>
+        <div class="bc-info"><span>최대 16명</span><span>광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1388,7 +1396,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">유람호</div>
-        <div class="bc-info"><span>👥 최대 14명</span><span>🐟 광어 · 우럭</span></div>
+        <div class="bc-info"><span>최대 14명</span><span>광어 · 우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1403,7 +1411,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">만선호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 노래미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 노래미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1418,7 +1426,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">섬스타호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1433,7 +1441,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">피쉬뱅크호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">60,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1448,7 +1456,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">자연피싱호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1463,7 +1471,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">안흥2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 노래미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 노래미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1478,7 +1486,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">성진호</div>
-        <div class="bc-info"><span>👥 최대 13명</span><span>🐟 광어</span></div>
+        <div class="bc-info"><span>최대 13명</span><span>광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1493,7 +1501,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">힐링피싱호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1508,7 +1516,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">뉴정원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1523,7 +1531,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">홍단피싱호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">60,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1538,7 +1546,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안면도</div>
         <div class="bc-name">은행나무호</div>
-        <div class="bc-info"><span>👥 최대 10명</span><span>🐟 노래미 · 광어</span></div>
+        <div class="bc-info"><span>최대 10명</span><span>노래미 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1553,7 +1561,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">섬스타호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1568,7 +1576,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">성진호</div>
-        <div class="bc-info"><span>👥 최대 13명</span><span>🐟 광어</span></div>
+        <div class="bc-info"><span>최대 13명</span><span>광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1583,7 +1591,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">뉴패밀리호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1598,7 +1606,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">유람호</div>
-        <div class="bc-info"><span>👥 최대 14명</span><span>🐟 광어 · 우럭</span></div>
+        <div class="bc-info"><span>최대 14명</span><span>광어 · 우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1613,7 +1621,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">동백호</div>
-        <div class="bc-info"><span>👥 최대 15명</span><span>🐟 광어 · 우럭</span></div>
+        <div class="bc-info"><span>최대 15명</span><span>광어 · 우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1628,7 +1636,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">안흥2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 노래미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 노래미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1643,7 +1651,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">신출항호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 농어 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>농어 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1658,7 +1666,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">세원호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 광어 · 우럭</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>광어 · 우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1673,7 +1681,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">해원호</div>
-        <div class="bc-info"><span>👥 최대 21명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 21명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1688,7 +1696,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">예진호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 광어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1703,7 +1711,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">은진호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1718,7 +1726,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">성남호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 우럭</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1733,7 +1741,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">예진호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 광어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1748,7 +1756,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">나르샤호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1763,7 +1771,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">홍단피싱호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">60,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1778,7 +1786,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">태백8호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 광어 · 우럭</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>광어 · 우럭</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1793,7 +1801,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">글로리호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1808,7 +1816,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">블랙헬리오스호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1823,7 +1831,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">블루피싱호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1838,7 +1846,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">뉴용궁호</div>
-        <div class="bc-info"><span>👥 최대 21명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 21명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1853,7 +1861,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">부남호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1868,7 +1876,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">킹스타호</div>
-        <div class="bc-info"><span>👥 최대 19명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 19명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1883,7 +1891,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">라온호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1898,7 +1906,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">진하호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1913,7 +1921,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">레드피싱호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1928,7 +1936,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">어해루호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1943,7 +1951,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">가가호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1958,7 +1966,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">부흥호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1973,7 +1981,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">뉴해덕호</div>
-        <div class="bc-info"><span>👥 최대 21명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 21명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -1988,7 +1996,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안면도</div>
         <div class="bc-name">판타지호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2003,7 +2011,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">킹스타호</div>
-        <div class="bc-info"><span>👥 최대 19명</span><span>🐟 갑오징어 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 19명</span><span>갑오징어 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2018,7 +2026,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">글램핑호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 갑오징어 · 참돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>갑오징어 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2033,7 +2041,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안면도</div>
         <div class="bc-name">마린호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2048,7 +2056,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">나폴레옹호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 노래미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 노래미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2063,7 +2071,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">와일드캣호</div>
-        <div class="bc-info"><span>👥 최대 10명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 10명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2078,7 +2086,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">블루피싱호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2093,7 +2101,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">와일드캣호</div>
-        <div class="bc-info"><span>👥 최대 10명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 10명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2108,7 +2116,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안흥항</div>
         <div class="bc-name">레드피싱호</div>
-        <div class="bc-info"><span>👥 최대 17명</span><span>🐟 백조기 · 광어</span></div>
+        <div class="bc-info"><span>최대 17명</span><span>백조기 · 광어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2123,7 +2131,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 안면도</div>
         <div class="bc-name">마린호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2138,7 +2146,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 모항</div>
         <div class="bc-name">나폴레옹호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 노래미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 노래미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2153,7 +2161,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">충남 마검포</div>
         <div class="bc-name">부남호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 갑오징어 · 백조기</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>갑오징어 · 백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">0</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2185,7 +2193,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">하늘채레저</div>
-        <div class="bc-info"><span>👥 최대 10명</span><span>🐟 감성돔 · 농어</span></div>
+        <div class="bc-info"><span>최대 10명</span><span>감성돔 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2200,7 +2208,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">도시어부호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 참돔 · 볼락</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>참돔 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2215,7 +2223,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">목화피싱2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2230,7 +2238,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">목화피싱2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2245,7 +2253,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">목화피싱2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2260,7 +2268,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">목화피싱2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2275,7 +2283,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">바다클래식호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 참돔</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2290,7 +2298,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">드림피싱</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 감성돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>감성돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2305,7 +2313,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">드림피싱</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 감성돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>감성돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2320,7 +2328,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">드림피싱</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 감성돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>감성돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">110,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2335,7 +2343,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">광용호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 능성어</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>능성어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2350,7 +2358,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">  랑이다호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 감성돔 · 볼락</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>감성돔 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">70,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2365,7 +2373,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">일랑이다호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 감성돔 · 볼락</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>감성돔 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">70,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2380,7 +2388,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">보아스호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갈치 · 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갈치 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2395,7 +2403,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">보아스호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갈치 · 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갈치 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2410,7 +2418,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">보아스호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갈치 · 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갈치 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2425,7 +2433,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">은솔호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 감성돔 · 참돔</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>감성돔 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">150,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2440,7 +2448,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">지오레저호</div>
-        <div class="bc-info"><span>👥 최대 6명</span><span>🐟 감성돔 · 참돔</span></div>
+        <div class="bc-info"><span>최대 6명</span><span>감성돔 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">150,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2455,7 +2463,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">은솔호</div>
-        <div class="bc-info"><span>👥 최대 8명</span><span>🐟 감성돔 · 참돔</span></div>
+        <div class="bc-info"><span>최대 8명</span><span>감성돔 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">150,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2470,7 +2478,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">레인보우호</div>
-        <div class="bc-info"><span>👥 최대 7명</span><span>🐟 감성돔 · 참돔</span></div>
+        <div class="bc-info"><span>최대 7명</span><span>감성돔 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">150,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2485,7 +2493,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">로아2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 농어 · 부시리</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>농어 · 부시리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">150,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2500,7 +2508,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">용궁1호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갈치 · 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갈치 · 문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2515,7 +2523,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">로이스호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 문어 · 한치</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>문어 · 한치</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2530,7 +2538,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">더블케이2호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 낙지 · 열기</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>낙지 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2545,7 +2553,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">더블케이2호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 낙지 · 열기</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>낙지 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2560,7 +2568,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">더블케이호</div>
-        <div class="bc-info"><span>👥 최대 21명</span><span>🐟 낙지 · 열기</span></div>
+        <div class="bc-info"><span>최대 21명</span><span>낙지 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2575,7 +2583,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">더블케이3호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 낙지 · 볼락</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>낙지 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2590,7 +2598,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">아쿠아호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 한치</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 한치</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">120,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2605,7 +2613,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">로아호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 농어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 농어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2620,7 +2628,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">고고써니호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 열기 · 볼락</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>열기 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">90,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2635,7 +2643,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">충만호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 열기 · 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>열기 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">130,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2650,7 +2658,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">해모수호</div>
-        <div class="bc-info"><span>👥 최대 16명</span><span>🐟 감성돔 · 낙지</span></div>
+        <div class="bc-info"><span>최대 16명</span><span>감성돔 · 낙지</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2665,7 +2673,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">해모수호</div>
-        <div class="bc-info"><span>👥 최대 16명</span><span>🐟 감성돔 · 낙지</span></div>
+        <div class="bc-info"><span>최대 16명</span><span>감성돔 · 낙지</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2680,7 +2688,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">헤밍웨이호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2695,7 +2703,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">고고호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 낙지 · 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>낙지 · 문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2710,7 +2718,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">고고호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 낙지 · 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>낙지 · 문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2725,7 +2733,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">포인트피싱호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2740,7 +2748,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">포인트피싱호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔 · 주꾸미</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔 · 주꾸미</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2755,7 +2763,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">나래호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 낙지 · 도다리</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>낙지 · 도다리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">60,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2770,7 +2778,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">나래호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 낙지 · 도다리</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>낙지 · 도다리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">60,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2785,7 +2793,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">골드로저호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 백조기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>백조기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2800,7 +2808,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">일신호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 부시리 · 열기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>부시리 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">160,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2815,7 +2823,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">일신호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 부시리 · 열기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>부시리 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">160,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2830,7 +2838,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">일신호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 부시리 · 열기</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>부시리 · 열기</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">160,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2845,7 +2853,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">제주</div>
         <div class="bc-name">로즈마리호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 갑오징어 · 벵에돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>갑오징어 · 벵에돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">120,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2860,7 +2868,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">유림2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 열기 · 볼락</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>열기 · 볼락</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">130,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2875,7 +2883,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">부산</div>
         <div class="bc-name">서린호</div>
-        <div class="bc-info"><span>👥 최대 16명</span><span>🐟 문어</span></div>
+        <div class="bc-info"><span>최대 16명</span><span>문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">80,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2890,7 +2898,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">완도파랑새호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2905,7 +2913,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">오리온호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 문어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>문어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2920,7 +2928,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">행복드림1호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2935,7 +2943,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">엘도라도호</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 부시리 · 참돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>부시리 · 참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2950,7 +2958,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">행복드림2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2965,7 +2973,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">늘빛호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 방어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 방어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2980,7 +2988,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">바이브1호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔 · 붉바리</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔 · 붉바리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -2995,7 +3003,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">이여라호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 도다리</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 도다리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">70,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3010,7 +3018,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">도리스피싱</div>
-        <div class="bc-info"><span>👥 최대 11명</span><span>🐟 감성돔</span></div>
+        <div class="bc-info"><span>최대 11명</span><span>감성돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">100,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3025,7 +3033,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">늘빛호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 갑오징어 · 방어</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>갑오징어 · 방어</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3040,7 +3048,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">경남</div>
         <div class="bc-name">이래피싱</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 낙지</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>낙지</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">50,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3055,7 +3063,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">행복드림2호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 참돔</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>참돔</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">140,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3070,7 +3078,7 @@ ul{list-style:none}
       <div class="bc-body">
         <div class="bc-region">전남</div>
         <div class="bc-name">이여라호</div>
-        <div class="bc-info"><span>👥 최대 20명</span><span>🐟 감성돔 · 도다리</span></div>
+        <div class="bc-info"><span>최대 20명</span><span>감성돔 · 도다리</span></div>
         <div class="bc-bot">
           <div class="bc-price"><div class="p-from">1인 기준</div><span class="p-val">70,000</span><span class="p-unit">원~</span></div>
           <span class="btn-res">예약하기</span>
@@ -3084,17 +3092,17 @@ ul{list-style:none}
 <div class="season-wrap reveal" id="season">
   <div class="season">
     <div>
-      <div class="season-t">🐙 4월 시즌 어종 안내</div>
+      <div class="season-t">4월 시즌 어종 안내</div>
       <p class="season-d">봄 시즌 주꾸미·갑오징어·우럭 호조황! 문어·참돔·감성돔 조황도 꾸준합니다. 전국 1,298척 예약 가능</p>
       <div class="fish-tags">
-        <span class="ftag">🐟 우럭</span>
-        <span class="ftag">🐙 주꾸미</span>
-        <span class="ftag">🐠 광어</span>
-        <span class="ftag">🐙 문어</span>
-        <span class="ftag">🦑 갑오징어</span>
-        <span class="ftag">🎣 참돔</span>
+        <span class="ftag">우럭</span>
+        <span class="ftag">주꾸미</span>
+        <span class="ftag">광어</span>
+        <span class="ftag">문어</span>
+        <span class="ftag">갑오징어</span>
+        <span class="ftag">참돔</span>
       </div>
-      <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="season-cta">전국 선상낚시 할인 쿠폰 받기 🎫</a>
+      <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="season-cta">전국 선상낚시 할인 쿠폰 받기 </a>
     </div>
   </div>
 </div>
@@ -3103,10 +3111,10 @@ ul{list-style:none}
 <section class="sec reveal">
   <div class="sec-hd"><div class="sec-t">어바웃피싱이 좋은 이유<small>전국 1위 낚시 예약 플랫폼</small></div></div>
   <div class="feat-g">
-    <div class="feat"><div class="feat-ic">⚡</div><div class="feat-tt">실시간 예약</div><div class="feat-ds">잔여석 확인부터 결제까지 3분 완료</div></div>
-    <div class="feat"><div class="feat-ic">🎫</div><div class="feat-tt">할인 쿠폰</div><div class="feat-ds">앱 전용 할인 쿠폰 상시 제공</div></div>
-    <div class="feat"><div class="feat-ic">📊</div><div class="feat-tt">조황 정보</div><div class="feat-ds">실시간 어종별 조황 리포트</div></div>
-    <div class="feat"><div class="feat-ic">🛡️</div><div class="feat-tt">안전 보장</div><div class="feat-ds">검증된 선박만 등록·보험 완비</div></div>
+    <div class="feat"><div class="feat-ic"></div><div class="feat-tt">실시간 예약</div><div class="feat-ds">잔여석 확인부터 결제까지 3분 완료</div></div>
+    <div class="feat"><div class="feat-ic"></div><div class="feat-tt">할인 쿠폰</div><div class="feat-ds">앱 전용 할인 쿠폰 상시 제공</div></div>
+    <div class="feat"><div class="feat-ic"></div><div class="feat-tt">조황 정보</div><div class="feat-ds">실시간 어종별 조황 리포트</div></div>
+    <div class="feat"><div class="feat-ic">️</div><div class="feat-tt">안전 보장</div><div class="feat-ds">검증된 선박만 등록·보험 완비</div></div>
   </div>
 </section>
 
@@ -3151,27 +3159,27 @@ ul{list-style:none}
   <div class="sec-hd"><div class="sec-t">이용 후기<small>실제 예약자 리뷰</small></div></div>
   <div class="hscroll">
     <div class="rev">
-      <div class="rev-hd"><div class="rev-av">😊</div><div><div class="rev-name">낚시왕김씨</div><div class="rev-date">2026.03.07 · 킹콩2호</div></div></div>
+      <div class="rev-hd"><div class="rev-av"></div><div><div class="rev-name">낚시왕김씨</div><div class="rev-date">2026.03.07 · 킹콩2호</div></div></div>
       <div class="rev-stars">★★★★★</div>
       <div class="rev-txt">쭈꾸미 45마리 잡았습니다! 선장님 포인트 선정이 정확하고, 배도 깨끗해서 너무 좋았어요. 다음에 또 예약할게요.</div>
     </div>
     <div class="rev">
-      <div class="rev-hd"><div class="rev-av">🎣</div><div><div class="rev-name">바다사나이</div><div class="rev-date">2026.03.05 · 에프원호</div></div></div>
+      <div class="rev-hd"><div class="rev-av"></div><div><div class="rev-name">바다사나이</div><div class="rev-date">2026.03.05 · 에프원호</div></div></div>
       <div class="rev-stars">★★★★★</div>
       <div class="rev-txt">어바웃피싱 앱으로 예약하니까 정말 편하네요. 할인 쿠폰도 받아서 저렴하게 다녀왔습니다. 조황도 대만족!</div>
     </div>
     <div class="rev">
-      <div class="rev-hd"><div class="rev-av">👨‍👩‍👧</div><div><div class="rev-name">가족낚시러</div><div class="rev-date">2026.03.02 · 화인호</div></div></div>
+      <div class="rev-hd"><div class="rev-av">‍‍</div><div><div class="rev-name">가족낚시러</div><div class="rev-date">2026.03.02 · 화인호</div></div></div>
       <div class="rev-stars">★★★★☆</div>
       <div class="rev-txt">가족 체험으로 처음 갔는데 아이들도 너무 좋아했어요. 안전하게 잘 다녀왔습니다. 초보 가이드도 해주셔서 감사!</div>
     </div>
     <div class="rev">
-      <div class="rev-hd"><div class="rev-av">🏆</div><div><div class="rev-name">프로앵글러</div><div class="rev-date">2026.02.28 · 은아호</div></div></div>
+      <div class="rev-hd"><div class="rev-av"></div><div><div class="rev-name">프로앵글러</div><div class="rev-date">2026.02.28 · 은아호</div></div></div>
       <div class="rev-stars">★★★★★</div>
       <div class="rev-txt">다운샷으로 광어 52cm 잡았습니다. 선장님 포인트 이동이 빠르고 정확해서 조과가 좋았어요. 강추!</div>
     </div>
     <div class="rev">
-      <div class="rev-hd"><div class="rev-av">🐙</div><div><div class="rev-name">주꾸미러버</div><div class="rev-date">2026.03.04 · 에프투호</div></div></div>
+      <div class="rev-hd"><div class="rev-av"></div><div><div class="rev-name">주꾸미러버</div><div class="rev-date">2026.03.04 · 에프투호</div></div></div>
       <div class="rev-stars">★★★★★</div>
       <div class="rev-txt">에프투호 타고 쭈꾸미 38마리! 어바웃피싱 쿠폰으로 만원 할인 받아서 가성비도 최고였습니다.</div>
     </div>
@@ -3194,11 +3202,11 @@ ul{list-style:none}
 <!-- ═══ COUPON DOWNLOAD CTA ═══ -->
 <div class="cta-sec reveal">
   <div class="cta-card">
-    <h3>지금 쿠폰 다운로드하고<br>할인 예약하세요 🎫</h3>
+    <h3>지금 쿠폰 다운로드하고<br>할인 예약하세요 </h3>
     <p>인천배낚시 쭈꾸미 낚시 전국 실시간 예약</p>
-    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="cta-btn">📲 전국 선상낚시 할인 쿠폰 다운로드</a>
+    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="cta-btn">전국 선상낚시 할인 쿠폰 다운로드</a>
     <div class="stores">
-      <a href="https://apps.apple.com/kr/app/%EC%96%B4%EB%B0%94%EC%9B%83%ED%94%BC%EC%8B%B1-%EB%82%9A%EC%8B%9C%EB%B0%B0-%EC%84%A0%EC%83%81-%EB%82%9A%EC%8B%9C-%EC%98%88%EC%95%BD-%EC%A1%B0%ED%99%A9-%ED%8F%AC%EC%9D%B8%ED%8A%B8-%EC%87%BC%ED%95%91/id1599058872" class="store-b">🍎 App Store</a>
+      <a href="https://apps.apple.com/kr/app/%EC%96%B4%EB%B0%94%EC%9B%83%ED%94%BC%EC%8B%B1-%EB%82%9A%EC%8B%9C%EB%B0%B0-%EC%84%A0%EC%83%81-%EB%82%9A%EC%8B%9C-%EC%98%88%EC%95%BD-%EC%A1%B0%ED%99%A9-%ED%8F%AC%EC%9D%B8%ED%8A%B8-%EC%87%BC%ED%95%91/id1599058872" class="store-b">App Store</a>
       <a href="https://play.google.com/store/apps/details?id=com.aboutfishingawesome" class="store-b">▶️ Google Play</a>
     </div>
   </div>
@@ -3208,7 +3216,7 @@ ul{list-style:none}
 <footer class="footer">
   <div class="footer-in">
     <div>
-      <div class="footer-logo">어바웃피싱</div>
+      <div class="footer-logo"><img src="./images/logo-brand.png" alt="어바웃피싱" height="32" style="border-radius:6px;opacity:.9"></div>
       <div class="footer-links">
         <a href="https://booking.aboutfishing.kr">낚시배 예약</a>
         <a href="https://map.aboutfishing.kr">낚시포인트</a>
@@ -3868,8 +3876,8 @@ ul{list-style:none}
       <div class="cl">인천배낚시 할인 예약</div>
       <div class="ct">쭈꾸미 시즌 쿠폰 할인 중</div>
     </div>
-    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="btn-bot">🎫 쿠폰받기</a>
-    <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="btn-bk" aria-label="예약하기">🚢</a>
+    <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" class="btn-bot">쿠폰받기</a>
+    <a href="https://booking.aboutfishing.kr/search/list?keyword=인천" class="btn-bk" aria-label="예약하기"></a>
   </div>
 </div>
 
