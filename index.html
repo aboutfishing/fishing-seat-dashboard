@@ -3,85 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>어바웃피싱 실시간 잔여석 현황</title>
+  <title>선상24 실시간 좌석 현황 | AboutFishing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Leaflet.js 지도 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <style>
+    /* ── Reset & Base ──────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Noto Sans KR', sans-serif; background: #f0f4f8; color: #1a2332; min-height: 100vh; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      min-height: 100vh;
+    }
 
-    /* ── Header ── */
+    /* ── Header ────────────────────────────────────── */
     header {
       background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-      color: white; padding: 14px 24px;
-      display: flex; align-items: center; justify-content: space-between;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      position: sticky; top: 0; z-index: 1000;
+      position: sticky; top: 0; z-index: 100;
     }
-    header .logo { display: flex; align-items: center; gap: 10px; }
-    header h1 { font-size: 1.15rem; font-weight: 700; }
-    header .meta { font-size: 0.75rem; opacity: 0.85; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    header .logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    header .logo svg { width: 32px; height: 32px; }
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    header .meta {
+      font-size: 0.78rem; opacity: 0.85;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    }
     .refresh-btn {
       background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
       color: white; padding: 6px 14px; border-radius: 20px;
-      cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: background 0.2s;
+      cursor: pointer; font-size: 0.8rem; font-family: inherit;
+      transition: background 0.2s;
     }
     .refresh-btn:hover { background: rgba(255,255,255,0.35); }
 
-    /* ── View Toggle ── */
-    .view-toggle {
-      display: flex; gap: 0; padding: 12px 24px 0;
-    }
-    .view-btn {
-      padding: 8px 20px; border: 1px solid #cfd8dc; background: white;
-      cursor: pointer; font-size: 0.85rem; font-family: inherit;
-      transition: all 0.15s; color: #607d8b;
-    }
-    .view-btn:first-child { border-radius: 8px 0 0 8px; }
-    .view-btn:last-child  { border-radius: 0 8px 8px 0; }
-    .view-btn.active { background: #1565c0; color: white; border-color: #1565c0; }
-
-    /* ── Summary Cards ── */
+    /* ── Summary Cards ──────────────────────────────── */
     .summary-bar {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px; padding: 12px 24px 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; padding: 16px 24px 0;
     }
     .stat-card {
-      background: white; border-radius: 10px; padding: 12px 14px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.09); border-left: 4px solid #1565c0;
+      background: white; border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+      border-left: 4px solid #1565c0;
     }
     .stat-card.green  { border-left-color: #2e7d32; }
     .stat-card.orange { border-left-color: #e65100; }
     .stat-card.red    { border-left-color: #c62828; }
-    .stat-card.purple { border-left-color: #7b1fa2; }
-    .stat-card .num   { font-size: 1.55rem; font-weight: 700; color: #1a2332; line-height: 1; }
-    .stat-card .label { font-size: 0.72rem; color: #607d8b; margin-top: 4px; }
-
-    /* ── AF 전용 배너 ── */
-    .af-notice {
-      margin: 10px 24px 0;
-      background: #e8f5e9; border: 1px solid #a5d6a7;
-      border-radius: 8px; padding: 8px 14px;
-      font-size: 0.82rem; color: #2e7d32;
-      display: flex; align-items: center; gap: 8px;
+    .stat-card .num {
+      font-size: 1.7rem; font-weight: 700; color: #1a2332;
+      line-height: 1;
     }
-    .af-toggle {
-      margin-left: auto; display: flex; align-items: center; gap: 6px;
-      cursor: pointer;
+    .stat-card .label {
+      font-size: 0.75rem; color: #607d8b; margin-top: 4px;
     }
-    .af-toggle input { cursor: pointer; width: 16px; height: 16px; }
 
-    /* ── Map ── */
-    #map-view { display: none; }
-    #map { height: 520px; border-radius: 10px; margin: 12px 24px; }
-
-    /* ── Toolbar ── */
+    /* ── Toolbar ────────────────────────────────────── */
     .toolbar {
       display: flex; flex-wrap: wrap; gap: 10px;
-      padding: 12px 24px; align-items: center;
+      padding: 14px 24px;
+      align-items: center;
     }
     .toolbar input, .toolbar select {
       padding: 7px 12px; border: 1px solid #cfd8dc;
@@ -89,95 +79,160 @@
       font-family: inherit; background: white;
       outline: none; transition: border-color 0.2s;
     }
-    .toolbar input:focus, .toolbar select:focus { border-color: #1565c0; }
-    .filter-tag {
-      padding: 7px 14px; border: 1px solid #cfd8dc;
-      border-radius: 20px; background: white;
-      cursor: pointer; font-size: 0.82rem; font-family: inherit;
-      transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+    .toolbar input:focus, .toolbar select:focus {
+      border-color: #1565c0;
     }
-    .filter-tag.active { background: #1565c0; color: white; border-color: #1565c0; }
+    .toolbar input { min-width: 200px; }
+    .filter-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #e3f2fd; color: #1565c0;
+      padding: 5px 12px; border-radius: 16px;
+      font-size: 0.8rem; cursor: pointer;
+      border: 1px solid #bbdefb; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .filter-tag.active, .filter-tag:hover { background: #1565c0; color: white; border-color: #1565c0; }
     .count-badge {
-      background: #e3f2fd; color: #1565c0; border-radius: 20px;
-      padding: 1px 7px; font-size: 0.78rem; font-weight: 600;
+      background: white; color: #1565c0; border-radius: 10px;
+      padding: 1px 6px; font-size: 0.7rem; font-weight: 700;
     }
     .filter-tag.active .count-badge { background: rgba(255,255,255,0.25); color: white; }
     .spacer { flex: 1; }
 
-    /* ── Table ── */
-    .table-wrap { margin: 0 24px 12px; overflow-x: auto; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.09); }
-    table { width: 100%; border-collapse: collapse; background: white; font-size: 0.82rem; }
+    /* ── Table Container ────────────────────────────── */
+    .table-wrap {
+      margin: 0 24px 24px; overflow-x: auto;
+      border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: white; font-size: 0.84rem;
+    }
     thead th {
-      background: #1565c0; color: white; padding: 10px 12px;
-      text-align: left; white-space: nowrap; cursor: pointer;
-      user-select: none;
+      background: #1565c0; color: white;
+      padding: 11px 12px; font-weight: 600;
+      text-align: left; white-space: nowrap;
+      cursor: pointer; user-select: none;
+      position: sticky; top: 60px;
     }
     thead th:hover { background: #1976d2; }
-    thead th.sorted { background: #0d47a1; }
-    .sort-arrow { font-size: 0.7rem; opacity: 0.8; }
-    tbody tr { border-bottom: 1px solid #f5f5f5; transition: background 0.1s; }
-    tbody tr:hover { background: #f8fbff; }
-    td { padding: 9px 12px; vertical-align: middle; }
-    .date-group-header td {
-      background: #e8eaf6; color: #3949ab; font-weight: 600;
-      padding: 6px 14px; font-size: 0.8rem;
-    }
-    .af-link { color: #1565c0; text-decoration: none; font-weight: 600; }
-    .af-link:hover { text-decoration: underline; }
-    .seat-badge {
-      display: inline-block; padding: 3px 9px; border-radius: 12px;
-      font-weight: 700; font-size: 0.85rem; color: white;
-    }
-    .seat-zero  { background: #bdbdbd; }
-    .seat-high  { background: #43a047; }
-    .seat-mid   { background: #ffa000; }
-    .seat-low   { background: #e53935; }
-    .seat-bar { height: 4px; background: #eceff1; border-radius: 2px; margin-top: 4px; min-width: 60px; }
-    .seat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
-    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
-    .status-ING  { background: #e8f5e9; color: #2e7d32; }
-    .status-END  { background: #ffebee; color: #c62828; }
-    .status-CALL { background: #fff3e0; color: #e65100; }
-    .fish-tags { display: flex; flex-wrap: wrap; gap: 3px; }
-    .fish-tag { background: #e3f2fd; color: #1565c0; border-radius: 4px; padding: 1px 5px; font-size: 0.73rem; }
-    .loading { text-align: center; padding: 60px 20px; color: #90a4ae; }
-    .loading-spinner { width: 36px; height: 36px; border: 3px solid #e3f2fd; border-top-color: #1565c0; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .empty { text-align: center; padding: 60px 20px; color: #90a4ae; }
+    thead th .sort-arrow { margin-left: 4px; opacity: 0.5; font-size: 0.7rem; }
+    thead th.sorted .sort-arrow { opacity: 1; }
 
-    /* ── Pagination ── */
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; padding: 12px 24px; flex-wrap: wrap; }
-    .page-btn { padding: 5px 10px; border: 1px solid #cfd8dc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.82rem; transition: all 0.15s; }
+    tbody tr {
+      border-bottom: 1px solid #eceff1;
+      transition: background 0.12s;
+    }
+    tbody tr:hover { background: #e3f2fd; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td {
+      padding: 9px 12px; vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* ── Seat Cell ──────────────────────────────────── */
+    .seat-cell { text-align: center; }
+    .seat-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 56px; padding: 3px 8px;
+      border-radius: 12px; font-weight: 700; font-size: 0.88rem;
+    }
+    .seat-high   { background: #e8f5e9; color: #2e7d32; }
+    .seat-mid    { background: #fff8e1; color: #f57f17; }
+    .seat-low    { background: #ffebee; color: #c62828; }
+    .seat-zero   { background: #eeeeee; color: #757575; }
+    .seat-bar {
+      height: 4px; border-radius: 2px;
+      margin-top: 4px; background: #eceff1;
+      overflow: hidden;
+    }
+    .seat-bar-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* ── Status Badge ───────────────────────────────── */
+    .status-badge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 10px; font-size: 0.75rem; font-weight: 600;
+    }
+    .status-ING  { background: #e8f5e9; color: #2e7d32; }
+    .status-END  { background: #eeeeee; color: #757575; }
+    .status-CALL { background: #fff3e0; color: #e65100; }
+
+    /* ── Fish Type Tag ──────────────────────────────── */
+    .fish-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+    .fish-tag {
+      background: #e1f5fe; color: #01579b;
+      padding: 1px 7px; border-radius: 8px; font-size: 0.74rem;
+    }
+
+    /* ── Date Group ─────────────────────────────────── */
+    .date-group-header td {
+      background: #f5f7fa; color: #455a64;
+      font-weight: 700; font-size: 0.82rem;
+      padding: 6px 12px; letter-spacing: 0.02em;
+    }
+
+    /* ── Loading / Empty ────────────────────────────── */
+    .loading, .empty {
+      text-align: center; padding: 60px 20px;
+      color: #90a4ae;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 4px solid #e3f2fd;
+      border-top-color: #1565c0;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Pagination ─────────────────────────────────── */
+    .pagination {
+      display: flex; justify-content: center; align-items: center;
+      gap: 6px; padding: 12px 24px 24px;
+    }
+    .page-btn {
+      padding: 6px 12px; border-radius: 8px;
+      border: 1px solid #cfd8dc; background: white;
+      color: #455a64; cursor: pointer; font-family: inherit;
+      font-size: 0.82rem; transition: all 0.15s;
+    }
     .page-btn:hover:not(:disabled) { background: #e3f2fd; border-color: #1565c0; color: #1565c0; }
     .page-btn.active { background: #1565c0; color: white; border-color: #1565c0; }
     .page-btn:disabled { opacity: 0.4; cursor: default; }
     .page-info { font-size: 0.82rem; color: #78909c; padding: 0 8px; }
 
-    /* ── Footer ── */
-    footer { text-align: center; padding: 14px; font-size: 0.73rem; color: #90a4ae; border-top: 1px solid #eceff1; }
+    /* ── Footer ─────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 16px;
+      font-size: 0.75rem; color: #90a4ae;
+      border-top: 1px solid #eceff1;
+    }
 
-    /* ── Responsive ── */
+    /* ── Responsive ─────────────────────────────────── */
     @media (max-width: 768px) {
       header { flex-wrap: wrap; gap: 8px; }
-      .summary-bar, .toolbar, .view-toggle, .af-notice { padding-left: 12px; padding-right: 12px; }
+      .summary-bar { padding: 12px 12px 0; }
+      .toolbar { padding: 12px 12px; }
       .table-wrap { margin: 0 12px 12px; }
-      #map { margin: 12px 12px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
+<!-- ── Header ──────────────────────────────────────────── -->
 <header>
   <div class="logo">
-    <svg viewBox="0 0 32 32" width="30" height="30" fill="none">
-      <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,0.15)"/>
+    <svg viewBox="0 0 32 32" fill="white">
       <path d="M4 22 Q8 14 16 18 Q22 10 28 16" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
       <circle cx="16" cy="10" r="3" fill="white" opacity="0.9"/>
+      <path d="M14 12 L13 20 M18 12 L19 20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <div>
-      <h1>어바웃피싱 실시간 잔여석</h1>
-      <div style="font-size:0.7rem;opacity:0.7">선상24 · 더피싱 → AF 매핑 좌석 현황</div>
+      <h1>선상24 실시간 좌석 현황</h1>
+      <div style="font-size:0.72rem;opacity:0.7">AboutFishing 운영 대시보드</div>
     </div>
   </div>
   <div class="meta">
@@ -187,17 +242,11 @@
   <button class="refresh-btn" onclick="loadData()">⟳ 새로고침</button>
 </header>
 
-<!-- ── View Toggle ── -->
-<div class="view-toggle">
-  <button class="view-btn active" id="btn-table" onclick="switchView('table')">📋 목록</button>
-  <button class="view-btn"        id="btn-map"   onclick="switchView('map')">🗺️ 지도</button>
-</div>
-
-<!-- ── Summary Cards ── -->
+<!-- ── Summary Cards ──────────────────────────────────── -->
 <div class="summary-bar">
   <div class="stat-card">
     <div class="num" id="stat-ships">-</div>
-    <div class="label">AF 상품 수</div>
+    <div class="label">총 선박 수</div>
   </div>
   <div class="stat-card green">
     <div class="num" id="stat-avail">-</div>
@@ -211,199 +260,75 @@
     <div class="num" id="stat-full">-</div>
     <div class="label">예약마감</div>
   </div>
-  <div class="stat-card purple">
+  <div class="stat-card" style="border-left-color:#7b1fa2">
     <div class="num" id="stat-dates">-</div>
     <div class="label">출조 일수</div>
   </div>
 </div>
 
-<!-- ── AF 전용 배너 ── -->
-<div class="af-notice">
-  <span>🎣 어바웃피싱(aboutfishing.kr) 등록 선박 좌석만 표시</span>
-  <label class="af-toggle">
-    <input type="checkbox" id="af-only-toggle" checked onchange="applyFilters()" />
-    AF 상품만
-  </label>
+<!-- ── Toolbar ────────────────────────────────────────── -->
+<div class="toolbar">
+  <input type="text" id="search-input" placeholder="🔍 선박명, 지역, 어종 검색..." oninput="applyFilters()" />
+
+  <select id="filter-area" onchange="applyFilters()">
+    <option value="">전체 지역</option>
+    <option value="남해안">남해안</option>
+    <option value="서해안">서해안</option>
+    <option value="동해안">동해안</option>
+    <option value="제주도">제주도</option>
+  </select>
+
+  <select id="filter-date" onchange="applyFilters()">
+    <option value="">전체 날짜</option>
+  </select>
+
+  <select id="filter-status" onchange="applyFilters()">
+    <option value="">전체 상태</option>
+    <option value="ING">예약가능</option>
+    <option value="END">예약마감</option>
+    <option value="CALL">전화예약</option>
+  </select>
+
+  <button class="filter-tag" id="filter-seats" onclick="toggleSeatFilter()" title="남은 자리 있는 배만 보기">
+    🎣 남은좌석만 <span class="count-badge" id="seats-count">0</span>
+  </button>
+
+  <div class="spacer"></div>
+  <div style="font-size:0.8rem;color:#78909c" id="filter-result"></div>
 </div>
 
-<!-- ── Map View ── -->
-<div id="map-view">
-  <div id="map"></div>
-</div>
-
-<!-- ── Table View ── -->
-<div id="table-view">
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <input type="text" id="search-input" placeholder="🔍 선박명, 항구, 어종 검색..." oninput="applyFilters()" />
-    <select id="filter-area" onchange="applyFilters()">
-      <option value="">전체 지역</option>
-    </select>
-    <select id="filter-date" onchange="applyFilters()">
-      <option value="">전체 날짜</option>
-    </select>
-    <select id="filter-status" onchange="applyFilters()">
-      <option value="">전체 상태</option>
-      <option value="ING">예약가능</option>
-      <option value="END">예약마감</option>
-      <option value="CALL">전화예약</option>
-    </select>
-    <button class="filter-tag" id="filter-seats" onclick="toggleSeatFilter()">
-      🎣 남은좌석만 <span class="count-badge" id="seats-count">0</span>
-    </button>
-    <div class="spacer"></div>
-    <div style="font-size:0.8rem;color:#78909c" id="filter-result"></div>
-  </div>
-
-  <!-- Table -->
-  <div class="table-wrap">
-    <div id="table-container">
-      <div class="loading"><div class="loading-spinner"></div><div>데이터를 불러오는 중...</div></div>
+<!-- ── Table ──────────────────────────────────────────── -->
+<div class="table-wrap">
+  <div id="table-container">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>데이터를 불러오는 중...</div>
     </div>
   </div>
-  <div class="pagination" id="pagination"></div>
 </div>
 
-<!-- ── Footer ── -->
+<!-- ── Pagination ─────────────────────────────────────── -->
+<div class="pagination" id="pagination"></div>
+
+<!-- ── Footer ────────────────────────────────────────── -->
 <footer>
-  데이터 출처: sunsang24.com · thefishing.kr &nbsp;|&nbsp; 매일 01:00 자동 갱신 &nbsp;|&nbsp;
-  <a href="https://aboutfishing.kr" style="color:#90a4ae">aboutfishing.kr</a>
+  데이터 출처: sunsang24.com &nbsp;|&nbsp; 매일 오전 01:00 자동 갱신 &nbsp;|&nbsp; aboutfishing.kr
 </footer>
 
 <script>
-// ── 설정 ────────────────────────────────────────
+// ── 설정 ────────────────────────────────────────────────
 const JSON_URL      = "data/latest.json";
 const ROWS_PER_PAGE = 50;
-const AF_BOOK_BASE  = "https://aboutfishing.kr/booking_detail.html?boat_id=";
 
-// ── 상태 ────────────────────────────────────────
-let allData      = [];   // 전체 데이터
+// ── 상태 ────────────────────────────────────────────────
+let allData      = [];
 let filteredData = [];
 let currentPage  = 1;
-let sortCol      = 4;
+let sortCol      = 4;   // 출조일 기본 정렬
 let sortAsc      = true;
 let seatFilter   = false;
-let currentView  = 'table';
-let mapObj       = null;
-let mapMarkers   = [];
 
-// ── 뷰 전환 ─────────────────────────────────────
-function switchView(v) {
-  currentView = v;
-  document.getElementById('table-view').style.display = v === 'table' ? '' : 'none';
-  document.getElementById('map-view').style.display   = v === 'map'   ? '' : 'none';
-  document.getElementById('btn-table').classList.toggle('active', v === 'table');
-  document.getElementById('btn-map').classList.toggle('active',   v === 'map');
-  if (v === 'map') {
-    // 브라우저가 컨테이너를 렌더링한 후 지도 초기화 (0px 방지)
-    requestAnimationFrame(() => requestAnimationFrame(() => initMap()));
-  }
-}
-
-// ── 지도 초기화 ──────────────────────────────────
-function initMap() {
-  if (!mapObj) {
-    mapObj = L.map('map').setView([36.5, 127.8], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors', maxZoom: 17
-    }).addTo(mapObj);
-  } else {
-    mapObj.invalidateSize();
-  }
-  renderMapMarkers();
-}
-
-function renderMapMarkers() {
-  if (!mapObj) return;
-  mapMarkers.forEach(m => m.remove());
-  mapMarkers = [];
-
-  // AF 매핑된 데이터만, 오늘 이후 날짜, 선박별 최소 잔여석 집계
-  const afOnly  = document.getElementById('af-only-toggle').checked;
-  const dateFilter = document.getElementById('filter-date')?.value || '';
-  const today = new Date().toISOString().slice(0,10);
-
-  // 선박+날짜 기준으로 집계 (같은 선박 여러 스케줄 합산)
-  const boatMap = {};
-  for (const r of allData) {
-    if (afOnly && !r[16]) continue;               // AF 매핑 필터
-    if (!r[18] || !r[19]) continue;               // 좌표 없으면 스킵
-    if (r[4] < today) continue;                   // 과거 날짜 스킵
-    if (dateFilter && r[4] !== dateFilter) continue;
-
-    const key = `${r[16]||r[1]}_${r[4]}`;
-    if (!boatMap[key]) {
-      boatMap[key] = {
-        name: r[1], area: r[2], port: r[3], date: r[4],
-        remain: 0, lat: parseFloat(r[18]), lng: parseFloat(r[19]),
-        af_id: r[16], status: r[13], fish: r[7],
-        stime: r[5], price: r[9], schedules: 0
-      };
-    }
-    boatMap[key].remain += parseInt(r[12]) || 0;
-    boatMap[key].schedules++;
-    if (r[13] === 'ING') boatMap[key].status = 'ING';
-  }
-
-  for (const b of Object.values(boatMap)) {
-    const remain = b.remain;
-    const color  = remain === 0 ? '#9e9e9e' : remain <= 3 ? '#e53935' : remain <= 8 ? '#ffa000' : '#43a047';
-
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="
-        background:${color};color:white;border:2px solid white;
-        border-radius:50%;width:36px;height:36px;
-        display:flex;align-items:center;justify-content:center;
-        font-size:0.75rem;font-weight:700;
-        box-shadow:0 2px 6px rgba(0,0,0,0.3);
-        font-family:'Noto Sans KR',sans-serif;
-      ">${remain}</div>`,
-      iconSize: [36, 36], iconAnchor: [18, 18]
-    });
-
-    const bookLink = b.af_id
-      ? `<a href="${AF_BOOK_BASE}${b.af_id}" target="_blank"
-            style="display:inline-block;margin-top:6px;padding:4px 10px;
-            background:#1565c0;color:white;border-radius:6px;
-            text-decoration:none;font-size:0.78rem;">예약하기</a>`
-      : '';
-
-    const popup = `
-      <div style="min-width:160px;font-family:'Noto Sans KR',sans-serif">
-        <div style="font-weight:700;font-size:0.92rem;margin-bottom:4px">${b.name}</div>
-        <div style="font-size:0.78rem;color:#607d8b">${b.area} ${b.port}</div>
-        <div style="font-size:0.78rem;margin:4px 0">📅 ${b.date} ${b.stime||''}</div>
-        <div style="font-size:0.78rem">🎣 ${b.fish||'-'}</div>
-        <div style="margin-top:6px">
-          <span style="background:${color};color:white;padding:2px 8px;border-radius:10px;font-size:0.8rem;font-weight:700">
-            잔여 ${remain}석
-          </span>
-          <span style="font-size:0.75rem;color:#607d8b;margin-left:6px">${b.price ? b.price+'원' : ''}</span>
-        </div>
-        ${bookLink}
-      </div>`;
-
-    const marker = L.marker([b.lat, b.lng], { icon }).addTo(mapObj).bindPopup(popup);
-    mapMarkers.push(marker);
-  }
-
-  // 범례
-  document.getElementById('map-legend')?.remove();
-  const legend = L.control({ position: 'bottomright' });
-  legend.onAdd = () => {
-    const div = L.DomUtil.create('div');
-    div.id = 'map-legend';
-    div.innerHTML = `<div style="background:white;padding:8px 12px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-size:0.75rem;font-family:'Noto Sans KR',sans-serif">
-      <div style="font-weight:600;margin-bottom:4px">잔여석</div>
-      <div>🟢 9석 이상</div><div>🟡 4~8석</div><div>🔴 1~3석</div><div>⚫ 마감</div>
-    </div>`;
-    return div;
-  };
-  legend.addTo(mapObj);
-}
-
-// ── 데이터 로드 ──────────────────────────────────
+// ── 데이터 로드 ──────────────────────────────────────────
 async function loadData() {
   document.getElementById("table-container").innerHTML = `
     <div class="loading"><div class="loading-spinner"></div><div>데이터를 불러오는 중...</div></div>`;
@@ -412,106 +337,98 @@ async function loadData() {
     const resp = await fetch(JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
     if (!resp.ok) throw new Error("네트워크 오류: " + resp.status);
     const payload = await resp.json();
+
+    // rows: [[collected_at, ship_name, area_name, port_name, fishing_date,
+    //         depart_time, return_time, fish_types, fishing_methods, price,
+    //         total_seats, reserved_seats, remain_seats, status_code, status_name, schedule_no], ...]
     allData = payload.rows || [];
 
-    // 날짜 필터 옵션
+    // 날짜 필터 옵션 채우기 (fishing_date = index 4)
     const dates = [...new Set(allData.map(r => r[4]))].filter(Boolean).sort();
-    const dateSel = document.getElementById("filter-date");
-    dateSel.innerHTML = '<option value="">전체 날짜</option>';
+    const sel = document.getElementById("filter-date");
+    sel.innerHTML = '<option value="">전체 날짜</option>';
     dates.forEach(d => {
-      const o = document.createElement("option");
-      o.value = d; o.textContent = formatDate(d);
-      dateSel.appendChild(o);
-    });
-
-    // 지역 필터 옵션 (AF 매핑 기준)
-    const areas = [...new Set(allData.filter(r => r[16]).map(r => r[2]))].filter(Boolean).sort();
-    const areaSel = document.getElementById("filter-area");
-    areaSel.innerHTML = '<option value="">전체 지역</option>';
-    areas.forEach(a => {
-      const o = document.createElement("option");
-      o.value = a; o.textContent = a;
-      areaSel.appendChild(o);
+      const opt = document.createElement("option");
+      opt.value = d; opt.textContent = formatDate(d);
+      sel.appendChild(opt);
     });
 
     updateSummary();
     applyFilters();
 
-    const kstStr = payload.updated_at
-      ? new Date(payload.updated_at).toLocaleString('ko-KR', {timeZone:'Asia/Seoul'}) + ' KST'
-      : '알 수 없음';
-    document.getElementById("updated-at").textContent = "최종 수집: " + kstStr;
-    const afRows = allData.filter(r => r[16]);
+    document.getElementById("updated-at").textContent =
+      "최종 수집: " + (payload.updated_at || "알 수 없음");
     document.getElementById("total-count").textContent =
-      `AF ${afRows.length}건 / 전체 ${allData.length}건`;
-
-    if (currentView === 'map') renderMapMarkers();
+      `${allData.length}건 / ${dates.length}일`;
   } catch (e) {
     document.getElementById("table-container").innerHTML = `
-      <div class="empty"><div style="font-size:2rem;margin-bottom:12px">⚠️</div>
-      <div>데이터 로드 실패: ${e.message}</div>
-      <div style="margin-top:8px;font-size:0.8rem">GitHub Actions 수집 완료 후 이용 가능합니다.</div></div>`;
+      <div class="empty">
+        <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
+        <div>데이터 로드 실패: ${e.message}</div>
+        <div style="margin-top:8px;font-size:0.8rem">GitHub Actions 수집이 완료된 후 이용 가능합니다.</div>
+      </div>`;
   }
 }
 
-// ── 요약 통계 (AF 매핑 기준) ─────────────────────
+// ── 요약 통계 ────────────────────────────────────────────
 function updateSummary() {
-  const afOnly = document.getElementById('af-only-toggle').checked;
-  const base   = afOnly ? allData.filter(r => r[16]) : allData;
-  const avail  = base.filter(r => r[13] === "ING");
-  const full   = base.filter(r => r[13] === "END");
-  const seats  = base.reduce((s, r) => s + (parseInt(r[12]) || 0), 0);
-  const dates  = new Set(base.map(r => r[4])).size;
-  const withSeat = base.filter(r => (parseInt(r[12]) || 0) > 0).length;
+  const avail   = allData.filter(r => r[13] === "ING");
+  const full    = allData.filter(r => r[13] === "END");
+  const seats   = allData.reduce((s, r) => s + (parseInt(r[12]) || 0), 0);
+  const dates   = new Set(allData.map(r => r[4])).size;
+  const withSeat = allData.filter(r => (parseInt(r[12]) || 0) > 0).length;
 
-  document.getElementById("stat-ships").textContent  = base.length.toLocaleString();
-  document.getElementById("stat-avail").textContent  = avail.length.toLocaleString();
+  document.getElementById("stat-ships").textContent  = allData.length;
+  document.getElementById("stat-avail").textContent  = avail.length;
   document.getElementById("stat-seats").textContent  = seats.toLocaleString();
-  document.getElementById("stat-full").textContent   = full.length.toLocaleString();
+  document.getElementById("stat-full").textContent   = full.length;
   document.getElementById("stat-dates").textContent  = dates;
-  document.getElementById("seats-count").textContent = withSeat.toLocaleString();
+  document.getElementById("seats-count").textContent = withSeat;
+  document.getElementById("total-count").textContent = `${allData.length}건 / ${dates}일`;
 }
 
-// ── 필터 & 정렬 ──────────────────────────────────
+// ── 필터 & 정렬 ──────────────────────────────────────────
 function applyFilters() {
   const q      = document.getElementById("search-input").value.toLowerCase();
   const area   = document.getElementById("filter-area").value;
   const date_  = document.getElementById("filter-date").value;
   const status = document.getElementById("filter-status").value;
-  const afOnly = document.getElementById('af-only-toggle').checked;
 
   filteredData = allData.filter(r => {
-    if (afOnly && !r[16]) return false;                                          // AF 매핑 필터
-    if (q && !`${r[1]}${r[2]}${r[3]}${r[7]}`.toLowerCase().includes(q)) return false;
-    if (area   && r[2] !== area)   return false;
-    if (date_  && r[4] !== date_)  return false;
+    if (q && !`${r[1]}${r[2]}${r[7]}${r[8]}`.toLowerCase().includes(q)) return false;
+    if (area && r[2] !== area) return false;
+    if (date_ && r[4] !== date_) return false;
     if (status && r[13] !== status) return false;
     if (seatFilter && (parseInt(r[12]) || 0) <= 0) return false;
     return true;
   });
 
+  // 정렬
   filteredData.sort((a, b) => {
-    const va = a[sortCol] ?? "", vb = b[sortCol] ?? "";
+    const va = a[sortCol] || "", vb = b[sortCol] || "";
     const na = parseFloat(va), nb = parseFloat(vb);
-    const cmp = !isNaN(na) && !isNaN(nb) ? na - nb : String(va).localeCompare(String(vb), "ko");
+    const cmp = !isNaN(na) && !isNaN(nb) ? na - nb : va.localeCompare(vb, "ko");
     return sortAsc ? cmp : -cmp;
   });
 
-  document.getElementById("filter-result").textContent = `${filteredData.length.toLocaleString()}건 표시`;
-  updateSummary();
+  document.getElementById("filter-result").textContent =
+    `${filteredData.length}건 표시`;
   currentPage = 1;
   renderTable();
   renderPagination();
-  if (currentView === 'map') renderMapMarkers();
 }
 
 function toggleSeatFilter() {
   seatFilter = !seatFilter;
-  document.getElementById("filter-seats").classList.toggle("active", seatFilter);
+  const btn = document.getElementById("filter-seats");
+  btn.classList.toggle("active", seatFilter);
   applyFilters();
 }
 
-// ── 테이블 렌더링 ─────────────────────────────────
+// ── 테이블 렌더링 ─────────────────────────────────────────
+const COLS = ["수집일시","선박명","지역","항구","출조일","출항","철수",
+              "어종","낚시방법","선비","정원","예약","남은좌석","","상태",""];
+
 function renderTable() {
   if (!filteredData.length) {
     document.getElementById("table-container").innerHTML =
@@ -519,56 +436,60 @@ function renderTable() {
     return;
   }
 
-  const start    = (currentPage - 1) * ROWS_PER_PAGE;
+  const start = (currentPage - 1) * ROWS_PER_PAGE;
   const pageData = filteredData.slice(start, start + ROWS_PER_PAGE);
-  let lastDate   = "";
 
+  // 날짜별 그룹핑
+  let lastDate = "";
   let html = `<table>
     <thead><tr>
       <th onclick="sortBy(1)" class="${sortCol===1?'sorted':''}">선박명 <span class="sort-arrow">${sortCol===1?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(2)" class="${sortCol===2?'sorted':''}">지역 <span class="sort-arrow">${sortCol===2?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(4)" class="${sortCol===4?'sorted':''}">출조일 <span class="sort-arrow">${sortCol===4?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th>출항/철수</th>
-      <th>어종</th>
-      <th>낚시방법</th>
-      <th onclick="sortBy(9)" class="${sortCol===9?'sorted':''}">선비 <span class="sort-arrow">${sortCol===9?(sortAsc?'▲':'▼'):'⇅'}</span></th>
+      <th>어종(상품내용1)</th>
+      <th>낚시방법(상품내용2)</th>
+      <th>선비(상품내용3)</th>
+      <th onclick="sortBy(10)" class="${sortCol===10?'sorted':''}">정원 <span class="sort-arrow">${sortCol===10?(sortAsc?'▲':'▼'):'⇅'}</span></th>
+      <th onclick="sortBy(11)" class="${sortCol===11?'sorted':''}">예약 <span class="sort-arrow">${sortCol===11?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(12)" class="${sortCol===12?'sorted':''}">남은좌석 <span class="sort-arrow">${sortCol===12?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th>상태</th>
-      <th>예약</th>
     </tr></thead><tbody>`;
 
   for (const r of pageData) {
-    if (r[4] !== lastDate) {
-      html += `<tr class="date-group-header"><td colspan="10">📅 ${formatDate(r[4])}</td></tr>`;
-      lastDate = r[4];
+    const date_ = r[4];
+    if (date_ !== lastDate) {
+      html += `<tr class="date-group-header"><td colspan="11">📅 ${formatDate(date_)}</td></tr>`;
+      lastDate = date_;
     }
 
-    const remain   = parseInt(r[12]) || 0;
-    const seatCls  = remain === 0 ? "seat-zero" : remain <= 3 ? "seat-low" : remain <= 8 ? "seat-mid" : "seat-high";
-    const barColor = remain === 0 ? "#bdbdbd"   : remain <= 3 ? "#e53935"  : remain <= 8 ? "#ffa000"  : "#43a047";
-    const barPct   = Math.min(100, remain * 5);
-    const fishTags = (r[7]||'').split(",").filter(Boolean).map(f => `<span class="fish-tag">${f.trim()}</span>`).join("");
+    const remain  = parseInt(r[12]) || 0;
+    const total   = parseInt(r[10]) || 1;
+    const ratio   = remain / total;
+    const seatCls = remain === 0 ? "seat-zero" : ratio > 0.5 ? "seat-high" : ratio > 0.2 ? "seat-mid" : "seat-low";
+    const barColor= remain === 0 ? "#bdbdbd"   : ratio > 0.5 ? "#43a047"   : ratio > 0.2 ? "#ffa000"   : "#e53935";
+
+    const fishTags = r[7].split(",").filter(Boolean).map(f =>
+      `<span class="fish-tag">${f.trim()}</span>`).join("");
+
     const statusCode = r[13] || "ING";
     const statusName = r[14] || "예약가능";
 
-    const bookCell = r[16]
-      ? `<a class="af-link" href="${AF_BOOK_BASE}${r[16]}" target="_blank">예약 →</a>`
-      : `<span style="color:#bdbdbd;font-size:0.75rem">-</span>`;
-
     html += `<tr>
-      <td><strong>${r[1]}</strong><div style="font-size:0.72rem;color:#90a4ae">${r[3]||''}</div></td>
-      <td>${r[2]||''}</td>
+      <td><strong>${r[1]}</strong></td>
+      <td>${r[2]}</td>
       <td>${formatDate(r[4])}</td>
-      <td style="font-size:0.78rem;white-space:nowrap">${r[5]||''}~${r[6]||''}</td>
-      <td><div class="fish-tags">${fishTags||r[7]||''}</div></td>
-      <td style="font-size:0.78rem;color:#455a64">${r[8]||''}</td>
-      <td style="font-weight:600;color:#1565c0;white-space:nowrap">${r[9] ? Number(r[9]).toLocaleString()+'원' : '-'}</td>
-      <td class="seat-cell" style="min-width:80px">
+      <td style="font-size:0.8rem">${r[5]}~${r[6]}</td>
+      <td><div class="fish-tags">${fishTags || r[7]}</div></td>
+      <td style="font-size:0.8rem;color:#455a64">${r[8]}</td>
+      <td style="font-weight:600;color:#1565c0">${r[9]}</td>
+      <td style="text-align:center">${r[10]}</td>
+      <td style="text-align:center">${r[11]}</td>
+      <td class="seat-cell">
         <span class="seat-badge ${seatCls}">${remain}석</span>
-        <div class="seat-bar"><div class="seat-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+        <div class="seat-bar"><div class="seat-bar-fill" style="width:${Math.round(ratio*100)}%;background:${barColor}"></div></div>
       </td>
       <td><span class="status-badge status-${statusCode}">${statusName}</span></td>
-      <td>${bookCell}</td>
     </tr>`;
   }
 
@@ -576,23 +497,26 @@ function renderTable() {
   document.getElementById("table-container").innerHTML = html;
 }
 
+// ── 정렬 ─────────────────────────────────────────────────
 function sortBy(col) {
   if (sortCol === col) sortAsc = !sortAsc;
   else { sortCol = col; sortAsc = true; }
   applyFilters();
 }
 
-// ── 페이지네이션 ──────────────────────────────────
+// ── 페이지네이션 ──────────────────────────────────────────
 function renderPagination() {
   const total = Math.ceil(filteredData.length / ROWS_PER_PAGE);
   if (total <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
+
   let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ 이전</button>`;
-  const s = Math.max(1, currentPage-2), e = Math.min(total, currentPage+2);
-  if (s > 1) html += `<button class="page-btn" onclick="goPage(1)">1</button>${s>2?'<span class="page-info">…</span>':""}`;
-  for (let i = s; i <= e; i++) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-  if (e < total) html += `${e<total-1?'<span class="page-info">…</span>':""}<button class="page-btn" onclick="goPage(${total})">${total}</button>`;
+  const start = Math.max(1, currentPage-2), end = Math.min(total, currentPage+2);
+  if (start > 1) html += `<button class="page-btn" onclick="goPage(1)">1</button>${start>2?'<span class="page-info">…</span>':""}`;
+  for (let i = start; i <= end; i++)
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  if (end < total) html += `${end<total-1?'<span class="page-info">…</span>':""}<button class="page-btn" onclick="goPage(${total})">${total}</button>`;
   html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>다음 ›</button>`;
-  html += `<span class="page-info">${currentPage}/${total}p (${filteredData.length.toLocaleString()}건)</span>`;
+  html += `<span class="page-info">${currentPage}/${total} 페이지 (${filteredData.length}건)</span>`;
   document.getElementById("pagination").innerHTML = html;
 }
 
@@ -604,16 +528,16 @@ function goPage(p) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ── 유틸 ─────────────────────────────────────────
+// ── 유틸 ─────────────────────────────────────────────────
 function formatDate(d) {
   if (!d) return "";
   const days = ["일","월","화","수","목","금","토"];
-  const dt = new Date(d + 'T00:00:00');
+  const dt = new Date(d);
   if (isNaN(dt)) return d;
   return `${d} (${days[dt.getDay()]})`;
 }
 
-// ── 초기 로드 ─────────────────────────────────────
+// ── 초기 로드 ─────────────────────────────────────────────
 loadData();
 </script>
 </body>
