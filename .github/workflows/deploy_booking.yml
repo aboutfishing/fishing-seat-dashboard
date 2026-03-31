@@ -8,7 +8,7 @@ on:
   # 아래 주석 해제 시 이 레포 main 브랜치 푸시마다 자동 배포:
   # push:
   #   branches: [main]
-  #   paths: ['booking.html']  # booking.html 변경 시에만
+  #   paths: ['booking.html']
 
 jobs:
   deploy:
@@ -20,10 +20,11 @@ jobs:
       - name: GCP 서비스 계정 인증
         run: |
           echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
-
-      - name: gsutil 설치
-        run: pip install gsutil --quiet
+          # gcloud SDK 서비스 계정 활성화 (gcloud 번들 gsutil 인증)
+          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          PROJECT=$(python3 -c "import json; print(json.load(open('/tmp/gcp-key.json'))['project_id'])")
+          gcloud config set project "$PROJECT"
+          echo "Project: $PROJECT"
 
       - name: aboutfishing-kr-html 레포에서 booking.html 가져오기
         env:
@@ -34,7 +35,7 @@ jobs:
             -H "Accept: application/vnd.github.v3.raw" \
             "https://api.github.com/repos/aboutfishing/aboutfishing-kr-html/contents/booking.html?ref=main" \
             -o booking_deploy.html
-          wc -c booking_deploy.html
+          echo "파일 크기: $(wc -c < booking_deploy.html) bytes"
           echo "✅ booking.html 다운로드 완료"
 
       - name: booking.html → GCS 업로드
