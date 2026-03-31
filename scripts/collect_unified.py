@@ -32,10 +32,11 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # ── 설정 ──────────────────────────────────────────────────────────────────
-GCS_BUCKET   = "booking-redirect-aboutfishing-kr"
-GCS_PREFIX   = "seat-data"
-DAYS_AHEAD   = int(os.environ.get("DAYS_AHEAD", "14"))  # 오늘 포함 N일치 (기본 14일)
-MAX_CONC     = 10
+GCS_BUCKET    = "booking-redirect-aboutfishing-kr"
+GCS_PREFIX    = "seat-data"
+DAYS_AHEAD    = int(os.environ.get("DAYS_AHEAD", "14"))   # 오늘 포함 N일치 (기본 14일)
+SKIP_EXISTING = os.environ.get("SKIP_EXISTING", "").lower() in ("1", "true", "yes")  # 기존 GCS 날짜 스킵
+MAX_CONC      = 10
 
 # sunsang24 API
 SS24_API     = "https://api.sunsang24.com/ship/list"
@@ -591,16 +592,47 @@ def upload_to_gcs(local_path: str, gcs_path: str) -> bool:
     return True
 
 
+def gcs_file_exists(gcs_path: str) -> bool:
+    """GCS에 해당 파일이 이미 존재하는지 확인"""
+    gsutil = shutil.which("gsutil") or "/usr/bin/gsutil"
+    result = subprocess.run(
+        [gsutil, "stat", f"gs://{GCS_BUCKET}/{gcs_path}"],
+        capture_output=True, text=True
+    )
+    return result.returncode == 0
+
+
 # ── 메인 ───────────────────────────────────────────────────────────────────
 async def main():
     log.info("=" * 65)
     log.info("통합 좌석 수집 v2: 선상24 + 더피싱 → AF 매핑 → GCS")
     log.info(f"수집 기간: 오늘~{DAYS_AHEAD}일 ({date.today()} ~ {date.today()+timedelta(days=DAYS_AHEAD-1)})")
+    if SKIP_EXISTING:
+        log.info("  ※ SKIP_EXISTING=true: 기존 GCS 날짜는 재수집 생략")
     log.info("=" * 65)
     start = datetime.now()
 
     # 날짜 범위
-    dates = [(date.today() + timedelta(days=i)).isoformat() for i in range(DAYS_AHEAD)]
+    all_dates = [(date.today() + timedelta(days=i)).isoformat() for i in range(DAYS_AHEAD)]
+
+    # SKIP_EXISTING: 이미 GCS에 있는 날짜 필터링
+    if SKIP_EXISTING:
+        skipped = []
+        dates = []
+        for d in all_dates:
+            if gcs_file_exists(f"{GCS_PREFIX}/{d}.json"):
+                skipped.append(d)
+            else:
+                dates.append(d)
+        if skipped:
+            log.info(f"  GCS 기존 데이터 스킵: {len(skipped)}일 ({skipped[0]}~{skipped[-1]})")
+        log.info(f"  신규 수집 대상: {len(dates)}일")
+    else:
+        dates = all_dates
+    if not dates:
+        log.info("  ✅ 수집할 신규 날짜 없음 (모두 GCS에 존재). 종료.")
+        return
+
     months = list(dict.fromkeys(
         (int(d[:4]), int(d[5:7])) for d in dates
     ))

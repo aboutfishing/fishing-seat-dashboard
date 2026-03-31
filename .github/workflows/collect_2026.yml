@@ -1,24 +1,38 @@
-name: 어바웃피싱 2026 전체 데이터 수집
+name: 좌석 데이터 통합 수집 (선상24 + 더피싱)
+
+# collect.yml 통합 — 이 워크플로우가 유일한 수집 워크플로우입니다.
+# ① 매일 01:00 KST: 14일치 실시간 수집 → GCS + data/latest.json (대시보드 즉시 반영)
+# ② 매일 02:00 KST: 90일치 확장 수집 → GCS (기존 날짜 스킵, 신규 날짜만 추가)
+# ③ 수동 실행: days_ahead / skip_existing 파라미터로 자유롭게 수집 범위 지정
 
 on:
-  workflow_dispatch:       # 수동 실행
+  workflow_dispatch:
     inputs:
       days_ahead:
-        description: '수집 기간 (일수, 기본 90일)'
+        description: '수집 기간 (일수, 기본 14일 / 올해말까지=276)'
         required: false
-        default: '90'
+        default: '276'
+      skip_existing:
+        description: 'GCS 기존 날짜 스킵 여부 (true/false)'
+        required: false
+        default: 'true'
   schedule:
-    # 매일 오전 2시 KST (UTC 17:00) — 기본 14일 수집(collect.yml) 완료 후 확장 수집
+    # ① 매일 01:00 KST (UTC 16:00) — 14일치 실시간 수집
+    - cron: '0 16 * * *'
+    # ② 매일 02:00 KST (UTC 17:00) — 90일치 확장 수집 (기존 스킵)
     - cron: '0 17 * * *'
 
 permissions:
   contents: write
 
 jobs:
-  collect_2026:
-    name: 2026 전체 좌석 데이터 수집 (90일)
+  collect:
+    name: >-
+      ${{ github.event_name == 'workflow_dispatch' && format('수동: {0}일 (스킵={1})', inputs.days_ahead, inputs.skip_existing) ||
+          github.event.schedule == '0 16 * * *' && '자동: 14일 실시간' ||
+          '자동: 90일 확장' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     steps:
       - name: 코드 체크아웃
@@ -38,12 +52,20 @@ jobs:
           echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
 
-      - name: 좌석 데이터 수집 (선상24 + 더피싱, 90일치)
+      - name: 좌석 데이터 수집
         env:
           JSON_OUTPUT_PATH: data/latest.json
-          DAYS_AHEAD: ${{ github.event.inputs.days_ahead || '90' }}
+          DAYS_AHEAD: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.days_ahead ||
+                github.event.schedule == '0 16 * * *' && '14' || '90' }}
+          SKIP_EXISTING: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.skip_existing ||
+                github.event.schedule == '0 16 * * *' && 'false' || 'true' }}
         run: |
-          echo "수집 시작: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST') / 수집기간: ${DAYS_AHEAD}일"
+          echo "==================================================="
+          echo "수집 시작: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST')"
+          echo "DAYS_AHEAD=${DAYS_AHEAD} / SKIP_EXISTING=${SKIP_EXISTING}"
+          echo "==================================================="
           python scripts/collect_unified.py
           echo "수집 완료: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST')"
 
@@ -59,7 +81,7 @@ jobs:
       - name: 수집 결과 요약
         if: always()
         run: |
-          echo "=== 2026 수집 결과 ==="
+          echo "=== 수집 결과 ==="
           if [ -f data/latest.json ]; then
             python3 -c "
           import json
@@ -80,7 +102,8 @@ jobs:
                       af_matched += 1
               for src, cnt in sorted(sources.items()):
                   print(f'  {src}: {cnt:,}건')
-              print(f'어바웃피싱 매칭: {af_matched:,}건 / {len(rows):,}건 ({af_matched/len(rows)*100:.1f}%)')
+              pct = af_matched / len(rows) * 100 if rows else 0
+              print(f'어바웃피싱 매핑: {af_matched:,}건 ({pct:.1f}%)')
           "
           else
             echo "data/latest.json 없음"

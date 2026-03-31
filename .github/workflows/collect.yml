@@ -1,10 +1,10 @@
 name: 좌석 데이터 수집 (선상24 + 더피싱 통합)
 
 on:
-  schedule:
-    # 매일 오전 1시 KST (UTC 16:00)
-    - cron: '0 16 * * *'
-  workflow_dispatch:  # 수동 실행
+  # ⛔ collect_2026.yml로 통합됨 — 이 워크플로우는 비활성화
+  # schedule:
+  #   - cron: '0 16 * * *'
+  workflow_dispatch:  # 수동 실행만 허용 (디버그 전용)
 
 permissions:
   contents: write   # data/latest.json 커밋 & 푸시 허용
