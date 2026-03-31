@@ -593,13 +593,33 @@ def upload_to_gcs(local_path: str, gcs_path: str) -> bool:
 
 
 def gcs_file_exists(gcs_path: str) -> bool:
-    """GCS에 해당 파일이 이미 존재하는지 확인"""
+    """GCS에 해당 파일이 이미 존재하는지 확인 (단일 파일)"""
     gsutil = shutil.which("gsutil") or "/usr/bin/gsutil"
     result = subprocess.run(
         [gsutil, "stat", f"gs://{GCS_BUCKET}/{gcs_path}"],
         capture_output=True, text=True
     )
     return result.returncode == 0
+
+
+def get_gcs_existing_dates() -> set:
+    """GCS에 이미 존재하는 날짜 목록을 한 번의 ls 호출로 가져옴 (성능 최적화)"""
+    gsutil = shutil.which("gsutil") or "/usr/bin/gsutil"
+    result = subprocess.run(
+        [gsutil, "ls", f"gs://{GCS_BUCKET}/{GCS_PREFIX}/"],
+        capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        log.warning(f"GCS ls 실패, stat 방식으로 fallback: {result.stderr[:100]}")
+        return set()
+    existing = set()
+    for line in result.stdout.splitlines():
+        # gs://bucket/seat-data/2026-04-05.json → 2026-04-05
+        fname = line.strip().split("/")[-1]
+        if fname.endswith(".json") and len(fname) == 15:  # YYYY-MM-DD.json
+            existing.add(fname[:10])
+    log.info(f"  GCS 기존 날짜: {len(existing)}일")
+    return existing
 
 
 # ── 메인 ───────────────────────────────────────────────────────────────────
@@ -615,15 +635,18 @@ async def main():
     # 날짜 범위
     all_dates = [(date.today() + timedelta(days=i)).isoformat() for i in range(DAYS_AHEAD)]
 
-    # SKIP_EXISTING: 이미 GCS에 있는 날짜 필터링
+    # SKIP_EXISTING: 이미 GCS에 있는 날짜 필터링 (단일 ls 호출)
     if SKIP_EXISTING:
-        skipped = []
-        dates = []
-        for d in all_dates:
-            if gcs_file_exists(f"{GCS_PREFIX}/{d}.json"):
-                skipped.append(d)
-            else:
-                dates.append(d)
+        existing_dates = get_gcs_existing_dates()
+        if existing_dates:
+            # ls 성공: 한 번에 필터링
+            dates   = [d for d in all_dates if d not in existing_dates]
+            skipped = [d for d in all_dates if d in existing_dates]
+        else:
+            # ls 실패: 개별 stat fallback
+            skipped, dates = [], []
+            for d in all_dates:
+                (skipped if gcs_file_exists(f"{GCS_PREFIX}/{d}.json") else dates).append(d)
         if skipped:
             log.info(f"  GCS 기존 데이터 스킵: {len(skipped)}일 ({skipped[0]}~{skipped[-1]})")
         log.info(f"  신규 수집 대상: {len(dates)}일")
