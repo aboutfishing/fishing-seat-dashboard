@@ -36,8 +36,16 @@ jobs:
                  cp index_kr.html gs://booking-redirect-aboutfishing-kr/index.html
           echo "✅ index.html 배포: https://aboutfishing.kr/"
 
+      - name: GCS 버킷 웹사이트 기본 페이지 설정 (index.html)
+        run: |
+          gsutil web set -m index.html -e 404.html gs://booking-redirect-aboutfishing-kr || \
+          gsutil web set -m index.html gs://booking-redirect-aboutfishing-kr
+          echo "✅ 버킷 기본 페이지: index.html"
+
       - name: 배포 확인
         run: |
           echo "=== 배포된 파일 목록 ==="
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/booking.html
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/index.html
+          echo "=== 버킷 웹사이트 설정 ==="
+          gsutil web get gs://booking-redirect-aboutfishing-kr
