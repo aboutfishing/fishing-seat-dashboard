@@ -150,8 +150,10 @@ ul{list-style:none}
   max-width:var(--max-w);margin:0 auto;height:100%;
   display:flex;align-items:center;justify-content:space-between;padding:0 16px;
 }
-.logo{display:flex;align-items:center;gap:8px;font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;color:var(--c-blue)}
-.logo-ic{width:32px;height:32px;background:var(--c-blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark-wrap{display:flex;align-items:center;justify-content:center}
+.logo-mark{width:36px;height:36px;border-radius:8px;flex-shrink:0;object-fit:cover}
+.logo-text{font-family:'Noto Sans KR',sans-serif;font-weight:800;font-size:18px;color:var(--c-blue);letter-spacing:-.5px}
 .nav-pc{display:none}
 .nav-pc a{font-size:14px;font-weight:500;color:var(--c-sub);padding:8px 14px;border-radius:var(--r-s);transition:var(--ease)}
 .hdr-acts{display:flex;align-items:center;gap:8px}
@@ -189,14 +191,7 @@ ul{list-style:none}
 .hero{
   margin-top:var(--hdr);position:relative;overflow:hidden;
   padding:0;min-height:420px;display:flex;align-items:flex-end;
-}
-.hero-bg{
-  position:absolute;inset:0;z-index:0;
-  background:url('https://bimg.aboutfishing.kr/banners/2026/03/09/279471a110fb542cb01c4c4beb3d36454.webp') center/cover no-repeat;
-}
-.hero-bg::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,27,68,.45) 0%,rgba(0,27,68,.85) 100%);
+  background:linear-gradient(155deg,#001b44 0%,#0040cc 60%,#0052FF 100%);
 }
 .hero-inner{
   position:relative;z-index:1;width:100%;max-width:var(--max-w);
@@ -378,7 +373,9 @@ ul{list-style:none}
    ═══════════════════════════════════════════════════ */
 .footer{background:var(--c-text);color:rgba(255,255,255,.5);padding:32px 16px 100px;font-size:12px;line-height:1.8}
 .footer-in{max-width:var(--max-w);margin:0 auto}
-.footer-logo{font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:12px}
+.footer-logo{margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.footer-logo img{height:32px;width:auto;border-radius:6px;opacity:.9}
+.footer-logo-text{font-family:'Noto Sans KR',sans-serif;font-weight:800;font-size:17px;color:#fff}
 .footer-links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
 .footer-links a{color:rgba(255,255,255,.7);font-size:13px}
 .footer-info p{margin-bottom:2px}
@@ -515,9 +512,11 @@ ul{list-style:none}
 <!-- ═══ HEADER ═══ -->
 <header class="hdr" id="hdr">
   <div class="hdr-in">
-    <a href="https://aboutfishing.kr" class="logo">
-      <div class="logo-ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10C3 10 5 4 10 4C15 4 17 10 17 10C17 10 15 16 10 16C5 16 3 10 3 10Z" stroke="white" stroke-width="1.5" fill="none"/><circle cx="13" cy="9" r="1" fill="white"/><path d="M17 10L19 7M17 10L19 13" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <a href="https://aboutfishing.onelink.me/oR5G/c57b7pe8" ">
+    <a href="https://aboutfishing.kr" class="logo" aria-label="어바웃피싱 홈">
+      <span class="logo-mark-wrap">
+        <img src="./images/logo-brand.png" class="logo-mark" alt="어바웃피싱 로고" width="36" height="36">
+      </span>
+      <span class="logo-text">어바웃피싱</span>
     </a>
     <nav class="nav-pc">
       <a href="#boats">낚시배 예약</a>
@@ -548,7 +547,6 @@ ul{list-style:none}
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <div class="hero-bg" role="img" aria-label="인천배낚시 쭈꾸미낚시 낚시배 예약 어바웃피싱"></div>
   <div class="hero-inner">
     <div class="hero-badge"><span class="dot"></span> 실시간 잔여석 확인 가능</div>
     <h1><em>인천배낚시</em> 쭈꾸미낚시 예약<br>어바웃피싱이 쉽게</h1>
@@ -900,7 +898,10 @@ ul{list-style:none}
 <footer class="footer">
   <div class="footer-in">
     <div>
-      <div class="footer-logo">어바웃피싱</div>
+      <div class="footer-logo">
+        <img src="./images/logo-brand.png" alt="어바웃피싱" width="32" height="32">
+        <span class="footer-logo-text">어바웃피싱</span>
+      </div>
       <div class="footer-links">
         <a href="https://booking.aboutfishing.kr">낚시배 예약</a>
         <a href="https://map.aboutfishing.kr">낚시포인트</a>
