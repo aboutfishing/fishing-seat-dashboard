@@ -1,14 +1,12 @@
-name: booking.html 배포 (aboutfishing.kr)
-
-# aboutfishing-kr-html 레포에 GCP_CREDENTIALS 시크릿이 없어
-# GCS 인증이 가능한 이 레포에서 배포를 수행합니다.
+name: booking.html & index.html 배포 (aboutfishing.kr)
 
 on:
-  workflow_dispatch:   # 수동 실행
-  # 아래 주석 해제 시 이 레포 main 브랜치 푸시마다 자동 배포:
-  # push:
-  #   branches: [main]
-  #   paths: ['booking.html']
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'booking.html'
+      - 'index_kr.html'
 
 jobs:
   deploy:
@@ -20,30 +18,26 @@ jobs:
       - name: GCP 서비스 계정 인증
         run: |
           echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
-          # gcloud SDK 서비스 계정 활성화 (gcloud 번들 gsutil 인증)
           gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
           PROJECT=$(python3 -c "import json; print(json.load(open('/tmp/gcp-key.json'))['project_id'])")
           gcloud config set project "$PROJECT"
-          echo "Project: $PROJECT"
-
-      - name: aboutfishing-kr-html 레포에서 booking.html 가져오기
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -sL \
-            -H "Authorization: token ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github.v3.raw" \
-            "https://api.github.com/repos/aboutfishing/aboutfishing-kr-html/contents/booking.html?ref=main" \
-            -o booking_deploy.html
-          echo "파일 크기: $(wc -c < booking_deploy.html) bytes"
-          echo "✅ booking.html 다운로드 완료"
 
       - name: booking.html → GCS 업로드
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:public, max-age=300" \
-                 cp booking_deploy.html gs://booking-redirect-aboutfishing-kr/booking.html
-          echo "✅ 배포 완료: https://aboutfishing.kr/booking.html"
+                 cp booking.html gs://booking-redirect-aboutfishing-kr/booking.html
+          echo "✅ booking.html 배포: https://aboutfishing.kr/booking.html"
+
+      - name: index.html (landing page) → GCS 업로드
+        run: |
+          gsutil -h "Content-Type:text/html; charset=utf-8" \
+                 -h "Cache-Control:public, max-age=300" \
+                 cp index_kr.html gs://booking-redirect-aboutfishing-kr/index.html
+          echo "✅ index.html 배포: https://aboutfishing.kr/"
 
       - name: 배포 확인
-        run: gsutil ls -la gs://booking-redirect-aboutfishing-kr/booking.html
+        run: |
+          echo "=== 배포된 파일 목록 ==="
+          gsutil ls -la gs://booking-redirect-aboutfishing-kr/booking.html
+          gsutil ls -la gs://booking-redirect-aboutfishing-kr/index.html
