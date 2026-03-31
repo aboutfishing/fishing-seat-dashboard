@@ -118,7 +118,7 @@
   --shadow-m: 0 4px 16px rgba(0,0,0,.06);
   --shadow-l: 0 8px 32px rgba(0,0,0,.08);
   --r-s: 8px; --r-m: 12px; --r-l: 16px; --r-xl: 20px;
-  --hdr: 56px;
+  --hdr: 48px;
   --cta-h: 72px;
   --max-w: 1200px;
   --ease: .25s cubic-bezier(.4,0,.2,1);
@@ -189,11 +189,11 @@ ul{list-style:none}
    ═══════════════════════════════════════════════════ */
 .hero{
   margin-top:var(--hdr);background:#F8FAFC;
-  min-height:460px;display:flex;align-items:center;
+  min-height:360px;display:flex;align-items:center;
 }
 .hero-inner{
   width:100%;max-width:var(--max-w);
-  margin:0 auto;padding:48px 16px;
+  margin:0 auto;padding:28px 16px;
   display:flex;align-items:center;gap:32px;
 }
 .hero-content{flex:1;min-width:0}
@@ -390,6 +390,43 @@ ul{list-style:none}
 .footer-info p{margin-bottom:2px}
 .footer-copy{margin-top:16px;border-top:1px solid rgba(255,255,255,.1);padding-top:16px}
 
+
+/* ═══════════════════════════════════════════════════
+   AI 물어보기
+   ═══════════════════════════════════════════════════ */
+.aiask-wrap{display:flex;justify-content:center}
+.aiask-inner{width:100%;max-width:640px;background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-m);border:1px solid var(--c-border);overflow:hidden}
+.aiask-preview{padding:16px 16px 8px;display:flex;flex-direction:column;gap:10px;min-height:80px}
+.aiask-msg.bot{background:#F4F6FB;color:var(--c-text);border-radius:4px 16px 16px 16px;padding:10px 14px;font-size:13px;line-height:1.6;max-width:100%;word-break:break-word;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.aiask-typing{display:flex;align-items:center;gap:4px;padding:10px 14px;background:#F4F6FB;border-radius:4px 16px 16px 16px;align-self:flex-start;width:56px}
+.aiask-typing span{width:7px;height:7px;background:#aaa;border-radius:50%;animation:typing-bounce 1.4s infinite}
+.aiask-typing span:nth-child(2){animation-delay:.2s}
+.aiask-typing span:nth-child(3){animation-delay:.4s}
+.aiask-chips{display:flex;gap:6px;flex-wrap:wrap;padding:4px 16px 10px}
+.aiask-chip{padding:6px 14px;background:#EAF0FF;color:var(--c-blue);border:none;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap}
+.aiask-chip:hover{background:var(--c-blue);color:#fff}
+.aiask-row{display:flex;gap:8px;padding:0 12px 12px}
+#aiask-input{flex:1;border:1.5px solid var(--c-border);border-radius:100px;padding:9px 16px;font-size:13px;outline:none;font-family:inherit;transition:border-color .2s;background:#fafafa}
+#aiask-input:focus{border-color:var(--c-blue);background:#fff}
+#aiask-btn{padding:9px 20px;background:var(--c-blue);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap}
+#aiask-btn:hover{background:var(--c-blue-dk)}
+#aiask-btn:disabled{background:#ccc;cursor:not-allowed}
+.aiask-powered{font-size:11px;color:var(--c-muted);text-align:center;padding:0 12px 12px}
+.aiask-powered a{color:var(--c-blue);font-weight:600}
+
+/* ═══════════════════════════════════════════════════
+   쇼핑 섹션
+   ═══════════════════════════════════════════════════ */
+.shop-g{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:640px){.shop-g{grid-template-columns:repeat(4,1fr);gap:16px}}
+.shop-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px;background:#fff;border:1px solid var(--c-border);border-radius:var(--r-l);text-align:center;transition:var(--ease)}
+.shop-card:hover{border-color:var(--c-blue);box-shadow:var(--shadow-m);transform:translateY(-2px)}
+.shop-ic{width:64px;height:64px;border-radius:var(--r-m);display:flex;align-items:center;justify-content:center}
+.shop-nm{font-size:14px;font-weight:700;color:var(--c-text)}
+.shop-ds{font-size:12px;color:var(--c-muted)}
+.shop-all-btn{display:inline-flex;align-items:center;padding:12px 28px;background:var(--c-blue);color:#fff;border-radius:var(--r-m);font-size:14px;font-weight:700;transition:var(--ease)}
+.shop-all-btn:hover{background:var(--c-blue-dk)}
+
 /* ═══════════════════════════════════════════════════
    BOTTOM CTA BAR
    ═══════════════════════════════════════════════════ */
@@ -432,9 +469,9 @@ ul{list-style:none}
    TABLET 768px+
    ═══════════════════════════════════════════════════ */
 @media(min-width:768px){
-  :root{--hdr:64px}
-  .hero{min-height:480px}
-  .hero-inner{padding:64px 24px;gap:48px}
+  :root{--hdr:52px}
+  .hero{min-height:380px}
+  .hero-inner{padding:40px 24px;gap:48px}
   .hero h1{font-size:36px}
   .hero-stats{gap:40px}
   .hero-stat-n{font-size:28px}
@@ -455,15 +492,15 @@ ul{list-style:none}
    PC 1024px+
    ═══════════════════════════════════════════════════ */
 @media(min-width:1024px){
-  :root{--hdr:68px;--cta-h:0px}
+  :root{--hdr:56px;--cta-h:0px}
   body{padding-bottom:0}
   .ham{display:none}
   .nav-pc{display:flex;align-items:center;gap:4px}
   .nav-pc a:hover{background:var(--c-bg);color:var(--c-text)}
   .btn-coupon-hdr{display:block}
   .btn-coupon-hdr:hover{background:var(--c-orange-dk)}
-  .hero{min-height:520px}
-  .hero-inner{padding:80px 40px;gap:64px}
+  .hero{min-height:400px}
+  .hero-inner{padding:48px 40px;gap:64px}
   .hero h1{font-size:44px}
   .hero-stats{gap:48px}
   .hero-stat-n{font-size:32px}
@@ -3088,6 +3125,48 @@ ul{list-style:none}
   </div>
 </section>
 
+
+<!-- ═══ 낚시 장비 쇼핑 ═══ -->
+<section class="sec reveal" id="shop">
+  <div class="sec-hd">
+    <div class="sec-t">낚시 장비 쇼핑<small>어바웃피싱 공식 쇼핑몰</small></div>
+    <a href="https://shop.aboutfishing.kr" class="sec-more" target="_blank" rel="noopener">전체보기 →</a>
+  </div>
+  <div class="shop-g">
+    <a href="https://shop.aboutfishing.kr/category/에기/1/" class="shop-card" target="_blank" rel="noopener">
+      <div class="shop-ic" style="background:#EEF4FF;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0052FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M3 21l18-18"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+      </div>
+      <div class="shop-nm">에기·루어</div>
+      <div class="shop-ds">쭈꾸미·갑오징어·오징어</div>
+    </a>
+    <a href="https://shop.aboutfishing.kr/category/낚시대/2/" class="shop-card" target="_blank" rel="noopener">
+      <div class="shop-ic" style="background:#F0FFF4;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4"/><polyline points="9 4 20 4 20 15"/></svg>
+      </div>
+      <div class="shop-nm">낚시대·릴</div>
+      <div class="shop-ds">선상·바다 전용 세트</div>
+    </a>
+    <a href="https://shop.aboutfishing.kr/category/채비/3/" class="shop-card" target="_blank" rel="noopener">
+      <div class="shop-ic" style="background:#FFF7ED;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v10M9 21h6M8 17l4 4 4-4"/></svg>
+      </div>
+      <div class="shop-nm">채비·소품</div>
+      <div class="shop-ds">봉돌·바늘·줄·미끼</div>
+    </a>
+    <a href="https://shop.aboutfishing.kr/category/의류/4/" class="shop-card" target="_blank" rel="noopener">
+      <div class="shop-ic" style="background:#FDF4FF;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9333EA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div class="shop-nm">의류·라이프</div>
+      <div class="shop-ds">낚시복·방수복·장갑</div>
+    </a>
+  </div>
+  <div style="text-align:center;margin-top:20px;">
+    <a href="https://shop.aboutfishing.kr" class="shop-all-btn" target="_blank" rel="noopener">쇼핑몰 전체 보기</a>
+  </div>
+</section>
+
 <!-- ═══ SEASON BANNER ═══ -->
 <div class="season-wrap reveal" id="season">
   <div class="season">
@@ -3182,6 +3261,35 @@ ul{list-style:none}
       <div class="rev-hd"><div class="rev-av"></div><div><div class="rev-name">주꾸미러버</div><div class="rev-date">2026.03.04 · 에프투호</div></div></div>
       <div class="rev-stars">★★★★★</div>
       <div class="rev-txt">에프투호 타고 쭈꾸미 38마리! 어바웃피싱 쿠폰으로 만원 할인 받아서 가성비도 최고였습니다.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ AI 물어보기 ═══ -->
+<section class="sec reveal" id="ai-ask">
+  <div class="sec-hd">
+    <div class="sec-t">AI 낚시 도우미<small>어바웃 AI에게 바로 물어보세요</small></div>
+  </div>
+  <div class="aiask-wrap">
+    <div class="aiask-inner">
+      <div class="aiask-preview">
+        <div class="aiask-msg bot">안녕하세요! 어바웃피싱 AI입니다.<br>낚시 예약, 조황 정보, 어종별 시즌, 장비 쇼핑을 안내해 드릴게요!</div>
+        <div class="aiask-msg bot" id="aiask-reply-box" style="display:none;"></div>
+        <div id="aiask-typing" class="aiask-typing" style="display:none;"><span></span><span></span><span></span></div>
+      </div>
+      <div class="aiask-chips" id="aiask-chips">
+        <button class="aiask-chip" onclick="askAI('봄 쭈꾸미 낚시 어디서 해요?')">봄 쭈꾸미</button>
+        <button class="aiask-chip" onclick="askAI('인천 배낚시 예약 방법')">인천 예약</button>
+        <button class="aiask-chip" onclick="askAI('초보자 낚시배 추천')">초보 추천</button>
+        <button class="aiask-chip" onclick="askAI('낚시 장비 추천')">장비 추천</button>
+        <button class="aiask-chip" onclick="askAI('오늘 조황 어때요?')">오늘 조황</button>
+      </div>
+      <div class="aiask-row">
+        <input id="aiask-input" type="text" placeholder="무엇이든 물어보세요 (예: 갑오징어 잘 잡히는 곳)" maxlength="200">
+        <button id="aiask-btn" onclick="askAIFromInput()">전송</button>
+      </div>
+      <div class="aiask-powered">Powered by Google Gemini &nbsp;·&nbsp; <a href="#ai-chat-fab" onclick="event.preventDefault();openAIChat()">전체 대화 보기 →</a></div>
     </div>
   </div>
 </section>
@@ -4077,5 +4185,235 @@ ul{list-style:none}
 })();
 
 </script>
+<!-- ═══ AI 챗봇 플로팅 버튼 ═══ -->
+<style>
+#ai-chat-fab{position:fixed;bottom:88px;right:20px;z-index:9999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#0052FF 0%,#003DD6 100%);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,82,255,.5);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .2s,box-shadow .2s;padding:0;font-weight:900;letter-spacing:-.5px}
+#ai-chat-fab:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(0,82,255,.6)}
+.fab-badge{position:absolute;top:-2px;right:-2px;width:13px;height:13px;background:#F5A623;border-radius:50%;border:2px solid #fff;animation:pulse-badge 2.4s infinite}
+@keyframes pulse-badge{0%,100%{transform:scale(1);opacity:1}60%{transform:scale(1.4);opacity:.7}}
+@media(min-width:1024px){#ai-chat-fab{bottom:32px;right:32px}}
+#ai-chat-panel{position:fixed;bottom:160px;right:20px;z-index:9998;width:340px;height:520px;background:#fff;border-radius:20px;box-shadow:0 10px 48px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;transform:scale(.9) translateY(16px);opacity:0;pointer-events:none;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s}
+#ai-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+@media(max-width:400px){#ai-chat-panel{width:calc(100vw - 28px);right:14px;bottom:140px;height:480px}}
+@media(min-width:1024px){#ai-chat-panel{bottom:104px;right:32px}}
+.aichat-header{background:linear-gradient(135deg,#0052FF 0%,#003DD6 100%);color:#fff;padding:14px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.aichat-avatar{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.aichat-hinfo{flex:1}
+.aichat-hinfo strong{display:block;font-size:13px;font-weight:800}
+.aichat-hinfo span{font-size:11px;opacity:.82;display:flex;align-items:center;gap:4px}
+.aichat-status-dot{width:6px;height:6px;background:#4ADE80;border-radius:50%;display:inline-block;flex-shrink:0}
+.aichat-close{background:rgba(255,255,255,.18);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.aichat-close:hover{background:rgba(255,255,255,.32)}
+.aichat-msgs{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:#e0e0e0 transparent}
+.aichat-msg{max-width:88%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.6;word-break:break-word}
+.aichat-msg.bot{background:#F4F6FB;color:#1a1a2e;border-radius:4px 14px 14px 14px;align-self:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.aichat-msg.user{background:#0052FF;color:#fff;border-radius:14px 4px 14px 14px;align-self:flex-end}
+.aichat-msg a{color:#0052FF;font-weight:700;text-decoration:underline}
+.aichat-msg.user a{color:#cfe0ff}
+.typing-indicator{display:flex;align-items:center;gap:4px;padding:10px 14px;background:#F4F6FB;border-radius:4px 14px 14px 14px;align-self:flex-start;width:52px}
+.typing-indicator span{width:6px;height:6px;background:#aaa;border-radius:50%;animation:typing-bounce 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typing-bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-6px);opacity:1}}
+.aichat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:6px 12px 8px;flex-shrink:0}
+.aichat-chip{padding:5px 11px;background:#EAF0FF;color:#0052FF;border:none;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;transition:background .15s;white-space:nowrap}
+.aichat-chip:hover{background:#0052FF;color:#fff}
+.aichat-input-row{display:flex;gap:8px;padding:8px 12px 10px;border-top:1px solid #eee;flex-shrink:0}
+#aichat-input{flex:1;border:1.5px solid #e0e0e0;border-radius:100px;padding:8px 14px;font-size:12px;outline:none;font-family:inherit;transition:border-color .2s;background:#fafafa}
+#aichat-input:focus{border-color:#0052FF;background:#fff}
+#aichat-send{width:34px;height:34px;border-radius:50%;background:#0052FF;color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+#aichat-send:hover{background:#0035CC}
+#aichat-send:disabled{background:#ccc;cursor:not-allowed}
+.aichat-footer-badge{font-size:10px;color:#aaa;text-align:center;padding:0 12px 8px;flex-shrink:0}
+</style>
+
+<button id="ai-chat-fab" onclick="toggleAIChat()" title="어바웃 AI 낚시 도우미">
+  <span style="font-size:13px;font-weight:900;">AF</span><span class="fab-badge"></span>
+</button>
+
+<div id="ai-chat-panel">
+  <div class="aichat-header">
+    <div class="aichat-avatar">AF</div>
+    <div class="aichat-hinfo">
+      <strong>어바웃 AI</strong>
+      <span><span class="aichat-status-dot"></span>낚시 예약 · 조황 · 장비 안내</span>
+    </div>
+    <button class="aichat-close" onclick="toggleAIChat()">✕</button>
+  </div>
+  <div class="aichat-msgs" id="aichat-msgs">
+    <div class="aichat-msg bot">안녕하세요! 어바웃피싱 AI입니다.<br>낚시 예약, 조황 정보, 포인트 지도, 장비 쇼핑을 안내해 드립니다!</div>
+  </div>
+  <div class="aichat-chips" id="aichat-chips">
+    <button class="aichat-chip" onclick="fabSendChip('낚시배 예약')">낚시배 예약</button>
+    <button class="aichat-chip" onclick="fabSendChip('오늘 조황')">오늘 조황</button>
+    <button class="aichat-chip" onclick="fabSendChip('봄 쭈꾸미')">봄 쭈꾸미</button>
+    <button class="aichat-chip" onclick="fabSendChip('장비 추천')">장비 추천</button>
+    <button class="aichat-chip" onclick="fabSendChip('포인트 지도')">포인트 지도</button>
+  </div>
+  <div class="aichat-input-row">
+    <input id="aichat-input" type="text" placeholder="무엇이든 물어보세요..." maxlength="200">
+    <button id="aichat-send" onclick="fabSendMsg()">전송</button>
+  </div>
+  <div class="aichat-footer-badge">Powered by Google Gemini</div>
+</div>
+
+<script>
+(function(){
+  var CF_URL = 'https://asia-northeast3-aboutfishingproduct.cloudfunctions.net/aboutfishing-gemini-chat';
+  var MAX_HISTORY = 10;
+  var chatHistory = [];
+  var isLoading = false;
+  var aiChatOpen = false;
+
+  var RULES = [
+    {k:['예약','낚시배','배낚시','선박','출항'],a:'원하는 날짜와 지역으로 낚시배를 실시간 예약하세요!<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시배 예약하기</a>'},
+    {k:['조황','오늘','최근','잡혔','조과'],a:'최신 조황 정보를 확인해보세요!<br><a href="https://booking.aboutfishing.kr/?mainTab=3" target="_blank" style="color:#0052FF;font-weight:700;">오늘의 조황 보기</a>'},
+    {k:['쭈꾸미','주꾸미','봄쭈'],a:'봄 쭈꾸미 시즌! 인천·태안 출항 선박 운항 중이에요.<br><a href="https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미" target="_blank" style="color:#0052FF;font-weight:700;">쭈꾸미 낚시배 보기</a>'},
+    {k:['갑오징어','오징어'],a:'갑오징어는 완도·여수 지역이 인기입니다!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=갑오징어" target="_blank" style="color:#0052FF;font-weight:700;">갑오징어 낚시배</a>'},
+    {k:['광어','우럭','선상'],a:'광어·우럭 낚시는 인천 남항 출항이 많아요!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=광어" target="_blank" style="color:#0052FF;font-weight:700;">광어·우럭 낚시배</a>'},
+    {k:['쿠폰','할인','가격'],a:'앱 설치 시 할인 쿠폰 제공!<br><a href="https://aboutfishing.onelink.me/oR5G/5oksswhp" target="_blank" style="color:#0052FF;font-weight:700;">할인 쿠폰 받기</a>'},
+    {k:['장비','낚시대','릴','에기','채비','용품'],a:'어종별 맞춤 낚시 장비를 만나보세요!<br><a href="https://shop.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시 장비 쇼핑</a>'},
+    {k:['포인트','지도','위치'],a:'전국 낚시 포인트 지도를 확인해보세요!<br><a href="https://map.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">포인트 지도 보기</a>'},
+    {k:['인천','남항','연안부두'],a:'인천 낚시배는 남항·연안부두 출항! 쭈꾸미·광어·우럭이 인기어종이에요.<br><a href="https://booking.aboutfishing.kr/search/list?keyword=인천" target="_blank" style="color:#0052FF;font-weight:700;">인천 낚시배</a>'},
+    {k:['태안','서해'],a:'태안·홍원항은 쭈꾸미·갑오징어로 유명합니다!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=태안" target="_blank" style="color:#0052FF;font-weight:700;">태안 낚시배</a>'},
+    {k:['초보','처음','입문'],a:'초보자도 걱정 없어요! 장비 대여와 가이드를 선박에서 제공합니다.<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">초보 낚시배 찾기</a>'},
+    {k:['취소','환불','변경'],a:'출항 7일 전까지 100% 환불, 기상 결항 시에도 전액 환불돼요.<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">예약 관리</a>'}
+  ];
+
+  function getFallback(text){
+    var t=text.toLowerCase();
+    for(var i=0;i<RULES.length;i++){if(RULES[i].k.some(function(k){return t.includes(k);}))return RULES[i].a;}
+    return '낚시 예약, 조황, 포인트 지도, 장비 쇼핑을 안내해 드릴 수 있어요!<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시배 예약</a>';
+  }
+
+  function appendMsg(html,type){
+    var msgs=document.getElementById('aichat-msgs');
+    var div=document.createElement('div');
+    div.className='aichat-msg '+type;
+    div.innerHTML=html;
+    msgs.appendChild(div);
+    msgs.scrollTop=msgs.scrollHeight;
+    return div;
+  }
+
+  function showTyping(){
+    var msgs=document.getElementById('aichat-msgs');
+    var div=document.createElement('div');
+    div.id='fab-typing';div.className='typing-indicator';
+    div.innerHTML='<span></span><span></span><span></span>';
+    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  }
+  function hideTyping(){var el=document.getElementById('fab-typing');if(el)el.remove();}
+  function setLoading(v){
+    isLoading=v;
+    var b=document.getElementById('aichat-send'),i=document.getElementById('aichat-input');
+    if(b)b.disabled=v;if(i)i.disabled=v;
+  }
+
+  async function callGemini(text){
+    var resp=await fetch(CF_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,history:chatHistory.slice(-MAX_HISTORY).map(function(m){return{role:m.role,text:m.text};})}),
+      signal:AbortSignal.timeout(18000)});
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    var data=await resp.json();
+    if(data.error)throw new Error(data.error);
+    return data.reply;
+  }
+
+  async function fabSendMsg(){
+    if(isLoading)return;
+    var inp=document.getElementById('aichat-input');
+    var text=(inp.value||'').trim();
+    if(!text)return;
+    appendMsg(text,'user');inp.value='';
+    setLoading(true);showTyping();
+    chatHistory.push({role:'user',text:text});
+    var reply;
+    try{reply=await callGemini(text);}catch(e){reply=getFallback(text);}
+    hideTyping();setLoading(false);appendMsg(reply,'bot');
+    chatHistory.push({role:'model',text:reply.replace(/<[^>]+>/g,'')});
+  }
+
+  function fabSendChip(text){document.getElementById('aichat-input').value=text;fabSendMsg();}
+
+  function toggleAIChat(){
+    aiChatOpen=!aiChatOpen;
+    document.getElementById('ai-chat-panel').classList.toggle('open',aiChatOpen);
+    if(aiChatOpen)setTimeout(function(){var i=document.getElementById('aichat-input');if(i)i.focus();},300);
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var inp=document.getElementById('aichat-input');
+    if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();fabSendMsg();}});
+  });
+
+  window.toggleAIChat=toggleAIChat;
+  window.fabSendMsg=fabSendMsg;
+  window.fabSendChip=fabSendChip;
+  window.openAIChat=function(){if(!aiChatOpen)toggleAIChat();window.scrollTo({top:0,behavior:'smooth'});};
+})();
+</script>
+<!-- ═══ /AI 챗봇 플로팅 버튼 ═══ -->
+
+<script>
+(function(){
+  var CF_URL = 'https://asia-northeast3-aboutfishingproduct.cloudfunctions.net/aboutfishing-gemini-chat';
+  var askLoading = false;
+  var RULES = [
+    {k:['예약','낚시배','배낚시'],a:'원하는 날짜와 지역으로 낚시배를 실시간 예약하세요!<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시배 예약하기</a>'},
+    {k:['조황','오늘','잡혔'],a:'최신 조황 정보를 확인해보세요!<br><a href="https://booking.aboutfishing.kr/?mainTab=3" target="_blank" style="color:#0052FF;font-weight:700;">오늘의 조황 보기</a>'},
+    {k:['쭈꾸미','주꾸미'],a:'봄 쭈꾸미 시즌! 인천·태안 출항 선박 운항 중이에요.<br><a href="https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미" target="_blank" style="color:#0052FF;font-weight:700;">쭈꾸미 낚시배</a>'},
+    {k:['갑오징어'],a:'갑오징어는 완도·여수 지역이 인기입니다!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=갑오징어" target="_blank" style="color:#0052FF;font-weight:700;">갑오징어 낚시배</a>'},
+    {k:['광어','우럭'],a:'광어·우럭은 인천 남항 출항이 많아요. 연중 가능합니다!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=광어" target="_blank" style="color:#0052FF;font-weight:700;">광어·우럭 낚시배</a>'},
+    {k:['장비','낚시대','릴','에기'],a:'어종별 맞춤 낚시 장비를 만나보세요!<br><a href="https://shop.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시 장비 쇼핑</a>'},
+    {k:['포인트','지도'],a:'전국 낚시 포인트 지도를 확인해보세요!<br><a href="https://map.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">포인트 지도 보기</a>'},
+    {k:['초보','처음','입문'],a:'초보자도 걱정 없어요! 장비 대여와 가이드 제공.<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">초보 낚시배 찾기</a>'},
+    {k:['인천'],a:'인천 낚시배는 남항·연안부두 출항! 쭈꾸미·광어가 인기어종.<br><a href="https://booking.aboutfishing.kr/search/list?keyword=인천" target="_blank" style="color:#0052FF;font-weight:700;">인천 낚시배</a>'},
+    {k:['태안'],a:'태안·홍원항은 쭈꾸미·갑오징어로 유명합니다!<br><a href="https://booking.aboutfishing.kr/search/list?keyword=태안" target="_blank" style="color:#0052FF;font-weight:700;">태안 낚시배</a>'}
+  ];
+  function getFallback(t){
+    for(var i=0;i<RULES.length;i++){if(RULES[i].k.some(function(k){return t.includes(k);}))return RULES[i].a;}
+    return '낚시 예약, 조황, 포인트 지도, 장비 쇼핑을 안내해 드릴 수 있어요!<br><a href="https://booking.aboutfishing.kr/" target="_blank" style="color:#0052FF;font-weight:700;">낚시배 예약</a>';
+  }
+
+  async function askAI(text) {
+    if(askLoading)return;
+    var rb=document.getElementById('aiask-reply-box');
+    var ty=document.getElementById('aiask-typing');
+    var btn=document.getElementById('aiask-btn');
+    askLoading=true;
+    if(btn)btn.disabled=true;
+    rb.style.display='none';
+    ty.style.display='flex';
+    var reply;
+    try{
+      var resp=await fetch(CF_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message:text,history:[]}),signal:AbortSignal.timeout(15000)});
+      var data=await resp.json();
+      reply=data.reply||getFallback(text.toLowerCase());
+    }catch(e){reply=getFallback(text.toLowerCase());}
+    ty.style.display='none';
+    rb.innerHTML=reply;rb.style.display='block';
+    askLoading=false;if(btn)btn.disabled=false;
+    var sec=document.getElementById('ai-ask');
+    if(sec)sec.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function askAIFromInput(){
+    var inp=document.getElementById('aiask-input');
+    var text=(inp.value||'').trim();
+    if(text)askAI(text);
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var inp=document.getElementById('aiask-input');
+    if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();askAIFromInput();}});
+  });
+
+  window.askAI=askAI;
+  window.askAIFromInput=askAIFromInput;
+})();
+</script>
+
 </body>
 </html>
