@@ -1,18 +1,24 @@
 name: 어바웃피싱 2026 전체 데이터 수집
 
 on:
-  workflow_dispatch:       # 수동 실행
+  workflow_dispatch:
     inputs:
       days_ahead:
         description: '수집 기간 (일수, 기본 90일)'
         required: false
         default: '90'
   schedule:
-    # 매일 오전 2시 KST (UTC 17:00) — 기본 14일 수집(collect.yml) 완료 후 확장 수집
+    # ① 매일 오전 2시 KST (UTC 17:00)
     - cron: '0 17 * * *'
+    # ② 안전망: 30분 후 (① cron skip 대비)
+    - cron: '30 17 * * *'
 
 permissions:
   contents: write
+
+concurrency:
+  group: collect-data
+  cancel-in-progress: false
 
 jobs:
   collect_2026:
@@ -23,6 +29,8 @@ jobs:
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Python 3.11 설정
         uses: actions/setup-python@v5
@@ -35,6 +43,156 @@ jobs:
 
       - name: GCP 서비스 계정 인증 설정
         run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
+      - name: 좌석 데이터 수집 (1차)
+        id: collect
+        continue-on-error: true
+        env:
+          JSON_OUTPUT_PATH: data/latest.json
+          DAYS_AHEAD: ${{ github.event.inputs.days_ahead || '90' }}
+        run: |
+          echo "수집 시작: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST') / ${DAYS_AHEAD}일"
+          python scripts/collect_unified.py
+          echo "수집 완료: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST')"
+
+      - name: 재시도 대기 (1차 실패 시)
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "⚠️ 1차 실패 — 5분 대기 후 재시도"
+          sleep 300
+
+      - name: 좌석 데이터 수집 (재시도)
+        if: steps.collect.outcome == 'failure'
+        id: collect_retry
+        env:
+          JSON_OUTPUT_PATH: data/latest.json
+          DAYS_AHEAD: ${{ github.event.inputs.days_ahead || '90' }}
+        run: |
+          echo "재시도 시작: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M:%S KST')"
+          python scripts/collect_unified.py
+
+      - name: JSON 데이터 파일 커밋 & 푸시
+        if: >
+          steps.collect.outcome == 'success' ||
+          steps.collect_retry.outcome == 'success'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          git add data/latest.json
+          git diff --staged --quiet && echo "변경 없음, 스킵" && exit 0
+          git commit -m "chore: 데이터 자동 갱신 $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')"
+          for i in 1 2 3; do
+            git push && break || {
+              echo "push 실패 ($i/3) — rebase 후 재시도"
+              git pull --rebase origin main
+              sleep 5
+            }
+          done
+
+      - name: 수집 결과 요약
+        if: always()
+        run: |
+          echo "=== 2026 수집 결과 ==="
+          if [ -f data/latest.json ]; then
+            python3 -c "
+          import json
+          with open('data/latest.json') as f:
+              d = json.load(f)
+          print(f'갱신시각: {d[\"updated_at\"]}')
+          print(f'총 레코드: {d[\"row_count\"]:,}건')
+          rows = d['rows']
+          if rows:
+              dates = sorted(set(r[4] for r in rows if r[4]))
+              print(f'날짜 범위: {dates[0]} ~ {dates[-1]} ({len(dates)}일)')
+              sources = {}
+              af_matched = 0
+              for r in rows:
+                  src = r[17] if len(r) > 17 else 'unknown'
+                  sources[src] = sources.get(src, 0) + 1
+                  if len(r) > 16 and r[16]:
+                      af_matched += 1
+              for src, cnt in sorted(sources.items()):
+                  print(f'  {src}: {cnt:,}건')
+              print(f'어바웃피싱 매칭: {af_matched:,}건 / {len(rows):,}건 ({af_matched/len(rows)*100:.1f}%)')
+          "
+          else
+            echo "data/latest.json 없음"
+          fi
+
+      - name: 텔레그램 알림 (성공)
+        if: >
+          always() &&
+          (steps.collect.outcome == 'success' ||
+           steps.collect_retry.outcome == 'success')
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ATTEMPT="1차"
+          [ "${{ steps.collect.outcome }}" = "failure" ] && ATTEMPT="2차(재시도)"
+          KST=$(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')
+          python3 - << PYEOF
+          import urllib.request, json, os
+          token   = os.environ['TELEGRAM_BOT_TOKEN']
+          chat_id = os.environ['TELEGRAM_CHAT_ID']
+          try:
+              with open('data/latest.json') as f:
+                  d = json.load(f)
+              rows  = d.get('rows', [])
+              dates = sorted(set(r[4] for r in rows if r[4]))
+              af    = sum(1 for r in rows if len(r) > 16 and r[16])
+              avail = sum(1 for r in rows if len(r) > 13 and r[13] == 'ING')
+              summary = (f"{len(rows):,}건 | AF매칭 {af:,}건 | 예약가능 {avail:,}건\n"
+                         f"날짜범위: {dates[0] if dates else '-'} ~ {dates[-1] if dates else '-'} ({len(dates)}일)")
+          except Exception as e:
+              summary = f'요약 실패: {e}'
+          text = (f"✅ <b>어바웃피싱 2026 데이터 수집 완료</b>\n🕐 $KST ($ATTEMPT)\n\n{summary}\n\n"
+                  f"<a href='https://aboutfishing.github.io/fishing-seat-dashboard/'>대시보드 확인</a>")
+          payload = json.dumps({'chat_id':chat_id,'text':text,'parse_mode':'HTML','disable_web_page_preview':True}).encode()
+          req = urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage',
+              data=payload, headers={'Content-Type':'application/json'})
+          urllib.request.urlopen(req, timeout=10)
+          print('✅ 텔레그램 전송 완료')
+          PYEOF
+
+      - name: 텔레그램 알림 (실패)
+        if: >
+          always() &&
+          steps.collect.outcome == 'failure' &&
+          (steps.collect_retry.outcome == 'failure' ||
+           steps.collect_retry.outcome == 'skipped')
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          KST=$(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          python3 - << PYEOF
+          import urllib.request, json, os
+          token   = os.environ['TELEGRAM_BOT_TOKEN']
+          chat_id = os.environ['TELEGRAM_CHAT_ID']
+          text = (f"🚨 <b>어바웃피싱 2026 데이터 수집 실패</b>\n🕐 $KST\n\n"
+                  f"1차 + 재시도 모두 실패 — seat-data / latest.json 미갱신\n\n"
+                  f"<b>확인 필요</b>\n• sunsang24 / 더피싱 API\n• GCP_CREDENTIALS\n• GCS 버킷 권한\n\n"
+                  f"<a href='$RUN_URL'>Actions 로그 보기</a>")
+          payload = json.dumps({'chat_id':chat_id,'text':text,'parse_mode':'HTML','disable_web_page_preview':True}).encode()
+          req = urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage',
+              data=payload, headers={'Content-Type':'application/json'})
+          urllib.request.urlopen(req, timeout=10)
+          print('🚨 실패 알림 전송 완료')
+          PYEOF
+
+      - name: 최종 실패 처리
+        if: >
+          steps.collect.outcome == 'failure' &&
+          (steps.collect_retry.outcome == 'failure' ||
+           steps.collect_retry.outcome == 'skipped')
+        run: |
+          echo "❌ 1차 + 재시도 수집 모두 실패"
+          exit 1        run: |
           echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
 
