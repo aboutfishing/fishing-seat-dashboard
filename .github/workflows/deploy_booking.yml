@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - 'booking.html'
-      - 'index_kr.html'
+      - 'index_google.html'
 
 jobs:
   deploy:
@@ -29,11 +29,11 @@ jobs:
                  cp booking.html gs://booking-redirect-aboutfishing-kr/booking.html
           echo "✅ booking.html 배포: https://aboutfishing.kr/booking.html"
 
-      - name: index.html (landing page) → GCS 업로드
+      - name: index_google.html → GCS index.html 업로드
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:public, max-age=300" \
-                 cp index_kr.html gs://booking-redirect-aboutfishing-kr/index.html
+                 cp index_google.html gs://booking-redirect-aboutfishing-kr/index.html
           echo "✅ index.html 배포: https://aboutfishing.kr/"
 
       - name: GCS 버킷 웹사이트 기본 페이지 설정 (index.html)
@@ -42,6 +42,14 @@ jobs:
           gsutil web set -m index.html gs://booking-redirect-aboutfishing-kr
           echo "✅ 버킷 기본 페이지: index.html"
 
+      - name: CDN 캐시 무효화 (즉시 반영)
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache company-lb-v3 \
+            --path "/*" \
+            --async \
+            --global
+          echo "✅ CDN 캐시 무효화 요청 완료: company-lb-v3 / path=/*"
+
       - name: 배포 확인
         run: |
           echo "=== 배포된 파일 목록 ==="
@@ -49,3 +57,6 @@ jobs:
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/index.html
           echo "=== 버킷 웹사이트 설정 ==="
           gsutil web get gs://booking-redirect-aboutfishing-kr
+          echo "=== HTTP 응답 확인 ==="
+          sleep 5
+          curl -s -o /dev/null -w "aboutfishing.kr: HTTP %{http_code}\n" https://aboutfishing.kr/
