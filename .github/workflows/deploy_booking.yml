@@ -25,16 +25,16 @@ jobs:
       - name: booking.html → GCS 업로드
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
-                 -h "Cache-Control:public, max-age=300" \
+                 -h "Cache-Control:no-store" \
                  cp booking.html gs://booking-redirect-aboutfishing-kr/booking.html
           echo "✅ booking.html 배포: https://aboutfishing.kr/booking.html"
 
       - name: index_google.html → GCS index.html 업로드
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
-                 -h "Cache-Control:public, max-age=300" \
+                 -h "Cache-Control:no-store" \
                  cp index_google.html gs://booking-redirect-aboutfishing-kr/index.html
-          echo "✅ index.html 배포: https://aboutfishing.kr/"
+          echo "✅ index.html 배포: https://aboutfishing.kr/ (Cache-Control: no-store)"
 
       - name: GCS 버킷 웹사이트 기본 페이지 설정 (index.html)
         run: |
