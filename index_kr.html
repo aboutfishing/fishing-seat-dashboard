@@ -551,6 +551,52 @@ ul{list-style:none}
 }
 
 /* ═══════════════════════════════════════════════════
+   AI 챗봇 플로팅 버튼 (FAB)
+   ═══════════════════════════════════════════════════ */
+.chat-fab{
+  position:fixed;bottom:calc(var(--cta-h) + 16px);right:16px;
+  z-index:900;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.chat-fab-btn{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--c-blue);
+  box-shadow:0 4px 20px rgba(0,82,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;padding:0;
+  transition:transform .2s ease,box-shadow .2s ease;
+  overflow:hidden;
+  position:relative;
+}
+.chat-fab-btn:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(0,82,255,.45)}
+.chat-fab-avatar{
+  width:100%;height:100%;
+  object-fit:cover;object-position:top center;
+  border-radius:50%;
+  display:block;
+}
+.chat-fab-icon{
+  font-size:28px;color:#fff;
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+.chat-fab-label{
+  margin-top:4px;
+  background:rgba(0,0,0,.65);color:#fff;
+  font-size:11px;font-weight:600;
+  padding:3px 8px;border-radius:100px;
+  white-space:nowrap;
+}
+.chat-fab-pulse{
+  position:absolute;top:2px;right:2px;
+  width:12px;height:12px;background:#4ADE80;border-radius:50%;
+  border:2px solid #fff;
+  animation:pulse 2s infinite;
+}
+@media(min-width:1024px){
+  .chat-fab{bottom:20px;right:24px}
+}
+
+/* ═══════════════════════════════════════════════════
    POLICY MODAL
    ═══════════════════════════════════════════════════ */
 .policy-modal{
@@ -3896,6 +3942,19 @@ ul{list-style:none}
   </div>
 </div>
 
+
+<!-- ═══ AI 챗봇 플로팅 버튼 (FAB) ═══ -->
+<div class="chat-fab" id="chatFab">
+  <a href="https://booking.aboutfishing.kr" class="chat-fab-btn" aria-label="AI 낚시 예약 상담">
+    <img class="chat-fab-avatar"
+         src="https://aboutfishing.kr/img/ai-assistant.webp"
+         alt="AI 낚시 상담 비서"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <span class="chat-fab-icon" style="display:none">&#x1F3A3;</span>
+    <span class="chat-fab-pulse"></span>
+  </a>
+  <span class="chat-fab-label">AI 상담</span>
+</div>
 
 <!-- ═══ BOTTOM CTA BAR ═══ -->
 <div class="bot-cta" id="botCta">
