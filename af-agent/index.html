@@ -605,6 +605,13 @@ function parseMd(t){
   s=s.replace(/(?<!\w)\*(?!\w)/g,'');
   // Newlines
   s=s.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  // 잘린 마크다운 링크 정리: [text](https://... 로 끝나는 불완전 링크
+  s=s.replace(/\[([^\]]+)\]\(https?:\/\/[^)]*$/g,(m,txt)=>{
+    // txt가 URL이면 URL_LABEL에서 찾고, 아니면 txt 그대로 표시
+    const href=m.match(/\((https?:\/\/[^)]*)/)?.[1]||'';
+    const lbl=urlLabel(txt)||urlLabel(href)||(txt.startsWith('http')?null:txt);
+    return lbl?`<a href="${href||'#'}" target="_blank" rel="noopener" class="mlink">${lbl}</a>`:'';
+  });
   return s;
 }
 function addMsg(txt,isUser){
