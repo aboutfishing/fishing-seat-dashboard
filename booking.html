@@ -983,10 +983,8 @@ function renderTable() {
       : code==='END'
         ? '<span class="status-end">● 마감</span>'
         : '<span class="status-call">전화문의</span>';
-    /* ship_no(r[0]) = AF boat_id → 직접 선박 페이지 이동 */
-    var bookUrl = r[0]
-      ? 'https://booking.aboutfishing.kr/boats/'+r[0]
-      : 'https://booking.aboutfishing.kr/search/list?keyword='+encodeURIComponent(r[1]||'');
+    /* 예약 URL: 항상 선박명 검색 형식 */
+    var bookUrl = 'https://booking.aboutfishing.kr/search/list?keyword='+encodeURIComponent(r[1]||'');
     /* AF 파트너 배지 (ship_no 있을 때만) */
     var afBadge = r[0]
       ? '<span style="display:inline-block;background:#EEF3FF;color:#0052FF;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:middle;">AF</span>'
@@ -1008,7 +1006,7 @@ function renderTable() {
         +'<div class="seat-bar"><div class="seat-bar-fill" style="width:'+Math.min(100,remain)+'%;background:'+barColor+'"></div></div>'
       +'</td>'
       +'<td>'+badge+'</td>'
-      +'<td>'+(r[0]?'<a href="'+bookUrl+'" target="_blank" class="book-btn">예약하기</a>':'<span style="color:#aaa;font-size:12px;">미등록</span>')+'</td>'
+      +'<td>'+(r[1]?'<a href="'+bookUrl+'" target="_blank" class="book-btn">예약하기</a>':'<span style="color:#aaa;font-size:12px;">-</span>')+'</td>'
       +'</tr>';
   }).join('');
 
