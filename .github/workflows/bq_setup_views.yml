@@ -39,21 +39,31 @@ jobs:
           import os
           from google.cloud import bigquery
 
-          client = bigquery.Client()
-          project = client.project
-          print(f"✅ BigQuery 클라이언트 연결: {project}")
+          import re
+
+          # 기본 클라이언트로 데이터셋 위치(location) 자동 감지
+          client_default = bigquery.Client()
+          project = client_default.project
+          print(f"✅ BigQuery 프로젝트: {project}")
+
+          try:
+              ds = client_default.get_dataset("fishing")
+              location = ds.location
+              print(f"✅ fishing 데이터셋 위치: {location}")
+          except Exception as e:
+              location = "asia-northeast3"   # 기본값: 서울
+              print(f"⚠️  데이터셋 조회 실패, 기본 위치 사용: {location} ({e})")
+
+          # 올바른 location으로 클라이언트 재생성
+          client = bigquery.Client(project=project, location=location)
 
           # SQL 파일 읽기
           with open("scripts/bq_investor_setup.sql") as f:
               sql_raw = f.read()
 
           # 주석 제거 후 세미콜론 기준으로 문장 분리
-          import re
-          # 한 줄 주석(--...) 제거
           sql_clean = re.sub(r'--[^\n]*', '', sql_raw)
-          # 빈 줄 정리
           sql_clean = re.sub(r'\n{3,}', '\n\n', sql_clean)
-          # 세미콜론으로 분리
           raw_stmts = sql_clean.split(';')
           statements = [s.strip() for s in raw_stmts if s.strip()]
 
