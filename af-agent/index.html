@@ -770,6 +770,23 @@ async function send(){
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
     let reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
+    // 잘린 문장 감지·제거: 마지막 일반 텍스트 줄이 불완전하면 잘라냄
+    {
+      const lines=reply.split('\n');
+      // 링크·빈줄 제외한 마지막 텍스트 줄 찾기
+      const lastTxtIdx=lines.map((l,i)=>({l:l.trim(),i})).reverse()
+        .find(({l})=>l&&!/^\[.+\]\(https?:\/\//.test(l)&&!l.startsWith('|'));
+      if(lastTxtIdx){
+        const lt=lastTxtIdx.l;
+        // 완전한 문장 끝 패턴 (한국어 어미 + 기호)
+        const complete=/[요다!?.ㅎ]$|니다$|에요$|세요$|어요$|고요$|군요$|네요$|있어요$|없어요$|이에요$|거예요$|해요$|줄게요$|드려요$|볼게요$|아요$/.test(lt);
+        if(!complete&&lt.length>10){
+          // 불완전 마지막 줄 제거
+          lines.splice(lastTxtIdx.i,1);
+          reply=lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+        }
+      }
+    }
     // 응답에 링크가 없으면 fallback CTA 추가
     if(!/\[[^\]]+\]\(https?:\/\//.test(reply)&&!/https?:\/\//.test(reply)){
       const kw=fish||(txt.includes('태안')?'태안':txt.includes('인천')?'인천':txt.includes('거제')?'거제':txt.includes('부산')?'부산':txt.includes('여수')?'여수':txt.includes('목포')?'목포':txt.includes('통영')?'통영':null);
