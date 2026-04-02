@@ -131,6 +131,10 @@
     }
     .chip:hover{background:var(--blue);color:#fff;transform:translateY(-1px)}
     .chip:active{transform:scale(.95)}
+    .chip-shop{background:#FEF3C7;color:#92400E;border:1.5px solid #FDE68A}
+    .chip-shop:hover{background:#F59E0B;color:#fff;transform:translateY(-1px)}
+    .chip-event{background:#F0FDF4;color:#166534;border:1.5px solid #BBF7D0}
+    .chip-event:hover{background:#22C55E;color:#fff;transform:translateY(-1px)}
 
     /* INPUT */
     .input-area{padding:10px 12px 12px;border-top:1px solid var(--border);flex-shrink:0}
@@ -283,6 +287,9 @@
         <button class="chip" onclick="sendChip(this)">갑오징어 장비 추천</button>
         <button class="chip" onclick="sendChip(this)">거제 감성돔 포인트</button>
         <button class="chip" onclick="sendChip(this)">태안 낚시배 요금</button>
+        <button class="chip chip-shop" onclick="sendChipShop(this,'jjukumi')">쭈꾸미 채비 쇼핑</button>
+        <button class="chip chip-shop" onclick="sendChipShop(this,'gwangeo')">광어 다운샷 장비</button>
+        <button class="chip chip-event" onclick="sendChipInfo(this,'대회')">어바웃피싱 낚시대회</button>
       </div>
 
       <div class="input-area">
@@ -423,6 +430,33 @@ function togglePanel(){
 
 function sendChip(btn){document.getElementById('chatIn').value=btn.textContent;send();}
 
+const SHOP={
+  jjukumi:{
+    url:'https://shop.aboutfishing.kr/exhibitiondetail/45270',
+    info:'어바웃피싱 쇼핑몰에서 쭈꾸미·갑오징어 채비 234종을 확인하세요! 야마시타 어퍼(₩7,900), 어바웃피싱 에쿵에기(50%↓ ₩4,700), KN피싱 쭈킬 헌터 애자(₩3,000) 등 인기 에기 총정리. 쇼핑몰 바로가기 → shop.aboutfishing.kr'
+  },
+  gwangeo:{
+    url:'https://shop.aboutfishing.kr/exhibitiondetail/53108',
+    info:'봄 광어 시즌 다운샷 채비 190종! 버클리 걸프 스위밍 뮬렛(₩8,900), 파워 저크쉐드 HD 5인치(₩9,500), 시마노 25 스티레(₩487,000) 인기 중이에요. 쇼핑몰 바로가기 → shop.aboutfishing.kr'
+  },
+};
+const CHIP_INFO={
+  대회:'2026 어바웃피싱 챔피언십 개최 예정! 서해안 마검포·오천항 거점, 4~11월 예선 4회 + 챔피언십 결선. 연간 참가자 2,000명+ 규모로 대한민국 최대 데이터 기반 낚시 축제예요. 슬로건: "낚시를 습관으로, 기록을 전설로" — 선박 예약은 어바웃피싱 예약 사이트에서!'
+};
+
+function sendChipShop(btn,key){
+  if(busy) return;
+  addMsg(btn.textContent,true);
+  const s=SHOP[key];
+  window.open(s.url,'_blank');
+  addMsg(s.info,false);
+}
+function sendChipInfo(btn,key){
+  if(busy) return;
+  addMsg(btn.textContent,true);
+  addMsg(CHIP_INFO[key]||FB.default,false);
+}
+
 function detectFish(t){
   const syn={쭈꾸미:'주꾸미',주꾸미:'주꾸미',광어:'넙치',우럭:'조피볼락',볼락:'조피볼락'};
   for(const k of Object.keys(RAG)) if(t.includes(k)) return k;
@@ -480,7 +514,14 @@ async function send(){
     const mo=kst.getMonth()+1;
     fish=detectFish(txt);
     const rag=fish?buildRag(fish,mo)+'\n\n':'';
-    const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${txt}`;
+    let extra='';
+    if(/채비|루어|에기|장비|쇼핑|구매/.test(txt)){
+      extra='[쇼핑DB] 쭈꾸미채비: shop.aboutfishing.kr/exhibitiondetail/45270 (234종, 야마시타·KN피싱·요즈리), 광어다운샷: shop.aboutfishing.kr/exhibitiondetail/53108 (190종, 시마노·버클리)\n\n';
+    }
+    if(/낚시대회|챔피언십|대회/.test(txt)){
+      extra='[대회DB] 2026 어바웃피싱 챔피언십: 4~11월 서해안 마검포·오천항, 예선4회+결선, 연간2000명+, 슬로건 "낚시를 습관으로 기록을 전설로", 예약: booking.aboutfishing.kr\n\n';
+    }
+    const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${extra}${txt}`;
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
     const reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
