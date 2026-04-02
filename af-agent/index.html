@@ -139,6 +139,8 @@
     .chip-shop:hover{background:#F59E0B;color:#fff;transform:translateY(-1px)}
     .chip-event{background:#F0FDF4;color:#166534;border:1.5px solid #BBF7D0}
     .chip-event:hover{background:#22C55E;color:#fff;transform:translateY(-1px)}
+    .chip-live{background:#EFF6FF;color:#1D4ED8;border:1.5px solid #BFDBFE}
+    .chip-live:hover{background:#3B82F6;color:#fff;transform:translateY(-1px)}
 
     /* INPUT */
     .input-area{padding:10px 12px 12px;border-top:1px solid var(--border);flex-shrink:0}
@@ -335,7 +337,7 @@
       <div class="chips-area" id="chipsArea">
         <button class="chip" onclick="sendChip(this)">4월 광어 잘 잡혀?</button>
         <button class="chip" onclick="sendChip(this)">우럭 시즌 언제야?</button>
-        <button class="chip" onclick="sendChip(this)">갑오징어 장비 추천</button>
+        <button class="chip chip-live" onclick="sendChipIncheon(this)">🚢 인천배낚시 예약</button>
         <button class="chip" onclick="sendChip(this)">태안 낚시배 요금</button>
         <button class="chip chip-shop" onclick="sendChipShop(this,'jjukumi')">쭈꾸미 채비 쇼핑</button>
         <button class="chip chip-shop" onclick="sendChipShop(this,'gwangeo')">광어 다운샷 장비</button>
@@ -534,6 +536,70 @@ function sendChipInfo(btn,key){
   addMsg(CHIP_INFO[key]||FB.default,false);
 }
 
+async function sendChipIncheon(btn){
+  if(busy) return;
+  addMsg(btn.textContent.replace('🚢 ',''),true);
+  busy=true;
+  document.getElementById('sendBtn').disabled=true;
+  const tid=showTyping();
+  try{
+    const kst=new Date(Date.now()+9*3600000);
+    const ds=kst.toISOString().slice(0,10);
+    // 오늘·내일 두 날짜 시도
+    let rows=[], fetched=false;
+    for(const dt of [ds, new Date(Date.now()+9*3600000+86400000).toISOString().slice(0,10)]){
+      try{
+        const res=await fetch(`https://aboutfishing.kr/seat-data/${dt}.json?t=${Date.now()}`,{cache:'no-store'});
+        if(res.ok){
+          const d=await res.json();
+          // boats 포맷({boats:[{name,port,sp,seats,price}]})
+          if(d.boats&&d.boats.length){
+            const inch=d.boats.filter(b=>(b.port||'').includes('인천'));
+            const avail=inch.filter(b=>(b.seats||0)>0);
+            if(avail.length>0){
+              const top=avail.slice(0,3).map(b=>`${b.name}(${b.sp} ₩${(b.price||0).toLocaleString()} ${b.seats}석)`).join(' · ');
+              rmTyping(tid);
+              addMsg(`🚢 인천 배낚시 안내드릴게요!\n\n오늘(${ds}) 인천 출항 **${inch.length}척** 운항, **${avail.length}척** 예약 가능!\n${top} 등 잔여석 여유 있어요.\n\n[인천 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=인천) | [선박 조황](https://booking.aboutfishing.kr/?mainTab=3)`,false);
+              fetched=true; break;
+            }
+          }
+          // rows 포맷({rows:[[...]]}) — province=row[2], date=row[4], remain=row[12], status=row[13]
+          if(d.rows&&d.rows.length){
+            rows=d.rows; fetched=true; break;
+          }
+        }
+      }catch(e2){}
+    }
+    if(!fetched&&rows.length===0){
+      // rows 포맷으로 latest.json 시도
+      try{
+        const res2=await fetch(`https://aboutfishing.kr/data/latest.json?t=${Date.now()}`,{cache:'no-store'});
+        if(res2.ok){ const d2=await res2.json(); rows=d2.rows||[]; }
+      }catch(e3){}
+    }
+    if(!fetched&&rows.length>0){
+      const todayRows=rows.filter(r=>r[4]===ds&&r[2]==='인천');
+      const avail=todayRows.filter(r=>r[13]==='ING'&&parseInt(r[12])>0);
+      if(avail.length>0){
+        const top=avail.slice(0,3).map(r=>`${r[1]}(${r[7]} ₩${parseInt(r[9]).toLocaleString()} ${r[12]}석)`).join(' · ');
+        rmTyping(tid);
+        addMsg(`🚢 인천 배낚시 안내드릴게요!\n\n오늘(${ds}) 인천 출항 **${todayRows.length}척** 운항, **${avail.length}척** 예약 가능!\n${top} 등 잔여석 여유 있어요.\n\n[인천 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=인천) | [선박 조황](https://booking.aboutfishing.kr/?mainTab=3)`,false);
+        fetched=true;
+      }
+    }
+    if(!fetched){
+      rmTyping(tid);
+      addMsg('🚢 인천 배낚시!\n인천 연안부두·남항·영종도 출발 선박이 다양해요.\n쭈꾸미·광어·우럭 등 다양한 어종으로 출조 중이에요!\n\n[인천 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=인천) | [선박 조황](https://booking.aboutfishing.kr/?mainTab=3)',false);
+    }
+  }catch(e){
+    rmTyping(tid);
+    addMsg('🚢 인천 낚시배 예약은 아래에서 실시간 확인하세요!\n\n[인천 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=인천)',false);
+  }finally{
+    busy=false;
+    document.getElementById('sendBtn').disabled=false;
+  }
+}
+
 function detectFish(t){
   const syn={쭈꾸미:'주꾸미',주꾸미:'주꾸미',광어:'넙치',우럭:'조피볼락',볼락:'조피볼락'};
   for(const k of Object.keys(RAG)) if(t.includes(k)) return k;
@@ -660,7 +726,47 @@ async function send(){
     if(/클로드|claude|Claude|anthropic|앤스로픽|AI뉴스|AI 뉴스|최신AI|최신 AI/.test(txt)){
       extra+='[최신AI뉴스 2026-04] ①Claude Code NO_FLICKER모드: CLAUDE_CODE_NO_FLICKER=1 환경변수로 활성화, 화면깜박임 해소·입력창 하단고정·마우스클릭지원(실험적). ②OpenClaude: npm 소스맵 통해 Claude Code 소스 유출(2026-03-31), GPT-4o·Gemini·Ollama 등 200개 모델을 Claude Code UI로 사용 가능. ③Boris Cherny(Claude Code 개발자): 수동배포 단계 실수로 유출, 프로세스 자동화 개선 진행 중. ④Claude 소크라테스 스킬: npx skills add RoundTable02/socrates-skill 설치, 직접답변 대신 질문으로 학습 유도. ⑤Anthropic 수익성: 2025 매출총이익률 40%(2027년 70% 목표·2028년 흑자 계획), Cursor가 매출 5억달러 대비 앤스로픽에 6.5억달러 지불 사례. ⑥Claude Memory Import: 다른 AI 메모리를 Claude로 이전 가능(유료 플랜), 프롬프트 복붙으로 설정 즉시 반영.\n\n';
     }
-    const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${extra}${txt}`;
+    // 네이버·구글 색인 사이트 컨텍스트
+    if(/어바웃피싱|사이트|검색|홈페이지|앱|서비스|이용방법|가입/.test(txt)){
+      extra+='[사이트DB] 어바웃피싱 서비스: ①booking.aboutfishing.kr — 전국 낚시배 실시간 좌석 예약(인천·태안·여수·통영·거제·부산·속초 등 주요 항구, 광어·쭈꾸미·우럭·감성돔·참돔·삼치 등 어종별 검색, 네이버/구글 검색어 "낚시배 예약" "인천배낚시" "태안배낚시" 등으로 접근 가능). ②map.aboutfishing.kr — 전국 낚시 포인트 지도(방파제·갯바위·선상). ③shop.aboutfishing.kr — 낚시용품 쇼핑몰(채비·루어·장비 1만종+). 모바일 웹 최적화, 회원가입 없이 예약 가능.\n\n';
+    }
+    // 주말 좌석 RAG
+    if(/주말|이번주말|토요일|일요일|토요|일요|주말에|주말낚시/.test(txt)){
+      try{
+        const kst2=new Date(Date.now()+9*3600000);
+        const day=kst2.getDay();
+        // 이번 주 토요일(6), 일요일(0) 날짜 계산
+        const daysToSat=day===6?0:(6-day+7)%7;
+        const daysToSun=day===0?0:(7-day)%7;
+        const sat=new Date(kst2.getTime()+daysToSat*86400000).toISOString().slice(0,10);
+        const sun=new Date(kst2.getTime()+daysToSun*86400000).toISOString().slice(0,10);
+        for(const wkdt of [sat,sun]){
+          if(!wkdt||wkdt===ds) continue;
+          try{
+            const wr=await fetch(`https://aboutfishing.kr/seat-data/${wkdt}.json?t=${Date.now()}`,{cache:'no-store'});
+            if(wr.ok){
+              const wd=await wr.json();
+              // boats 포맷
+              if(wd.boats&&wd.boats.length){
+                const avail=wd.boats.filter(b=>(b.seats||0)>0);
+                const inch=avail.filter(b=>(b.port||'').includes('인천'));
+                extra+=`[주말좌석DB ${wkdt}] 예약가능 ${avail.length}척(인천 ${inch.length}척 포함). 추천: ${avail.slice(0,3).map(b=>`${b.name}(${b.port} ${b.sp} ${b.seats}석 ₩${(b.price||0).toLocaleString()})`).join(', ')}. 예약=https://booking.aboutfishing.kr/search/list?keyword=인천\n\n`;
+              }
+              // rows 포맷
+              else if(wd.rows&&wd.rows.length){
+                const avail=wd.rows.filter(r=>r[4]===wkdt&&r[13]==='ING'&&parseInt(r[12])>0);
+                const inch=avail.filter(r=>r[2]==='인천');
+                if(avail.length>0)
+                  extra+=`[주말좌석DB ${wkdt}] 예약가능 ${avail.length}척(인천 ${inch.length}척). 추천: ${avail.slice(0,3).map(r=>`${r[1]}(${r[2]} ${r[7]} ${r[12]}석)`).join(', ')}. 예약=booking.aboutfishing.kr\n\n`;
+              }
+            }
+          }catch(we){}
+        }
+      }catch(we2){}
+    }
+    // 답변 간결성 지시 (응답 잘림 방지)
+    const inst='[지시: 반드시 완전한 문장으로 끝내고 200자 이내로 간결하게 답변하세요. 링크는 마크다운 형식 [텍스트](URL)로만 표기하세요.] ';
+    const msg=`${inst}[오늘: ${ds} KST, ${mo}월] ${rag}${extra}${txt}`;
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
     let reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
