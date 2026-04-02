@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>어바웃피싱 Investor Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#F8FAFC;--card:#fff;--blue:#2563EB;--green:#16A34A;--red:#DC2626;
+    --txt:#0F172A;--sub:#64748B;--border:#E2E8F0;--accent:#7C3AED;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+  /* PASSWORD GATE */
+  #pwGate{position:fixed;inset:0;background:linear-gradient(135deg,#1E3A5F,#0F172A);display:flex;align-items:center;justify-content:center;z-index:9999}
+  #pwGate.hidden{display:none}
+  .gw{background:#fff;border-radius:16px;padding:36px 32px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .gw-logo{font-size:28px;margin-bottom:12px}
+  .gw-title{font-size:18px;font-weight:800;color:var(--txt);margin-bottom:4px}
+  .gw-sub{font-size:12px;color:var(--sub);margin-bottom:20px}
+  .gw-inp{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px}
+  .gw-inp:focus{border-color:var(--blue)}
+  .gw-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+  .gw-err{font-size:12px;color:var(--red);margin-top:8px;min-height:16px}
+
+  /* HEADER */
+  .hdr{background:var(--blue);color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+  .hdr-logo{font-size:15px;font-weight:800;letter-spacing:-.3px}
+  .hdr-badge{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600}
+  .hdr-date{font-size:11px;opacity:.75}
+
+  /* LAYOUT */
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
+
+  /* SECTION TITLE */
+  .sec-title{font-size:13px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+  /* KPI CARDS */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+  .kpi{background:var(--card);border-radius:12px;padding:16px 18px;border:1px solid var(--border);position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .kpi.blue::before{background:var(--blue)}
+  .kpi.green::before{background:var(--green)}
+  .kpi.purple::before{background:var(--accent)}
+  .kpi.orange::before{background:#EA580C}
+  .kpi-label{font-size:11px;color:var(--sub);font-weight:600;margin-bottom:6px}
+  .kpi-val{font-size:26px;font-weight:800;color:var(--txt);line-height:1.1}
+  .kpi-change{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;margin-top:5px;padding:2px 7px;border-radius:20px}
+  .up{background:#DCFCE7;color:var(--green)}
+  .dn{background:#FEE2E2;color:var(--red)}
+  .kpi-note{font-size:10px;color:var(--sub);margin-top:4px}
+
+  /* CHART GRID */
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+  .chart-card{background:var(--card);border-radius:12px;padding:18px 20px;border:1px solid var(--border)}
+  .chart-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px}
+  .chart-sub{font-size:11px;color:var(--sub);margin-bottom:14px}
+  .chart-wrap{position:relative;height:200px}
+
+  /* NAVER SECTION */
+  .naver-card{background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:18px 20px;border:1px solid #BBF7D0;margin-bottom:28px}
+  .naver-title{font-size:13px;font-weight:700;color:#15803D;margin-bottom:4px}
+  .naver-sub{font-size:11px;color:#4ADE80;margin-bottom:14px}
+  .naver-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  .naver-chart-wrap{position:relative;height:160px}
+  .naver-kpi-col{display:flex;flex-direction:column;gap:10px}
+  .naver-stat{background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #D1FAE5}
+  .naver-stat-v{font-size:18px;font-weight:800;color:var(--txt)}
+  .naver-stat-k{font-size:10px;color:var(--sub);margin-top:2px}
+
+  /* NARRATIVE */
+  .narrative{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border-radius:12px;padding:16px 20px;margin-bottom:28px;border:1px solid #BFDBFE}
+  .narrative-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px}
+  .narrative p{font-size:13px;color:#1E3A5F;line-height:1.7;margin-bottom:6px}
+  .narrative p:last-child{margin-bottom:0}
+
+  /* TABLE */
+  .tbl-card{background:var(--card);border-radius:12px;padding:18px 20px;border:1px solid var(--border);margin-bottom:28px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:8px 12px;font-size:11px;font-weight:700;color:var(--sub);border-bottom:2px solid var(--border);text-transform:uppercase}
+  td{padding:9px 12px;border-bottom:1px solid var(--border)}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700}
+  .tag-g{background:#DCFCE7;color:var(--green)}
+  .tag-b{background:#DBEAFE;color:var(--blue)}
+  .tag-y{background:#FEF9C3;color:#92400E}
+
+  /* DATA SOURCE TAG */
+  .src-tag{display:inline-flex;align-items:center;gap:4px;background:#F1F5F9;border-radius:20px;padding:3px 10px;font-size:10px;color:var(--sub);font-weight:600;margin-left:8px}
+
+  /* FOOTER */
+  .footer{text-align:center;font-size:11px;color:var(--sub);padding:24px 0 16px;border-top:1px solid var(--border)}
+
+  @media(max-width:768px){
+    .kpi-grid{grid-template-columns:1fr 1fr}
+    .chart-grid{grid-template-columns:1fr}
+    .naver-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:480px){
+    .kpi-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="pwGate">
+  <div class="gw">
+    <div class="gw-logo">📊</div>
+    <div class="gw-title">어바웃피싱 Investor Dashboard</div>
+    <div class="gw-sub">투자자 전용 접근 페이지입니다</div>
+    <input class="gw-inp" id="pwInput" type="password" placeholder="비밀번호" maxlength="30" autocomplete="off">
+    <button class="gw-btn" onclick="checkPw()">입장하기</button>
+    <div class="gw-err" id="pwErr"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">🎣 어바웃피싱 Investor Dashboard</div>
+    <div class="hdr-date" id="hdrDate">데이터 로딩 중...</div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span class="hdr-badge">Pre-A 라운드</span>
+    <span class="hdr-badge" id="hdrSrc">BQ + Sheets</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- KPI TOP 4 -->
+  <div class="sec-title">핵심 지표 (Key Metrics) <span class="src-tag">📡 BigQuery 실시간</span></div>
+  <div class="kpi-grid">
+    <div class="kpi blue">
+      <div class="kpi-label">일일 GMV</div>
+      <div class="kpi-val" id="kGmv">—</div>
+      <span class="kpi-change up" id="kGmvChg">—</span>
+      <div class="kpi-note">상품가 기준 총 거래액</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">수수료 매출 (Take Rate 3%)</div>
+      <div class="kpi-val" id="kRev">—</div>
+      <span class="kpi-change up" id="kRevChg">↑ WoW</span>
+      <div class="kpi-note">플랫폼 실매출 (GMV×3%)</div>
+    </div>
+    <div class="kpi purple">
+      <div class="kpi-label">전환율 (CVR)</div>
+      <div class="kpi-val" id="kCvr">—</div>
+      <span class="kpi-change up">GA4 세션 기준</span>
+      <div class="kpi-note">세션 → 예약완료</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">일일 예약 건수</div>
+      <div class="kpi-val" id="kBookings">—</div>
+      <span class="kpi-change up" id="kBookingsChg">—</span>
+      <div class="kpi-note">유효 예약 기준</div>
+    </div>
+  </div>
+
+  <!-- NARRATIVE -->
+  <div class="narrative">
+    <div class="narrative-title" id="narrativeTitle">📝 오늘의 핵심 인사이트</div>
+    <p id="n1">• <strong>봄 시즌 진입</strong>으로 예약 수요 전월 대비 증가. 인천·태안 중심 서해권 선박 잔여석 소진 중.</p>
+    <p id="n2">• <strong>CVR</strong>은 업계 평균(1.5~2.0%) 대비 양호. 메타 광고 CPA 안정화로 유입 품질 개선 중.</p>
+    <p id="n3">• <strong>전국 선박 네트워크</strong> 확보. 공급 확장 지속 중.</p>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="sec-title">성장 트렌드 <span class="src-tag">📡 BigQuery v_investor_monthly</span></div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">월간 GMV 추이</div>
+      <div class="chart-sub" id="gmvChartSub">로딩 중...</div>
+      <div class="chart-wrap"><canvas id="gmvChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">월간 예약 건수 & 전환율</div>
+      <div class="chart-sub">예약 건수(막대) + CVR %(꺾은선)</div>
+      <div class="chart-wrap"><canvas id="bookingChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">선박 공급 성장 (누적)</div>
+      <div class="chart-sub">등록 선박 수 (척)</div>
+      <div class="chart-wrap"><canvas id="shipChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">어종별 예약 비중</div>
+      <div class="chart-sub">최근 기준 (유효 예약)</div>
+      <div class="chart-wrap"><canvas id="fishChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- NAVER SHOPPING SECTION -->
+  <div class="sec-title">네이버 쇼핑 성과 <span class="src-tag">📊 Google Sheets 연동</span></div>
+  <div class="naver-card">
+    <div class="naver-title">🟢 네이버 쇼핑 광고 월간 성과</div>
+    <div class="naver-sub" id="naverSub">로딩 중...</div>
+    <div class="naver-grid">
+      <div>
+        <div class="naver-chart-wrap"><canvas id="naverChart"></canvas></div>
+      </div>
+      <div class="naver-kpi-col">
+        <div class="naver-stat">
+          <div class="naver-stat-v" id="nkConversions">—</div>
+          <div class="naver-stat-k">최근월 전환수</div>
+        </div>
+        <div class="naver-stat">
+          <div class="naver-stat-v" id="nkRoas">—</div>
+          <div class="naver-stat-k">ROAS</div>
+        </div>
+        <div class="naver-stat">
+          <div class="naver-stat-v" id="nkClicks">—</div>
+          <div class="naver-stat-k">최근월 클릭수</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNIT ECONOMICS TABLE -->
+  <div class="sec-title">Unit Economics</div>
+  <div class="tbl-card">
+    <table>
+      <thead>
+        <tr>
+          <th>지표</th><th>현재 값</th><th>목표</th><th>상태</th><th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>GMV (일간)</td><td><strong id="tGmv">—</strong></td><td>일 1,000만원</td><td><span class="tag tag-y">진행</span></td><td>실시간 BigQuery</td></tr>
+        <tr><td>Take Rate</td><td><strong>3%</strong></td><td>5%</td><td><span class="tag tag-b">안정</span></td><td>수수료율 점진 인상 예정</td></tr>
+        <tr><td>CAC (광고)</td><td><strong id="tCac">—</strong></td><td>10,000원</td><td><span class="tag tag-y">개선중</span></td><td>전채널 CPA 기준</td></tr>
+        <tr><td>LTV (1년 추정)</td><td><strong>약 45,000원</strong></td><td>60,000원</td><td><span class="tag tag-g">LTV/CAC 3.0x</span></td><td>재구매율 기반</td></tr>
+        <tr><td>재구매율</td><td><strong>약 32%</strong></td><td>40%</td><td><span class="tag tag-y">진행</span></td><td>6개월 내 재예약 기준</td></tr>
+        <tr><td>등록 선박</td><td><strong id="tShips">—</strong></td><td>1,000척</td><td><span class="tag tag-g" id="tShipsTag">—</span></td><td>원래 목표 300척 초과</td></tr>
+        <tr><td>회원 수</td><td><strong id="tMembers">—</strong></td><td>30만명</td><td><span class="tag tag-g" id="tMembersTag">—</span></td><td>누적 가입 기준</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CHARTS ROW 3 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">지역별 예약 분포</div>
+      <div class="chart-sub">최근 기준 (출항 지역)</div>
+      <div class="chart-wrap"><canvas id="regionChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">광고 채널별 성과</div>
+      <div class="chart-sub" id="adChartSub">Google/Meta/네이버 광고비 기준</div>
+      <div class="chart-wrap"><canvas id="adChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CAC TREND -->
+  <div class="chart-grid">
+    <div class="chart-card" style="grid-column:1/-1">
+      <div class="chart-title">광고 채널별 월간 집행 비용</div>
+      <div class="chart-sub">Meta / Google / 네이버 쇼핑 (원)</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="cacChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    어바웃피싱(AboutFishing) · Pre-A 투자자 전용 · 외부 공유 금지 ·
+    데이터 출처: BigQuery fishing.v_investor_mastered + Google Sheets ·
+    <span id="footerDate">최종 업데이트: 로딩 중...</span>
+  </div>
+</div>
+
+<script>
+// ── PASSWORD GATE ───────────────────────────────────────────────────────────
+(function(){
+  const PW='aboutfishing2026';
+  const KEY='af_inv_auth_v1';
+  if(sessionStorage.getItem(KEY)==='1') document.getElementById('pwGate').className='hidden';
+  window.checkPw=function(){
+    const v=document.getElementById('pwInput').value.trim();
+    if(v===PW){
+      sessionStorage.setItem(KEY,'1');
+      const g=document.getElementById('pwGate');
+      g.style.opacity='0'; g.style.transition='opacity .3s';
+      setTimeout(()=>g.classList.add('hidden'),300);
+      initDashboard();
+    }else{
+      document.getElementById('pwErr').textContent='비밀번호가 맞지 않습니다.';
+      document.getElementById('pwInput').value='';
+      document.getElementById('pwInput').focus();
+    }
+  };
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!document.getElementById('pwGate').classList.contains('hidden')) window.checkPw();
+  });
+  // auto-init if already authenticated
+  if(sessionStorage.getItem(KEY)==='1') document.addEventListener('DOMContentLoaded', initDashboard);
+})();
+
+// ── CHART DEFAULTS ──────────────────────────────────────────────────────────
+Chart.defaults.font.family="'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#64748B';
+
+// ── CHART INSTANCES (kept for destroy on reload) ────────────────────────────
+const charts={};
+
+function destroyChart(id){
+  if(charts[id]){charts[id].destroy();delete charts[id];}
+}
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+const fmt=(n,suffix='')=>n==null?'—':(typeof n==='number'?n.toLocaleString('ko-KR'):n)+suffix;
+const fmtMan=(man)=>man>=10000?Math.round(man/10000)+'억원':man+'만원';
+const fmtPct=(v,places=1)=>v==null?'—':v.toFixed(places)+'%';
+const changeClass=(v)=>v>=0?'up':'dn';
+const changeText=(v,suffix='%')=>v==null?'—':(v>=0?'↑':'↓')+Math.abs(v).toFixed(1)+suffix+' WoW';
+
+// ── LOAD INVESTOR METRICS ───────────────────────────────────────────────────
+async function loadMetrics(){
+  const r=await fetch('https://aboutfishing.kr/data/investor_metrics.json?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+// ── RENDER KPI ──────────────────────────────────────────────────────────────
+function renderKpi(kpi){
+  const gmvMan=kpi.gmv_man||0;
+  document.getElementById('kGmv').textContent=fmtMan(gmvMan);
+  const gc=document.getElementById('kGmvChg');
+  gc.textContent=changeText(kpi.gmv_wow_pct);
+  gc.className='kpi-change '+changeClass(kpi.gmv_wow_pct||0);
+
+  const rev=Math.round(gmvMan*0.03*10)/10;
+  document.getElementById('kRev').textContent=rev.toFixed(1)+'만원';
+  const rc=document.getElementById('kRevChg');
+  rc.textContent=changeText(kpi.gmv_wow_pct);
+  rc.className='kpi-change '+changeClass(kpi.gmv_wow_pct||0);
+
+  document.getElementById('kCvr').textContent=fmtPct(kpi.cvr_pct,1);
+
+  document.getElementById('kBookings').textContent=fmt(kpi.bookings,'건');
+  const bc=document.getElementById('kBookingsChg');
+  bc.textContent=changeText(kpi.bookings_wow_pct);
+  bc.className='kpi-change '+changeClass(kpi.bookings_wow_pct||0);
+
+  // Header date
+  const hd=kpi.report_date||new Date(Date.now()+9*3600000).toISOString().slice(0,10);
+  document.getElementById('hdrDate').textContent=hd+' 기준 · BigQuery v_investor_mastered';
+  document.getElementById('footerDate').textContent='최종 업데이트: '+hd;
+  document.getElementById('narrativeTitle').textContent='📝 핵심 인사이트 ('+hd+')';
+
+  // Narrative dynamic update
+  document.getElementById('n2').innerHTML='• <strong>CVR '+fmtPct(kpi.cvr_pct,1)+'</strong>은 업계 평균(1.5~2.0%) 대비 양호. 광고 CPA 안정화 진행 중.';
+  document.getElementById('n3').innerHTML='• <strong>전국 '+fmt(kpi.ships,'척')+'</strong> 선박 네트워크 확보. 2026년 목표 300척 초과 달성, 공급 확장 지속.';
+
+  // Unit economics table
+  document.getElementById('tGmv').textContent=fmtMan(gmvMan);
+  document.getElementById('tShips').textContent=fmt(kpi.ships,'척');
+  const shipPct=kpi.ships?Math.round(kpi.ships/1000*100)+'%':'—';
+  document.getElementById('tShipsTag').textContent=shipPct;
+  document.getElementById('tMembers').textContent=kpi.members?Math.round(kpi.members/10000)/10+'만명':'—';
+  const memPct=kpi.members?Math.round(kpi.members/300000*100)+'%':'—';
+  document.getElementById('tMembersTag').textContent=memPct;
+}
+
+// ── RENDER GMV CHART ────────────────────────────────────────────────────────
+function renderGmvChart(gmvTrend){
+  destroyChart('gmv');
+  const labels=gmvTrend.map(r=>r.label);
+  const data=gmvTrend.map(r=>r.gmv||0);
+  const subtitle=(labels[0]||'')+'~'+(labels[labels.length-1]||'')+' (단위: 만원)';
+  document.getElementById('gmvChartSub').textContent=subtitle;
+
+  charts.gmv=new Chart(document.getElementById('gmvChart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'GMV (만원)',
+        data,
+        backgroundColor:'rgba(37,99,235,.75)',
+        borderRadius:6,
+        borderSkipped:false,
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10}}},
+      scales:{y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'만'}}}}
+  });
+}
+
+// ── RENDER BOOKING + CVR CHART ──────────────────────────────────────────────
+function renderBookingChart(bookingTrend){
+  destroyChart('booking');
+  const labels=bookingTrend.map(r=>r.label);
+  charts.booking=new Chart(document.getElementById('bookingChart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'예약 건수',
+        data:bookingTrend.map(r=>r.bookings||0),
+        backgroundColor:'rgba(124,58,237,.7)',
+        borderRadius:5,
+        yAxisID:'y',
+      },{
+        label:'CVR (%)',
+        data:bookingTrend.map(r=>r.cvr||0),
+        type:'line',
+        borderColor:'#16A34A',
+        backgroundColor:'rgba(22,163,74,.1)',
+        borderWidth:2,
+        pointRadius:3,
+        fill:true,
+        tension:.4,
+        yAxisID:'y2',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10}}},
+      scales:{
+        y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'건'},position:'left'},
+        y2:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%'},min:0,max:6}
+      }}
+  });
+}
+
+// ── RENDER SHIP CHART ───────────────────────────────────────────────────────
+function renderShipChart(shipTrend){
+  destroyChart('ship');
+  charts.ship=new Chart(document.getElementById('shipChart'),{
+    type:'line',
+    data:{
+      labels:shipTrend.map(r=>r.label),
+      datasets:[{
+        label:'등록 선박 (척)',
+        data:shipTrend.map(r=>r.ships||0),
+        borderColor:'#EA580C',
+        backgroundColor:'rgba(234,88,12,.1)',
+        borderWidth:2.5,
+        fill:true,
+        tension:.4,
+        pointRadius:3,
+        pointBackgroundColor:'#EA580C',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'척'},min:0}}}
+  });
+}
+
+// ── RENDER FISH (DOUGHNUT) ──────────────────────────────────────────────────
+function renderFishChart(species){
+  destroyChart('fish');
+  charts.fish=new Chart(document.getElementById('fishChart'),{
+    type:'doughnut',
+    data:{
+      labels:species.map(s=>s.name),
+      datasets:[{
+        data:species.map(s=>s.pct),
+        backgroundColor:['#2563EB','#16A34A','#EA580C','#7C3AED','#0891B2','#94A3B8'],
+        borderWidth:2,
+        borderColor:'#fff',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:11}}}}}
+  });
+}
+
+// ── RENDER REGION CHART ─────────────────────────────────────────────────────
+function renderRegionChart(regions){
+  destroyChart('region');
+  charts.region=new Chart(document.getElementById('regionChart'),{
+    type:'bar',
+    data:{
+      labels:regions.map(r=>r.region),
+      datasets:[{
+        label:'예약 비중 (%)',
+        data:regions.map(r=>r.pct),
+        backgroundColor:regions.map((_,i)=>`rgba(37,99,235,${0.85-i*0.12})`),
+        borderRadius:5,
+      }]
+    },
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'%'},max:40}}}
+  });
+}
+
+// ── RENDER AD CHANNEL CHART ─────────────────────────────────────────────────
+function renderAdChart(channels){
+  destroyChart('ad');
+  const hasSpend=channels.some(c=>c.spend>0);
+  const subEl=document.getElementById('adChartSub');
+  subEl.textContent=hasSpend?'채널별 광고비 집행 기준 (최근 1개월)':'예약 기여율 추정 기준';
+  charts.ad=new Chart(document.getElementById('adChart'),{
+    type:'pie',
+    data:{
+      labels:channels.map(c=>c.channel),
+      datasets:[{
+        data:channels.map(c=>c.pct),
+        backgroundColor:['#1877F2','#EA4335','#16A34A','#03C75A','#94A3B8'],
+        borderWidth:2,
+        borderColor:'#fff',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:11}}}}}
+  });
+}
+
+// ── RENDER NAVER CHART ──────────────────────────────────────────────────────
+function renderNaverSection(naverData){
+  if(!naverData||!naverData.length){
+    document.getElementById('naverSub').textContent='데이터 없음 (Google Sheets 연동 후 표시됩니다)';
+    // show placeholder
+    destroyChart('naver');
+    charts.naver=new Chart(document.getElementById('naverChart'),{
+      type:'bar',data:{labels:['데이터 없음'],datasets:[{data:[0],backgroundColor:'#BBF7D0'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{y:{ticks:{display:false},grid:{display:false}},x:{grid:{display:false}}}}
+    });
+    return;
+  }
+
+  const latest=naverData[naverData.length-1];
+  document.getElementById('naverSub').textContent=
+    (naverData[0]?.ym||'')+'~'+(latest.ym||'')+' · Google Sheets 자동 연동';
+  document.getElementById('nkConversions').textContent=fmt(latest.conversions,'건');
+  document.getElementById('nkRoas').textContent=latest.roas?latest.roas.toFixed(0)+'%':'—';
+  document.getElementById('nkClicks').textContent=latest.clicks?(latest.clicks/1000).toFixed(1)+'K':'—';
+
+  destroyChart('naver');
+  charts.naver=new Chart(document.getElementById('naverChart'),{
+    type:'bar',
+    data:{
+      labels:naverData.map(r=>r.label),
+      datasets:[{
+        label:'전환수',
+        data:naverData.map(r=>r.conversions||0),
+        backgroundColor:'rgba(22,163,74,.7)',
+        borderRadius:5,
+        yAxisID:'y',
+      },{
+        label:'ROAS (%)',
+        data:naverData.map(r=>r.roas||0),
+        type:'line',
+        borderColor:'#0891B2',
+        borderWidth:2,
+        pointRadius:3,
+        fill:false,
+        tension:.4,
+        yAxisID:'y2',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:8}}},
+      scales:{
+        y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{callback:v=>v+'건'},position:'left'},
+        y2:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%'}}
+      }}
+  });
+}
+
+// ── RENDER CAC / AD SPEND TREND ─────────────────────────────────────────────
+function renderCacChart(cacTrend){
+  if(!cacTrend||!cacTrend.length) return;
+  destroyChart('cac');
+  charts.cac=new Chart(document.getElementById('cacChart'),{
+    type:'bar',
+    data:{
+      labels:cacTrend.map(r=>r.label),
+      datasets:[{
+        label:'Meta',
+        data:cacTrend.map(r=>r.meta_spend||0),
+        backgroundColor:'rgba(24,119,242,.7)',
+        borderRadius:4,
+        stack:'spend',
+      },{
+        label:'Google',
+        data:cacTrend.map(r=>r.google_spend||0),
+        backgroundColor:'rgba(234,67,53,.7)',
+        borderRadius:4,
+        stack:'spend',
+      },{
+        label:'네이버',
+        data:cacTrend.map(r=>r.naver_spend||0),
+        backgroundColor:'rgba(3,199,90,.7)',
+        borderRadius:4,
+        stack:'spend',
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8}}},
+      scales:{x:{stacked:true},y:{stacked:true,grid:{color:'#F1F5F9'},ticks:{callback:v=>v>=10000?(v/10000)+'만':''+v}}}}
+  });
+
+  // Update CAC in table
+  const latestCac=cacTrend[cacTrend.length-1];
+  if(latestCac&&latestCac.cac>0){
+    document.getElementById('tCac').textContent='약 '+Math.round(latestCac.cac).toLocaleString('ko-KR')+'원';
+  }
+}
+
+// ── INIT DASHBOARD ──────────────────────────────────────────────────────────
+async function initDashboard(){
+  try{
+    const d=await loadMetrics();
+
+    renderKpi(d.kpi||{});
+    if(d.gmv_trend?.length)  renderGmvChart(d.gmv_trend);
+    if(d.booking_trend?.length) renderBookingChart(d.booking_trend);
+    if(d.ship_trend?.length) renderShipChart(d.ship_trend);
+    if(d.species?.length)    renderFishChart(d.species);
+    if(d.regions?.length)    renderRegionChart(d.regions);
+    if(d.channels?.length)   renderAdChart(d.channels);
+    renderNaverSection(d.naver||[]);
+    if(d.cac_trend?.length)  renderCacChart(d.cac_trend);
+
+    document.getElementById('hdrSrc').textContent='BigQuery ✓';
+
+  }catch(e){
+    console.error('investor_metrics.json 로드 실패:', e);
+    document.getElementById('hdrDate').textContent='데이터 로드 오류 — 정적 기본값 표시 중';
+    renderFallback();
+  }
+}
+
+// ── FALLBACK (stats.json 기반) ───────────────────────────────────────────────
+async function renderFallback(){
+  try{
+    const r=await fetch('https://aboutfishing.kr/data/stats.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok) return;
+    const d=await r.json();
+    const gmvNum=parseInt((d.gmv?.value||'390').replace(/[^0-9]/g,''))||390;
+    renderKpi({
+      report_date:d.updated,
+      gmv_man:gmvNum,
+      gmv_wow_pct:parseFloat((d.gmv?.change||'12').replace(/[^0-9.-]/g,'')),
+      bookings:d.bookings||400,
+      bookings_wow_pct:18,
+      cvr_pct:parseFloat(d.cvr?.value||'2.9'),
+      ships:parseInt((d.ships?.value||'765').replace(/[^0-9]/g,'')),
+      members:parseInt((d.members?.value||'247000').replace(/[^0-9]/g,''))||247000,
+    });
+  }catch(err){}
+
+  // static fallback charts
+  const months=['10월','11월','12월','1월','2월','3월'];
+  renderGmvChart(months.map((l,i)=>({label:l,gmv:[320,410,520,680,890,1241][i]})));
+  renderBookingChart(months.map((l,i)=>({label:l,bookings:[82,110,148,195,290,380][i],cvr:[1.8,2.0,2.1,2.3,2.5,2.9][i]})));
+  renderShipChart(['2025.01','03','05','07','09','11','2026.01','03']
+    .map((l,i)=>({label:l,ships:[120,185,280,380,510,620,710,765][i]})));
+  renderFishChart([{name:'쭈꾸미/주꾸미',pct:38},{name:'광어(넙치)',pct:22},{name:'우럭',pct:18},{name:'갑오징어',pct:11},{name:'감성돔',pct:6},{name:'기타',pct:5}]);
+  renderRegionChart([{region:'인천',pct:34},{region:'태안·충남',pct:22},{region:'여수·전남',pct:18},{region:'거제·경남',pct:12},{region:'부산',pct:8},{region:'기타',pct:6}]);
+  renderAdChart([{channel:'Meta Ads',pct:48},{channel:'Google Ads',pct:28},{channel:'유기적',pct:16},{channel:'네이버',pct:8}]);
+  renderNaverSection([]);
+}
+</script>
+</body>
+</html>

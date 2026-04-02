@@ -10,3 +10,4 @@ __pycache__/
 data/*.json
 !data/latest.json
 !data/stats.json
+!data/investor_metrics.json

@@ -9,6 +9,8 @@ on:
       - 'index_google.html'
       - 'af-agent/**'
       - 'data/stats.json'
+      - 'data/investor_metrics.json'
+      - 'investor/**'
 
 jobs:
   deploy:
@@ -54,6 +56,29 @@ jobs:
                  -h "Cache-Control:no-store" \
                  cp af-agent/index.html gs://booking-redirect-aboutfishing-kr/af-agent/index.html
           echo "✅ af-agent 데모 배포: https://aboutfishing.kr/af-agent/"
+
+      - name: investor/index.html → GCS 업로드 (투자자 대시보드)
+        run: |
+          if [ -f investor/index.html ]; then
+            gsutil -h "Content-Type:text/html; charset=utf-8" \
+                   -h "Cache-Control:no-store" \
+                   cp investor/index.html gs://booking-redirect-aboutfishing-kr/investor/index.html
+            echo "✅ investor 대시보드 배포: https://aboutfishing.kr/investor/"
+          else
+            echo "⚠️ investor/index.html 없음, 스킵"
+          fi
+
+      - name: data/investor_metrics.json → GCS 업로드 (투자자 지표)
+        run: |
+          if [ -f data/investor_metrics.json ]; then
+            gsutil -h "Content-Type:application/json" \
+                   -h "Cache-Control:no-store" \
+                   -h "Access-Control-Allow-Origin:*" \
+                   cp data/investor_metrics.json gs://booking-redirect-aboutfishing-kr/data/investor_metrics.json
+            echo "✅ investor_metrics.json 배포: https://aboutfishing.kr/data/investor_metrics.json"
+          else
+            echo "⚠️ data/investor_metrics.json 없음, 스킵"
+          fi
 
       - name: data/stats.json → GCS 업로드 (서비스 지표)
         run: |

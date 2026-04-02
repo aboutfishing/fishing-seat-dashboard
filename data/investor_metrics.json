@@ -1,0 +1,72 @@
+{
+  "updated": "2026-04-03",
+  "source": "seed (BigQuery export 전 기본값 — scripts/export_investor_metrics.py 실행 후 교체됨)",
+  "kpi": {
+    "report_date": "2026-04-03",
+    "gmv_man": 390.0,
+    "gmv_wow_pct": 12.0,
+    "bookings": 400,
+    "bookings_wow_pct": 18.0,
+    "cvr_pct": 2.9,
+    "ships": 765,
+    "members": 247000,
+    "total_ad_spend": 0
+  },
+  "gmv_trend": [
+    {"label": "10월", "ym": "2025-10", "gmv": 320, "bookings": 82, "cvr": 1.8, "ships": 510},
+    {"label": "11월", "ym": "2025-11", "gmv": 410, "bookings": 110, "cvr": 2.0, "ships": 560},
+    {"label": "12월", "ym": "2025-12", "gmv": 520, "bookings": 148, "cvr": 2.1, "ships": 620},
+    {"label": "1월",  "ym": "2026-01", "gmv": 680, "bookings": 195, "cvr": 2.3, "ships": 680},
+    {"label": "2월",  "ym": "2026-02", "gmv": 890, "bookings": 290, "cvr": 2.5, "ships": 730},
+    {"label": "3월",  "ym": "2026-03", "gmv": 1241, "bookings": 380, "cvr": 2.9, "ships": 765}
+  ],
+  "booking_trend": [
+    {"label": "10월", "ym": "2025-10", "bookings": 82,  "cvr": 1.8},
+    {"label": "11월", "ym": "2025-11", "bookings": 110, "cvr": 2.0},
+    {"label": "12월", "ym": "2025-12", "bookings": 148, "cvr": 2.1},
+    {"label": "1월",  "ym": "2026-01", "bookings": 195, "cvr": 2.3},
+    {"label": "2월",  "ym": "2026-02", "bookings": 290, "cvr": 2.5},
+    {"label": "3월",  "ym": "2026-03", "bookings": 380, "cvr": 2.9}
+  ],
+  "ship_trend": [
+    {"label": "2025-01", "ships": 120},
+    {"label": "2025-03", "ships": 185},
+    {"label": "2025-05", "ships": 280},
+    {"label": "2025-07", "ships": 380},
+    {"label": "2025-09", "ships": 510},
+    {"label": "2025-11", "ships": 620},
+    {"label": "2026-01", "ships": 710},
+    {"label": "2026-03", "ships": 765}
+  ],
+  "cac_trend": [
+    {"label": "10월", "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0},
+    {"label": "11월", "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0},
+    {"label": "12월", "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0},
+    {"label": "1월",  "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0},
+    {"label": "2월",  "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0},
+    {"label": "3월",  "cac": 0, "aov": 0, "naver_spend": 0, "meta_spend": 0, "google_spend": 0}
+  ],
+  "naver": [],
+  "channels": [
+    {"channel": "Meta Ads",        "spend": 0, "pct": 48},
+    {"channel": "Google Ads",      "spend": 0, "pct": 28},
+    {"channel": "유기적(SEO·직접)", "spend": 0, "pct": 16},
+    {"channel": "네이버 키워드",   "spend": 0, "pct": 8}
+  ],
+  "species": [
+    {"name": "쭈꾸미/주꾸미", "pct": 38},
+    {"name": "광어(넙치)",    "pct": 22},
+    {"name": "우럭",          "pct": 18},
+    {"name": "갑오징어",      "pct": 11},
+    {"name": "감성돔",        "pct": 6},
+    {"name": "기타",          "pct": 5}
+  ],
+  "regions": [
+    {"region": "인천",      "pct": 34},
+    {"region": "태안·충남", "pct": 22},
+    {"region": "여수·전남", "pct": 18},
+    {"region": "거제·경남", "pct": 12},
+    {"region": "부산",      "pct": 8},
+    {"region": "기타",      "pct": 6}
+  ]
+}
