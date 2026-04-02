@@ -342,6 +342,12 @@
       </button>
     </div>
 
+    <!-- 초기화 버튼 -->
+    <div class="filter-group">
+      <span class="filter-label">&nbsp;</span>
+      <button onclick="clearFilters()" style="background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.8rem;color:#666;" title="필터 초기화">✕ 초기화</button>
+    </div>
+
     <div class="spacer"></div>
   </div>
 </div>
@@ -362,7 +368,7 @@
 
 <!-- ── Footer ────────────────────────────────────────── -->
 <footer>
-  데이터 출처: sunsang24.com &nbsp;|&nbsp; 매일 오전 05:00 자동 갱신 &nbsp;|&nbsp; aboutfishing.kr
+  데이터 출처: 어바웃피싱 + 더피싱 통합 &nbsp;|&nbsp; 매일 오전 01:00 자동 갱신 &nbsp;|&nbsp; aboutfishing.kr
 </footer>
 
 <script>
@@ -452,6 +458,20 @@ function updateSummary() {
 }
 
 // ── 필터 & 정렬 ──────────────────────────────────────────
+function clearFilters() {
+  const shipEl = document.getElementById("search-ship");
+  if (shipEl) shipEl.value = "";
+  document.getElementById("filter-date").value = "";
+  const fishEl = document.getElementById("filter-fish");
+  if (fishEl) fishEl.value = "";
+  const statusEl = document.getElementById("filter-status");
+  if (statusEl) statusEl.value = "";
+  seatFilter = false;
+  const btn = document.getElementById("filter-seats");
+  if (btn) btn.classList.remove("active");
+  applyFilters();
+}
+
 function applyFilters() {
   const shipQ  = document.getElementById("search-ship").value.toLowerCase();
   const fish   = document.getElementById("filter-fish").value;

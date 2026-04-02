@@ -19,8 +19,11 @@
 <meta name="keywords" content="인천배낚시, 인천배낚시체험, 쭈꾸미낚시, 봄쭈꾸미, 쭈꾸미낚시시즌, 갑오징어낚시, 낚시배예약, 어바웃피싱, 배낚시, 선상낚시, 바다낚시, 낚시체험, 낚시예약, 출조예약, 낚시예약사이트, 태안배낚시, 군산배낚시, 강릉배낚시, 부산배낚시, 제주배낚시, 주꾸미낚시, 광어낚시, 갈치낚시, 참돔낚시, 실시간조황, 낚시포인트, 낚시배추천">
 <meta name="naver-site-verification" content="58e0552c06b379fb692bfaf39094e438919c2a1b">
 
-<!-- Robots: 구글 색인 허용 + 리치스니펫 최대 허용 -->
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<!-- Robots: 색인 제외 (내부 운영용) -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="NaverBot" content="noindex, nofollow">
+<meta name="Yeti" content="noindex, nofollow">
 
 <!-- ⚠️ Canonical: Google이 aboutfishing.kr을 표준으로 선택하므로 www 포함 -->
 <link rel="canonical" href="https://aboutfishing.kr/booking.html">
@@ -729,14 +732,8 @@ table.seats tr:last-child td{border-bottom:none;}
       <input type="date" id="filter-date">
     </div>
     <div class="filter-item">
-      <label>지역</label>
-      <select id="filter-area">
-        <option value="">전체 지역</option>
-        <option value="서해안">서해안</option>
-        <option value="남해안">남해안</option>
-        <option value="동해안">동해안</option>
-        <option value="제주도">제주도</option>
-      </select>
+      <label>선박명</label>
+      <input type="text" id="filter-boat" placeholder="선박명으로 검색..." style="padding:9px 12px;" oninput="applyFilters()">
     </div>
     <div class="filter-item">
       <label>어종</label>
@@ -772,7 +769,7 @@ table.seats tr:last-child td{border-bottom:none;}
 </div>
 
 <script>
-/* ── seat-data 기반 데이터 로드 (선상24 + 더피싱 통합, collect_unified.py) ── */
+/* ── seat-data 기반 데이터 로드 (어바웃피싱 + 더피싱 통합, collect_unified.py) ── */
 var SEAT_BASE  = 'https://aboutfishing.kr/seat-data/';
 var allRows    = [];
 var filtered   = [];
@@ -803,7 +800,7 @@ function shipsToRows(ships){
       s.schedule_no || null,         // r[11] schedule_no
       s.remain != null ? s.remain : 0, // r[12] 남은좌석
       s.status || 'ING',             // r[13] 상태
-      s.source || 'sunsang24',       // r[14] 수집 출처
+      s.source || 'aboutfishing',     // r[14] 수집 출처
     ]);
   });
   return rows;
@@ -849,7 +846,7 @@ function loadDateData(dateStr){
 var _lastLoadedDate = '';
 function applyFilters() {
   var date  = document.getElementById('filter-date').value;
-  var area  = document.getElementById('filter-area').value;
+  var boat  = (document.getElementById('filter-boat').value || '').trim().toLowerCase();
   var fish  = document.getElementById('filter-fish').value;
   if(date && date !== _lastLoadedDate) {
     _lastLoadedDate = date;
@@ -858,7 +855,7 @@ function applyFilters() {
   }
   filtered = allRows.filter(function(r){
     if(!r[0]) return false;                          // AF 파트너만 표시 (ship_no 없으면 제외)
-    if(area && r[2] !== area) return false;
+    if(boat && !(r[1]||'').toLowerCase().includes(boat)) return false;
     if(fish && !(r[7]||'').includes(fish)) return false;
     return true;
   });
@@ -900,11 +897,11 @@ function renderTable() {
     var afBadge = r[0]
       ? '<span style="display:inline-block;background:#EEF3FF;color:#0052FF;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:middle;">AF</span>'
       : '';
-    /* 수집 출처 배지 */
-    var src = r[14] || 'sunsang24';
+    /* 수집 출처 배지 (더피싱만 표시, 기본 출처 배지 제거) */
+    var src = r[14] || 'aboutfishing';
     var srcBadge = src === 'thefishing'
       ? '<span style="display:inline-block;background:#FFF3E0;color:#E65100;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;">더피싱</span>'
-      : '<span style="display:inline-block;background:#E8F5E9;color:#2E7D32;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;">선상24</span>';
+      : '';
     return '<tr>'
       +'<td style="font-weight:700;color:#1a1a2e;">'+escHtml(r[1]||'')+afBadge+srcBadge+'</td>'
       +'<td style="color:#888;font-size:12px;">'+escHtml(r[2]||'')+' · '+escHtml(r[3]||'')+'</td>'
@@ -2000,8 +1997,14 @@ document.addEventListener('DOMContentLoaded',function(){
 
   /* ── Gemini 호출 (Cloud Function 프록시) ─────────────────────── */
   async function callGemini(userText) {
+    // 오늘 날짜를 KST 기준으로 메시지에 컨텍스트로 주입
+    var now = new Date();
+    var kstOffset = 9 * 60;
+    var kst = new Date(now.getTime() + (kstOffset - now.getTimezoneOffset()) * 60000);
+    var todayStr = kst.getFullYear() + '년 ' + (kst.getMonth()+1) + '월 ' + kst.getDate() + '일';
+    var contextMsg = '[오늘 날짜: ' + todayStr + '] ' + userText;
     var payload = {
-      message: userText,
+      message: contextMsg,
       history: chatHistory.slice(-MAX_HISTORY).map(function(m){
         return { role: m.role, text: m.text };
       })
