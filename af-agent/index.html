@@ -117,6 +117,8 @@
     .mb{padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.65;word-break:break-word;max-width:100%}
     .msg.bot .mb{background:#F4F6FB;color:var(--txt);border-radius:4px 16px 16px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
     .msg.user .mb{background:var(--blue);color:#fff;border-radius:16px 4px 16px 16px}
+    .mb a.mlink{color:var(--blue);text-decoration:underline;font-weight:600;word-break:break-all}
+    .mb a.mlink:hover{opacity:.75}
 
     .typing{display:flex;gap:4px;padding:11px 14px;background:#F4F6FB;border-radius:4px 16px 16px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
     .td{width:7px;height:7px;background:#B0BAD3;border-radius:50%;animation:dot .9s infinite}
@@ -286,12 +288,6 @@
       <strong>어피 · 어바웃피싱 AI</strong>
       <small><span class="hdr-dot"></span>어바웃피싱 AI 도우미</small>
     </div>
-    <div class="phase-pills">
-      <span class="pill done">Phase 0</span>
-      <span class="pill active">Phase 1</span>
-      <span class="pill">Phase 2</span>
-      <span class="pill">Phase 3</span>
-    </div>
   </div>
 
   <div class="main">
@@ -331,7 +327,7 @@
       <div class="chat-msgs" id="chatMsgs">
         <div class="msg bot">
           <div class="mav"><img src="https://aboutfishing.kr/img/ai-assistant.webp" alt="어피" onerror="this.parentNode.outerHTML='<div class=mav-fb>AF</div>'"></div>
-          <div class="mb">안녕하세요, 어바웃피싱 고객님의 비서 어피입니다.<br>원하시는 어종·지역을 알려주시면 딱 맞는 낚시배를 찾아드릴게요!</div>
+          <div class="mb">안녕하세요, 어바웃피싱 AI 비서 어피입니다! 🎣<br>원하시는 어종·지역을 알려주시면 딱 맞는 낚시배를 찾아드릴게요.<br><br><a href="https://booking.aboutfishing.kr" target="_blank" rel="noopener" class="mlink">낚시배 예약하기</a> · <a href="https://map.aboutfishing.kr" target="_blank" rel="noopener" class="mlink">낚시 포인트 지도</a></div>
         </div>
       </div>
 
@@ -443,11 +439,11 @@ const POIS = [
 ];
 
 const FB = {
-  주꾸미:'쭈꾸미/주꾸미는 9~11월이 피크 시즌이에요! 9월 22건으로 서해중부 인천 출항 배에서 가장 많이 잡혀요.',
-  갑오징어:'갑오징어는 9~10월 피크! 9월 30건, 10월 17건 기록이에요. 에기 낚시로 도전해보세요.',
-  넙치:'광어(넙치)는 4월이 성수기예요. 이번 달 서해중부에서 9건 조과 중이에요. 바닥 긁기가 핵심이에요!',
-  조피볼락:'우럭(조피볼락)은 봄(3~4월) 서해중부가 최고예요! 수심 30m 바닥을 집중 공략하세요.',
-  default:'어바웃피싱에서 전국 낚시배 예약이 가능해요! 원하시는 어종·지역을 알려주시면 맞춤 배를 찾아드릴게요.',
+  주꾸미:'쭈꾸미/주꾸미는 9~11월이 피크 시즌이에요! 9월 22건으로 서해중부 인천 출항 배에서 가장 많이 잡혀요.\n\n[쭈꾸미 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미)',
+  갑오징어:'갑오징어는 9~10월 피크! 9월 30건, 10월 17건 기록이에요. 에기 낚시로 도전해보세요.\n\n[갑오징어 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=갑오징어)',
+  넙치:'광어(넙치)는 4월이 성수기예요. 이번 달 서해중부에서 9건 조과 중이에요. 바닥 긁기가 핵심이에요!\n\n[광어 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=광어)',
+  조피볼락:'우럭(조피볼락)은 봄(3~4월) 서해중부가 최고예요! 수심 30m 바닥을 집중 공략하세요.\n\n[우럭 낚시배 예약](https://booking.aboutfishing.kr/search/list?keyword=우럭)',
+  default:'어바웃피싱에서 전국 낚시배 예약이 가능해요! 원하시는 어종·지역을 알려주시면 맞춤 배를 찾아드릴게요.\n\n[낚시배 예약하기](https://booking.aboutfishing.kr)',
 };
 
 let boats=[...BOATS], sel=null, busy=false, expanded=false, fuseIdx=null;
@@ -516,15 +512,15 @@ function sendChip(btn){document.getElementById('chatIn').value=btn.textContent;s
 const SHOP={
   jjukumi:{
     url:'https://shop.aboutfishing.kr/exhibitiondetail/45270',
-    info:'어바웃피싱 쇼핑몰에서 쭈꾸미·갑오징어 채비 234종을 확인하세요! 야마시타 어퍼(₩7,900), 어바웃피싱 에쿵에기(50%↓ ₩4,700), KN피싱 쭈킬 헌터 애자(₩3,000) 등 인기 에기 총정리. 쇼핑몰 바로가기 → shop.aboutfishing.kr'
+    info:'어바웃피싱 쇼핑몰에서 쭈꾸미·갑오징어 채비 234종을 확인하세요!\n야마시타 어퍼(₩7,900), 에쿵에기(50%↓ ₩4,700), KN피싱 쭈킬 헌터 애자(₩3,000) 등 인기 에기 총정리.\n\n[쭈꾸미·갑오징어 채비 전체보기](https://shop.aboutfishing.kr/exhibitiondetail/45270)\n[낚시배 예약하기](https://booking.aboutfishing.kr/search/list?keyword=쭈꾸미)'
   },
   gwangeo:{
     url:'https://shop.aboutfishing.kr/exhibitiondetail/53108',
-    info:'봄 광어 시즌 다운샷 채비 190종! 버클리 걸프 스위밍 뮬렛(₩8,900), 파워 저크쉐드 HD 5인치(₩9,500), 시마노 25 스티레(₩487,000) 인기 중이에요. 쇼핑몰 바로가기 → shop.aboutfishing.kr'
+    info:'봄 광어 시즌 다운샷 채비 190종!\n버클리 걸프 스위밍 뮬렛(₩8,900), 파워 저크쉐드 HD 5인치(₩9,500), 시마노 25 스티레(₩487,000) 인기 중이에요.\n\n[광어 다운샷 채비 전체보기](https://shop.aboutfishing.kr/exhibitiondetail/53108)\n[광어 낚시배 예약하기](https://booking.aboutfishing.kr/search/list?keyword=광어)'
   },
 };
 const CHIP_INFO={
-  대회:'2026 어바웃피싱 챔피언십 개최 예정! 서해안 마검포·오천항 거점, 4~11월 예선 4회 + 챔피언십 결선. 연간 참가자 2,000명+ 규모로 대한민국 최대 데이터 기반 낚시 축제예요. 슬로건: "낚시를 습관으로, 기록을 전설로" — 선박 예약은 어바웃피싱 예약 사이트에서!'
+  대회:'2026 어바웃피싱 챔피언십 개최 예정!\n서해안 마검포·오천항 거점, 4~11월 예선 4회 + 챔피언십 결선.\n연간 참가자 2,000명+ 규모로 대한민국 최대 데이터 기반 낚시 축제예요.\n슬로건: "낚시를 습관으로, 기록을 전설로"\n\n[어바웃피싱 낚시배 예약](https://booking.aboutfishing.kr)\n[낚시 포인트 지도](https://map.aboutfishing.kr)'
 };
 
 function sendChipShop(btn,key){
@@ -547,12 +543,22 @@ function detectFish(t){
   return null;
 }
 
+const MAP_LINKS={
+  '주꾸미':'https://search.naver.com/search.naver?query=쭈꾸미+낚시+포인트+map.aboutfishing.kr',
+  '넙치':'https://search.naver.com/search.naver?query=광어+낚시+포인트+map.aboutfishing.kr',
+  '조피볼락':'https://search.naver.com/search.naver?query=우럭+볼락+낚시+포인트+map.aboutfishing.kr',
+  '갑오징어':'https://search.naver.com/search.naver?query=갑오징어+낚시+포인트+map.aboutfishing.kr',
+  '감성돔':'https://search.naver.com/search.naver?query=감성돔+낚시+포인트+map.aboutfishing.kr',
+  '도다리':'https://search.naver.com/search.naver?query=도다리+낚시+포인트+map.aboutfishing.kr',
+};
+
 function buildRag(fn,month){
   const d=RAG[fn]; if(!d) return '';
   const peak=Object.entries(d.monthly).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([m])=>m+'월');
   const cnt=d.monthly[String(month)]||0;
   const tips=d.tips.map(t=>`[${t.date} ${t.sea}] ${t.tip}`).join(' | ');
-  return `[조황DB] ${fn}: 서식지=${d.seas.join(',')}, 피크=${peak.join(',')}, 이번달(${month}월)=${cnt}건. 팁: ${tips}`;
+  const mapLink=MAP_LINKS[fn]||'https://map.aboutfishing.kr';
+  return `[조황DB] ${fn}: 서식지=${d.seas.join(',')}, 피크=${peak.join(',')}, 이번달(${month}월)=${cnt}건. 팁: ${tips}. 포인트지도=${mapLink}. 예약=https://booking.aboutfishing.kr/search/list?keyword=${fn}`;
 }
 
 function mkAv(){
@@ -562,10 +568,29 @@ function mkAv(){
   d.appendChild(img); return d;
 }
 
+function parseMd(t){
+  // HTML escape
+  let s=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Bold **text**
+  s=s.replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+  // Markdown links [text](url)
+  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener" class="mlink">$1</a>');
+  // Strip heading # symbols
+  s=s.replace(/^#{1,4}\s+/gm,'');
+  // Bullet * / - at line start
+  s=s.replace(/^[\*\-]\s{0,3}/gm,'• ');
+  // Remove stray lone asterisks
+  s=s.replace(/(?<!\w)\*(?!\w)/g,'');
+  // Newlines
+  s=s.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  return s;
+}
 function addMsg(txt,isUser){
   const w=document.getElementById('chatMsgs');
   const row=document.createElement('div'); row.className='msg '+(isUser?'user':'bot');
-  const bub=document.createElement('div'); bub.className='mb'; bub.textContent=txt;
+  const bub=document.createElement('div'); bub.className='mb';
+  if(isUser){bub.textContent=txt;}else{bub.innerHTML=parseMd(txt);}
   if(!isUser){row.appendChild(mkAv());}
   row.appendChild(bub);
   w.appendChild(row); w.scrollTop=w.scrollHeight;
