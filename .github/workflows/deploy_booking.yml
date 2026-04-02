@@ -30,12 +30,22 @@ jobs:
                  cp booking.html gs://booking-redirect-aboutfishing-kr/booking.html
           echo "✅ booking.html 배포: https://aboutfishing.kr/booking.html"
 
-      - name: index_google.html → GCS index.html 업로드
+      - name: index_google.html → GCS 업로드 (index.html + index_google.html)
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:no-store" \
                  cp index_google.html gs://booking-redirect-aboutfishing-kr/index.html
-          echo "✅ index.html 배포: https://aboutfishing.kr/ (Cache-Control: no-store)"
+          gsutil -h "Content-Type:text/html; charset=utf-8" \
+                 -h "Cache-Control:no-store" \
+                 cp index_google.html gs://booking-redirect-aboutfishing-kr/index_google.html
+          echo "✅ index.html + index_google.html 배포 완료"
+
+      - name: images/hero_girl.webp → GCS 업로드
+        run: |
+          gsutil -h "Content-Type:image/webp" \
+                 -h "Cache-Control:public, max-age=86400" \
+                 cp images/hero_girl.webp gs://booking-redirect-aboutfishing-kr/images/hero_girl.webp
+          echo "✅ hero_girl.webp 배포 완료"
 
       - name: af-agent/index.html → GCS 업로드
         run: |
@@ -63,6 +73,7 @@ jobs:
           echo "=== 배포된 파일 목록 ==="
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/booking.html
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/index.html
+          gsutil ls -la gs://booking-redirect-aboutfishing-kr/index_google.html
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/af-agent/index.html
           echo "=== 버킷 웹사이트 설정 ==="
           gsutil web get gs://booking-redirect-aboutfishing-kr
