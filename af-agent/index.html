@@ -663,7 +663,14 @@ async function send(){
     const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${extra}${txt}`;
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
-    const reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
+    let reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
+    // 응답에 링크가 없으면 fallback CTA 추가
+    if(!/\[[^\]]+\]\(https?:\/\//.test(reply)&&!/https?:\/\//.test(reply)){
+      const kw=fish||(txt.includes('태안')?'태안':txt.includes('인천')?'인천':txt.includes('거제')?'거제':txt.includes('부산')?'부산':txt.includes('여수')?'여수':txt.includes('목포')?'목포':txt.includes('통영')?'통영':null);
+      const bookingUrl=kw?`https://booking.aboutfishing.kr/search/list?keyword=${encodeURIComponent(kw)}`:'https://booking.aboutfishing.kr';
+      const bookingLabel=kw?`${kw} 낚시배 예약`:'낚시배 예약하기';
+      reply+=`\n\n[${bookingLabel}](${bookingUrl}) | [선박 조황](https://booking.aboutfishing.kr/?mainTab=3)`;
+    }
     addMsg(reply,false);
     if(/예약|잡아줘|예약해/.test(txt))
       setTimeout(()=>addMsg('예약 도와드릴까요? 왼쪽 선박 목록에서 원하시는 배를 선택해 주세요!',false),600);
