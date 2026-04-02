@@ -679,6 +679,11 @@ ul{list-style:none}
 .booking-hero h1{font-size:clamp(20px,4vw,30px);font-weight:900;margin:0 0 8px;}
 .booking-hero p{font-size:13px;opacity:.82;margin:0;}
 .booking-wrap{max-width:1200px;margin:0 auto;padding:24px 20px 48px;}
+/* 통합 검색바 */
+.unified-search-bar{background:#fff;border-radius:16px;border:1px solid #EEE;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.unified-search-bar input{width:100%;padding:11px 18px 11px 42px;border:2px solid #0052FF;border-radius:24px;font-size:0.95rem;font-family:inherit;outline:none;background:#f5f9ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%230052FF' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 14px center;box-sizing:border-box;}
+.unified-search-bar input:focus{box-shadow:0 0 0 3px rgba(0,82,255,.15);}
+.unified-search-hint{font-size:11px;color:#aaa;margin-top:5px;padding-left:4px;}
 .filter-bar{background:#fff;border-radius:16px;border:1px solid #EEE;padding:20px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;box-shadow:0 2px 8px rgba(0,0,0,.06);}
 .filter-item{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
 .filter-item label{font-size:12px;font-weight:700;color:#767676;}
@@ -725,6 +730,14 @@ table.seats tr:last-child td{border-bottom:none;}
 </div>
 
 <div class="booking-wrap">
+  <!-- 통합 검색바 -->
+  <div class="unified-search-bar">
+    <input type="text" id="booking-unified-search"
+      placeholder="🔍 통합 검색: 선박명, 어종(쭈꾸미/주꾸미), 지역, 항구..."
+      oninput="applyFilters()" autocomplete="off">
+    <div class="unified-search-hint">💡 쭈꾸미↔주꾸미, 광어↔넙치 동의어 자동 인식 | 여러 단어 띄어쓰기로 AND 검색</div>
+  </div>
+
   <!-- 필터 바 -->
   <div class="filter-bar" id="filter-bar">
     <div class="filter-item">
@@ -768,12 +781,53 @@ table.seats tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js" crossorigin="anonymous"></script>
 <script>
 /* ── seat-data 기반 데이터 로드 (어바웃피싱 + 더피싱 통합, collect_unified.py) ── */
 var SEAT_BASE  = 'https://aboutfishing.kr/seat-data/';
 var allRows    = [];
 var filtered   = [];
 var pageSize   = 20;
+
+/* ── 어종 동의어 사전 ──────────────────────────────── */
+var FISH_SYNONYMS = {
+  '쭈꾸미': ['쭈꾸미', '주꾸미'],
+  '주꾸미': ['쭈꾸미', '주꾸미'],
+  '광어':   ['광어', '넙치'],
+  '넙치':   ['광어', '넙치'],
+  '우럭':   ['우럭', '볼락', '조피볼락'],
+  '볼락':   ['볼락', '우럭'],
+  '참돔':   ['참돔', '도미'],
+  '도미':   ['참돔', '도미'],
+  '학꽁치': ['학꽁치', '공치'],
+  '공치':   ['학꽁치', '공치'],
+};
+function expandFishSynonyms(term) {
+  var t = (term || '').trim();
+  if (FISH_SYNONYMS[t]) return FISH_SYNONYMS[t];
+  for (var key in FISH_SYNONYMS) {
+    var syns = FISH_SYNONYMS[key];
+    if (syns.some(function(s){ return s.indexOf(t) >= 0 || t.indexOf(s) >= 0; })) return syns;
+  }
+  return [t];
+}
+
+/* ── Fuse.js 인스턴스 ────────────────────────────── */
+var bookingFuse = null;
+function initBookingFuse() {
+  if (typeof Fuse === 'undefined' || !allRows.length) return;
+  bookingFuse = new Fuse(allRows, {
+    keys: [
+      { name: 'ship', getFn: function(r){ return r[1] || ''; } },
+      { name: 'fish', getFn: function(r){ return r[7] || ''; } },
+      { name: 'area', getFn: function(r){ return r[2] || ''; } },
+      { name: 'port', getFn: function(r){ return r[3] || ''; } },
+    ],
+    threshold: 0.35,
+    includeScore: true,
+    minMatchCharLength: 1,
+  });
+}
 var currentPage = 1;
 
 function getTomorrow(){ var d=new Date(); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); }
@@ -811,11 +865,12 @@ function loadDateData(dateStr){
   _lastLoadedDate = dateStr;
   document.getElementById('result-title').textContent = '데이터 불러오는 중…';
   document.getElementById('result-count').textContent = '';
-  fetch(SEAT_BASE + dateStr + '.json')
+  fetch(SEAT_BASE + dateStr + '.json?t=' + Date.now(), { cache: 'no-store' })
   .then(function(r){ if(!r.ok) throw 0; return r.json(); })
   .then(function(json){
     var allShips = json.ships || [];
     allRows = shipsToRows(allShips);
+    initBookingFuse();
     var afCount    = allRows.filter(function(r){ return r[0]; }).length;
     var totalCount = allShips.length;
     var afMatched  = json.af_matched || afCount;
@@ -848,15 +903,48 @@ function applyFilters() {
   var date  = document.getElementById('filter-date').value;
   var boat  = (document.getElementById('filter-boat').value || '').trim().toLowerCase();
   var fish  = document.getElementById('filter-fish').value;
+  var uniQ  = ((document.getElementById('booking-unified-search') || {}).value || '').trim();
+
   if(date && date !== _lastLoadedDate) {
     _lastLoadedDate = date;
     loadDateData(date);
     return;
   }
+
+  // ── 통합 검색: Fuse.js + 동의어 확장 ──────────────────
+  var fuseSet = null;
+  if (uniQ) {
+    var words = uniQ.split(/\s+/).filter(Boolean);
+    var candidates = allRows;
+    words.forEach(function(word) {
+      var synonyms = expandFishSynonyms(word);
+      if (bookingFuse) {
+        var matches = new Set();
+        synonyms.forEach(function(syn) {
+          bookingFuse.search(syn).forEach(function(res) { matches.add(res.item); });
+        });
+        candidates = candidates.filter(function(r){ return matches.has(r); });
+      } else {
+        candidates = candidates.filter(function(r) {
+          var text = [r[1], r[7], r[2], r[3]].join(' ').toLowerCase();
+          return synonyms.some(function(syn){ return text.indexOf(syn.toLowerCase()) >= 0; });
+        });
+      }
+    });
+    fuseSet = new Set(candidates);
+  }
+
+  // 어종 동의어 확장
+  var fishTerms = fish ? expandFishSynonyms(fish) : null;
+
   filtered = allRows.filter(function(r){
     if(!r[0]) return false;                          // AF 파트너만 표시 (ship_no 없으면 제외)
+    if(fuseSet && !fuseSet.has(r)) return false;     // 통합 검색 필터
     if(boat && !(r[1]||'').toLowerCase().includes(boat)) return false;
-    if(fish && !(r[7]||'').includes(fish)) return false;
+    if(fishTerms) {
+      // 동의어 중 하나라도 어종 필드에 포함되면 통과
+      if(!fishTerms.some(function(term){ return (r[7]||'').indexOf(term) >= 0; })) return false;
+    }
     return true;
   });
   currentPage = 1;

@@ -7,9 +7,10 @@
   <meta name="googlebot" content="noindex, nofollow" />
   <meta name="NaverBot" content="noindex, nofollow" />
   <meta name="Yeti" content="noindex, nofollow" />
-  <title>선상24 실시간 좌석 현황 | AboutFishing</title>
+  <title>어바웃피싱 실시간 좌석 현황 | AboutFishing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js" crossorigin="anonymous"></script>
   <style>
     /* ── Reset & Base ──────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,6 +78,32 @@
       background: white;
       border-bottom: 1px solid #e8edf2;
       margin-bottom: 4px;
+    }
+    /* 통합 검색바 */
+    .unified-search-wrap {
+      padding: 10px 24px 6px;
+      background: white;
+    }
+    .unified-search-input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border: 2px solid #1565c0;
+      border-radius: 24px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      background: #f5f9ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%231565c0' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 14px center;
+      transition: box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+    .unified-search-input:focus {
+      box-shadow: 0 0 0 3px rgba(21,101,192,0.15);
+    }
+    .unified-search-hint {
+      font-size: 0.72rem;
+      color: #90a4ae;
+      margin-top: 4px;
+      padding-left: 6px;
     }
     .toolbar {
       display: flex; flex-wrap: wrap; gap: 10px;
@@ -258,7 +285,7 @@
       <path d="M14 12 L13 20 M18 12 L19 20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <div>
-      <h1>선상24 실시간 좌석 현황</h1>
+      <h1>어바웃피싱 실시간 좌석 현황</h1>
       <div style="font-size:0.72rem;opacity:0.7">AboutFishing 운영 대시보드</div>
     </div>
   </div>
@@ -291,6 +318,14 @@
     <div class="num" id="stat-dates">-</div>
     <div class="label">출조 일수</div>
   </div>
+</div>
+
+<!-- ── 통합 검색 ───────────────────────────────────────── -->
+<div class="unified-search-wrap">
+  <input type="text" id="unified-search" class="unified-search-input"
+    placeholder="🔍 통합 검색: 선박명, 어종(쭈꾸미/주꾸미), 지역, 항구..."
+    oninput="applyFilters()" autocomplete="off">
+  <div class="unified-search-hint">💡 쭈꾸미↔주꾸미, 광어↔넙치 등 동의어 자동 인식 | 여러 단어 띄어쓰기로 AND 검색</div>
 </div>
 
 <!-- ── Toolbar ────────────────────────────────────────── -->
@@ -376,6 +411,49 @@
 const JSON_URL      = "data/latest.json";
 const ROWS_PER_PAGE = 50;
 
+// ── 어종 동의어 사전 ─────────────────────────────────────
+const FISH_SYNONYMS = {
+  '쭈꾸미': ['쭈꾸미', '주꾸미'],
+  '주꾸미': ['쭈꾸미', '주꾸미'],
+  '광어':   ['광어', '넙치'],
+  '넙치':   ['광어', '넙치'],
+  '우럭':   ['우럭', '볼락', '조피볼락'],
+  '볼락':   ['볼락', '우럭'],
+  '참돔':   ['참돔', '도미'],
+  '도미':   ['참돔', '도미'],
+  '삼치':   ['삼치', '고등어'],  // 계절 혼획 동의
+  '학꽁치': ['학꽁치', '공치'],
+  '공치':   ['학꽁치', '공치'],
+};
+// 검색어에서 동의어 배열 반환 (없으면 입력어 그대로)
+function expandFishSynonyms(term) {
+  const t = term.trim();
+  if (FISH_SYNONYMS[t]) return FISH_SYNONYMS[t];
+  // 부분 포함 매칭
+  for (const syns of Object.values(FISH_SYNONYMS)) {
+    if (syns.some(s => s.includes(t) || t.includes(s))) return syns;
+  }
+  return [t];
+}
+
+// ── Fuse.js 인스턴스 ─────────────────────────────────────
+let fuseInstance = null;
+function initFuse() {
+  if (typeof Fuse === 'undefined') return;
+  fuseInstance = new Fuse(allData, {
+    keys: [
+      { name: 'ship',  getFn: r => r[1] || '' },   // 선박명
+      { name: 'fish',  getFn: r => r[7] || '' },   // 어종
+      { name: 'area',  getFn: r => r[2] || '' },   // 지역
+      { name: 'port',  getFn: r => r[3] || '' },   // 항구
+    ],
+    threshold: 0.35,
+    includeScore: true,
+    minMatchCharLength: 1,
+    useExtendedSearch: false,
+  });
+}
+
 // ── 상태 ────────────────────────────────────────────────
 let allData      = [];
 let filteredData = [];
@@ -423,6 +501,7 @@ async function loadData() {
       selFish.appendChild(opt);
     });
 
+    initFuse();   // Fuse.js 인덱스 초기화
     updateSummary();
     applyFilters();
 
@@ -459,6 +538,8 @@ function updateSummary() {
 
 // ── 필터 & 정렬 ──────────────────────────────────────────
 function clearFilters() {
+  const uniEl = document.getElementById("unified-search");
+  if (uniEl) uniEl.value = "";
   const shipEl = document.getElementById("search-ship");
   if (shipEl) shipEl.value = "";
   document.getElementById("filter-date").value = "";
@@ -473,16 +554,49 @@ function clearFilters() {
 }
 
 function applyFilters() {
-  const shipQ  = document.getElementById("search-ship").value.toLowerCase();
-  const fish   = document.getElementById("filter-fish").value;
-  const date_  = document.getElementById("filter-date").value;
-  const status = document.getElementById("filter-status").value;
+  const unifiedQ = (document.getElementById("unified-search") || {}).value || "";
+  const shipQ    = document.getElementById("search-ship").value.toLowerCase();
+  const fish     = document.getElementById("filter-fish").value;
+  const date_    = document.getElementById("filter-date").value;
+  const status   = document.getElementById("filter-status").value;
+
+  // ── 통합 검색: Fuse.js 기반 다중 필드 퍼지 검색 ──────────
+  let fuseSet = null;
+  if (unifiedQ.trim()) {
+    // 여러 단어 AND 처리: "쭈꾸미 인천" → 각 단어 동의어 확장
+    const words = unifiedQ.trim().split(/\s+/).filter(Boolean);
+    let candidates = allData;
+    for (const word of words) {
+      const synonyms = expandFishSynonyms(word);
+      if (fuseInstance) {
+        // 동의어 각각 Fuse 검색 후 합집합
+        const matches = new Set();
+        synonyms.forEach(syn => {
+          fuseInstance.search(syn).forEach(r => matches.add(r.item));
+        });
+        candidates = candidates.filter(r => matches.has(r));
+      } else {
+        // Fuse 미로드시 단순 포함 검색
+        candidates = candidates.filter(r => {
+          const text = [r[1], r[7], r[2], r[3]].join(' ').toLowerCase();
+          return synonyms.some(syn => text.includes(syn.toLowerCase()));
+        });
+      }
+    }
+    fuseSet = new Set(candidates);
+  }
+
+  // ── 어종 동의어 확장 ──────────────────────────────────────
+  const fishTerms = fish ? expandFishSynonyms(fish) : null;
 
   filteredData = allData.filter(r => {
-    if (shipQ && !r[1].toLowerCase().includes(shipQ)) return false;
-    if (fish) {
+    // 통합 검색 필터
+    if (fuseSet && !fuseSet.has(r)) return false;
+    // 개별 필터
+    if (shipQ && !(r[1] || "").toLowerCase().includes(shipQ)) return false;
+    if (fishTerms) {
       const types = r[7] ? r[7].split(",").map(f => f.trim()) : [];
-      if (!types.includes(fish)) return false;
+      if (!fishTerms.some(term => types.some(t => t.includes(term) || term.includes(t)))) return false;
     }
     if (date_ && r[4] !== date_) return false;
     if (status && r[13] !== status) return false;
