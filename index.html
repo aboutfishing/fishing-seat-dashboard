@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="NaverBot" content="noindex, nofollow" />
+  <meta name="Yeti" content="noindex, nofollow" />
   <title>선상24 실시간 좌석 현황 | AboutFishing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -68,28 +72,43 @@
     }
 
     /* ── Toolbar ────────────────────────────────────── */
+    .toolbar-wrap {
+      padding: 14px 24px 10px;
+      background: white;
+      border-bottom: 1px solid #e8edf2;
+      margin-bottom: 4px;
+    }
     .toolbar {
       display: flex; flex-wrap: wrap; gap: 10px;
-      padding: 14px 24px;
       align-items: center;
     }
+    .filter-group {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .filter-label {
+      font-size: 0.7rem; font-weight: 600; color: #78909c;
+      letter-spacing: 0.03em; text-transform: uppercase;
+    }
     .toolbar input, .toolbar select {
-      padding: 7px 12px; border: 1px solid #cfd8dc;
+      padding: 8px 12px; border: 1px solid #cfd8dc;
       border-radius: 8px; font-size: 0.85rem;
       font-family: inherit; background: white;
-      outline: none; transition: border-color 0.2s;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      height: 36px;
     }
     .toolbar input:focus, .toolbar select:focus {
       border-color: #1565c0;
+      box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
     }
-    .toolbar input { min-width: 200px; }
+    .toolbar input#search-ship { min-width: 200px; }
     .filter-tag {
       display: inline-flex; align-items: center; gap: 6px;
       background: #e3f2fd; color: #1565c0;
-      padding: 5px 12px; border-radius: 16px;
-      font-size: 0.8rem; cursor: pointer;
+      padding: 5px 14px; border-radius: 16px;
+      font-size: 0.82rem; cursor: pointer;
       border: 1px solid #bbdefb; font-family: inherit;
       transition: background 0.15s;
+      height: 36px; white-space: nowrap;
     }
     .filter-tag.active, .filter-tag:hover { background: #1565c0; color: white; border-color: #1565c0; }
     .count-badge {
@@ -97,6 +116,7 @@
       padding: 1px 6px; font-size: 0.7rem; font-weight: 700;
     }
     .filter-tag.active .count-badge { background: rgba(255,255,255,0.25); color: white; }
+    .toolbar-divider { width: 1px; height: 28px; background: #e0e0e0; margin: 0 2px; }
     .spacer { flex: 1; }
 
     /* ── Table Container ────────────────────────────── */
@@ -204,6 +224,12 @@
     .page-btn:disabled { opacity: 0.4; cursor: default; }
     .page-info { font-size: 0.82rem; color: #78909c; padding: 0 8px; }
 
+    /* ── Filter Result ──────────────────────────────── */
+    .filter-result-bar {
+      padding: 6px 24px 10px;
+      font-size: 0.8rem; color: #78909c;
+    }
+
     /* ── Footer ─────────────────────────────────────── */
     footer {
       text-align: center; padding: 16px;
@@ -215,8 +241,9 @@
     @media (max-width: 768px) {
       header { flex-wrap: wrap; gap: 8px; }
       .summary-bar { padding: 12px 12px 0; }
-      .toolbar { padding: 12px 12px; }
+      .toolbar-wrap { padding: 12px 12px 10px; }
       .table-wrap { margin: 0 12px 12px; }
+      .filter-result-bar { padding: 4px 12px 8px; }
     }
   </style>
 </head>
@@ -267,35 +294,58 @@
 </div>
 
 <!-- ── Toolbar ────────────────────────────────────────── -->
-<div class="toolbar">
-  <input type="text" id="search-input" placeholder="🔍 선박명, 지역, 어종 검색..." oninput="applyFilters()" />
+<div class="toolbar-wrap">
+  <div class="toolbar">
 
-  <select id="filter-area" onchange="applyFilters()">
-    <option value="">전체 지역</option>
-    <option value="남해안">남해안</option>
-    <option value="서해안">서해안</option>
-    <option value="동해안">동해안</option>
-    <option value="제주도">제주도</option>
-  </select>
+    <!-- 날짜 -->
+    <div class="filter-group">
+      <span class="filter-label">📅 출조 날짜</span>
+      <select id="filter-date" onchange="applyFilters()">
+        <option value="">전체 날짜</option>
+      </select>
+    </div>
 
-  <select id="filter-date" onchange="applyFilters()">
-    <option value="">전체 날짜</option>
-  </select>
+    <!-- 어종 -->
+    <div class="filter-group">
+      <span class="filter-label">🐟 어종</span>
+      <select id="filter-fish" onchange="applyFilters()">
+        <option value="">전체 어종</option>
+      </select>
+    </div>
 
-  <select id="filter-status" onchange="applyFilters()">
-    <option value="">전체 상태</option>
-    <option value="ING">예약가능</option>
-    <option value="END">예약마감</option>
-    <option value="CALL">전화예약</option>
-  </select>
+    <div class="toolbar-divider"></div>
 
-  <button class="filter-tag" id="filter-seats" onclick="toggleSeatFilter()" title="남은 자리 있는 배만 보기">
-    🎣 남은좌석만 <span class="count-badge" id="seats-count">0</span>
-  </button>
+    <!-- 선박명 검색 -->
+    <div class="filter-group">
+      <span class="filter-label">🚢 선박명</span>
+      <input type="text" id="search-ship" placeholder="선박명 검색..." oninput="applyFilters()" />
+    </div>
 
-  <div class="spacer"></div>
-  <div style="font-size:0.8rem;color:#78909c" id="filter-result"></div>
+    <!-- 상태 -->
+    <div class="filter-group">
+      <span class="filter-label">📋 예약 상태</span>
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">전체 상태</option>
+        <option value="ING">예약가능</option>
+        <option value="END">예약마감</option>
+        <option value="CALL">전화예약</option>
+      </select>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <!-- 남은 좌석 버튼 -->
+    <div class="filter-group" style="justify-content:flex-end">
+      <span class="filter-label">&nbsp;</span>
+      <button class="filter-tag" id="filter-seats" onclick="toggleSeatFilter()" title="남은 자리 있는 배만 보기">
+        🎣 남은좌석만 <span class="count-badge" id="seats-count">0</span>
+      </button>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
 </div>
+<div class="filter-result-bar" id="filter-result"></div>
 
 <!-- ── Table ──────────────────────────────────────────── -->
 <div class="table-wrap">
@@ -312,7 +362,7 @@
 
 <!-- ── Footer ────────────────────────────────────────── -->
 <footer>
-  데이터 출처: sunsang24.com &nbsp;|&nbsp; 매일 오전 01:00 자동 갱신 &nbsp;|&nbsp; aboutfishing.kr
+  데이터 출처: sunsang24.com &nbsp;|&nbsp; 매일 오전 05:00 자동 갱신 &nbsp;|&nbsp; aboutfishing.kr
 </footer>
 
 <script>
@@ -345,12 +395,26 @@ async function loadData() {
 
     // 날짜 필터 옵션 채우기 (fishing_date = index 4)
     const dates = [...new Set(allData.map(r => r[4]))].filter(Boolean).sort();
-    const sel = document.getElementById("filter-date");
-    sel.innerHTML = '<option value="">전체 날짜</option>';
+    const selDate = document.getElementById("filter-date");
+    selDate.innerHTML = '<option value="">전체 날짜</option>';
     dates.forEach(d => {
       const opt = document.createElement("option");
       opt.value = d; opt.textContent = formatDate(d);
-      sel.appendChild(opt);
+      selDate.appendChild(opt);
+    });
+
+    // 어종 필터 옵션 채우기 (fish_types = index 7, 쉼표 구분)
+    const fishSet = new Set();
+    allData.forEach(r => {
+      if (r[7]) r[7].split(",").forEach(f => { const t = f.trim(); if (t) fishSet.add(t); });
+    });
+    const fishList = [...fishSet].sort((a, b) => a.localeCompare(b, "ko"));
+    const selFish = document.getElementById("filter-fish");
+    selFish.innerHTML = '<option value="">전체 어종</option>';
+    fishList.forEach(f => {
+      const opt = document.createElement("option");
+      opt.value = f; opt.textContent = f;
+      selFish.appendChild(opt);
     });
 
     updateSummary();
@@ -389,14 +453,17 @@ function updateSummary() {
 
 // ── 필터 & 정렬 ──────────────────────────────────────────
 function applyFilters() {
-  const q      = document.getElementById("search-input").value.toLowerCase();
-  const area   = document.getElementById("filter-area").value;
+  const shipQ  = document.getElementById("search-ship").value.toLowerCase();
+  const fish   = document.getElementById("filter-fish").value;
   const date_  = document.getElementById("filter-date").value;
   const status = document.getElementById("filter-status").value;
 
   filteredData = allData.filter(r => {
-    if (q && !`${r[1]}${r[2]}${r[7]}${r[8]}`.toLowerCase().includes(q)) return false;
-    if (area && r[2] !== area) return false;
+    if (shipQ && !r[1].toLowerCase().includes(shipQ)) return false;
+    if (fish) {
+      const types = r[7] ? r[7].split(",").map(f => f.trim()) : [];
+      if (!types.includes(fish)) return false;
+    }
     if (date_ && r[4] !== date_) return false;
     if (status && r[13] !== status) return false;
     if (seatFilter && (parseInt(r[12]) || 0) <= 0) return false;
@@ -412,7 +479,10 @@ function applyFilters() {
   });
 
   document.getElementById("filter-result").textContent =
-    `${filteredData.length}건 표시`;
+    filteredData.length === allData.length
+      ? `전체 ${allData.length}건`
+      : `${filteredData.length}건 표시 (전체 ${allData.length}건 중)`;
+
   currentPage = 1;
   renderTable();
   renderPagination();
@@ -426,9 +496,6 @@ function toggleSeatFilter() {
 }
 
 // ── 테이블 렌더링 ─────────────────────────────────────────
-const COLS = ["수집일시","선박명","지역","항구","출조일","출항","철수",
-              "어종","낚시방법","선비","정원","예약","남은좌석","","상태",""];
-
 function renderTable() {
   if (!filteredData.length) {
     document.getElementById("table-container").innerHTML =
@@ -447,9 +514,9 @@ function renderTable() {
       <th onclick="sortBy(2)" class="${sortCol===2?'sorted':''}">지역 <span class="sort-arrow">${sortCol===2?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(4)" class="${sortCol===4?'sorted':''}">출조일 <span class="sort-arrow">${sortCol===4?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th>출항/철수</th>
-      <th>어종(상품내용1)</th>
-      <th>낚시방법(상품내용2)</th>
-      <th>선비(상품내용3)</th>
+      <th>어종</th>
+      <th>낚시방법</th>
+      <th>선비</th>
       <th onclick="sortBy(10)" class="${sortCol===10?'sorted':''}">정원 <span class="sort-arrow">${sortCol===10?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(11)" class="${sortCol===11?'sorted':''}">예약 <span class="sort-arrow">${sortCol===11?(sortAsc?'▲':'▼'):'⇅'}</span></th>
       <th onclick="sortBy(12)" class="${sortCol===12?'sorted':''}">남은좌석 <span class="sort-arrow">${sortCol===12?(sortAsc?'▲':'▼'):'⇅'}</span></th>
