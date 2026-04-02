@@ -770,19 +770,20 @@ async function send(){
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
     let reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
-    // 잘린 문장 감지·제거: 마지막 일반 텍스트 줄이 불완전하면 잘라냄
+    // 잘린 문장 감지·제거: 명백히 잘린 경우(조사·명사로 끝남)에만 마지막 줄 제거
+    // 단, 제거 후 남은 텍스트가 있을 때만 적용 (전체 삭제 방지)
     {
       const lines=reply.split('\n');
-      // 링크·빈줄 제외한 마지막 텍스트 줄 찾기
-      const lastTxtIdx=lines.map((l,i)=>({l:l.trim(),i})).reverse()
-        .find(({l})=>l&&!/^\[.+\]\(https?:\/\//.test(l)&&!l.startsWith('|'));
-      if(lastTxtIdx){
-        const lt=lastTxtIdx.l;
-        // 완전한 문장 끝 패턴 (한국어 어미 + 기호)
-        const complete=/[요다!?.ㅎ]$|니다$|에요$|세요$|어요$|고요$|군요$|네요$|있어요$|없어요$|이에요$|거예요$|해요$|줄게요$|드려요$|볼게요$|아요$/.test(lt);
-        if(!complete&&lt.length>10){
-          // 불완전 마지막 줄 제거
-          lines.splice(lastTxtIdx.i,1);
+      const txtLines=lines.map((l,i)=>({l:l.trim(),i}))
+        .filter(({l})=>l&&!/^\[.+\]\(https?:\/\//.test(l)&&!l.startsWith('|'));
+      if(txtLines.length>=2){
+        // 텍스트 줄이 2줄 이상일 때만 마지막 줄 제거 고려
+        const last=txtLines[txtLines.length-1];
+        const lt=last.l;
+        // 명백히 잘린 패턴: 조사/전치사로 끝남 (에서, 에는, 을, 는, 이, 의, 으로, 에서의, 하여, 통해, 하면, 있어)
+        const truncated=/에서$|에는$|을$|를$|은$|는$|이$|의$|으로$|로$|하여$|통해$|하면$|있어$|하고$|이며$|위해$|대한$|따른$/.test(lt);
+        if(truncated&&lt.length>8){
+          lines.splice(last.i,1);
           reply=lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
         }
       }
