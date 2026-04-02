@@ -568,14 +568,37 @@ function mkAv(){
   d.appendChild(img); return d;
 }
 
+const URL_LABEL={
+  'booking.aboutfishing.kr/search/list?keyword=광어':'광어 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=쭈꾸미':'쭈꾸미 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=우럭':'우럭 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=갑오징어':'갑오징어 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=감성돔':'감성돔 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=도다리':'도다리 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=태안':'태안 낚시배 예약',
+  'booking.aboutfishing.kr/search/list?keyword=인천':'인천 낚시배 예약',
+  'booking.aboutfishing.kr/?mainTab=3':'조황·날씨·물때 확인',
+  'booking.aboutfishing.kr':'어바웃피싱 낚시배 예약',
+  'map.aboutfishing.kr':'낚시 포인트 지도',
+  'shop.aboutfishing.kr/exhibitiondetail/45270':'쭈꾸미·갑오징어 채비 쇼핑',
+  'shop.aboutfishing.kr/exhibitiondetail/53108':'광어 다운샷 채비 쇼핑',
+  'shop.aboutfishing.kr':'어바웃피싱 쇼핑몰',
+};
+function urlLabel(url){
+  const u=url.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  for(const[k,v] of Object.entries(URL_LABEL)) if(u.startsWith(k)||u===k) return v;
+  return null;
+}
 function parseMd(t){
-  // HTML escape
   let s=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Bold **text**
   s=s.replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
-  // Markdown links [text](url)
-  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-    '<a href="$2" target="_blank" rel="noopener" class="mlink">$1</a>');
+  // Markdown links [text](url) — use friendly label if text==url
+  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,(m,txt,url)=>{
+    const lbl=urlLabel(url);
+    const display=(txt===url||txt.startsWith('http'))?( lbl||txt):txt;
+    return `<a href="${url}" target="_blank" rel="noopener" class="mlink">${display}</a>`;
+  });
   // Strip heading # symbols
   s=s.replace(/^#{1,4}\s+/gm,'');
   // Bullet * / - at line start
