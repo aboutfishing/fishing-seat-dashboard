@@ -521,6 +521,9 @@ async function send(){
     if(/낚시대회|챔피언십|대회/.test(txt)){
       extra='[대회DB] 2026 어바웃피싱 챔피언십: 4~11월 서해안 마검포·오천항, 예선4회+결선, 연간2000명+, 슬로건 "낚시를 습관으로 기록을 전설로", 예약: booking.aboutfishing.kr\n\n';
     }
+    if(/클로드|claude|Claude|anthropic|앤스로픽|AI뉴스|AI 뉴스|최신AI|최신 AI/.test(txt)){
+      extra+='[최신AI뉴스 2026-04] ①Claude Code NO_FLICKER모드: CLAUDE_CODE_NO_FLICKER=1 환경변수로 활성화, 화면깜박임 해소·입력창 하단고정·마우스클릭지원(실험적). ②OpenClaude: npm 소스맵 통해 Claude Code 소스 유출(2026-03-31), GPT-4o·Gemini·Ollama 등 200개 모델을 Claude Code UI로 사용 가능. ③Boris Cherny(Claude Code 개발자): 수동배포 단계 실수로 유출, 프로세스 자동화 개선 진행 중. ④Claude 소크라테스 스킬: npx skills add RoundTable02/socrates-skill 설치, 직접답변 대신 질문으로 학습 유도. ⑤Anthropic 수익성: 2025 매출총이익률 40%(2027년 70% 목표·2028년 흑자 계획), Cursor가 매출 5억달러 대비 앤스로픽에 6.5억달러 지불 사례. ⑥Claude Memory Import: 다른 AI 메모리를 Claude로 이전 가능(유료 플랜), 프롬프트 복붙으로 설정 즉시 반영.\n\n';
+    }
     const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${extra}${txt}`;
     const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
     rmTyping(tid);
