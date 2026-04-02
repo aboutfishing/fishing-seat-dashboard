@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>어피 AF-Agent Demo · 어바웃피싱</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <title>어바웃피싱 AI Agent 데모</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js" crossorigin="anonymous"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -216,9 +218,63 @@
       .panel-l{width:240px}
       .phase-pills .pill:not(.active){display:none}
     }
+
+    /* PASSWORD GATE */
+    #pwGate{
+      position:fixed;inset:0;z-index:9999;
+      background:linear-gradient(135deg,#0052FF 0%,#003DD6 60%,#001A8C 100%);
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:0;
+    }
+    #pwGate.hidden{display:none}
+    .gw{
+      background:#fff;border-radius:20px;padding:36px 32px 32px;
+      width:min(360px,90vw);box-shadow:0 20px 60px rgba(0,0,50,.35);
+      text-align:center;
+    }
+    .gw-logo{width:64px;height:64px;border-radius:50%;margin:0 auto 16px;
+      background:var(--blue-l);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .gw-logo img{width:100%;height:100%;object-fit:cover}
+    .gw-title{font-size:18px;font-weight:800;color:var(--txt);margin-bottom:4px}
+    .gw-sub{font-size:12px;color:var(--txt-sub);margin-bottom:24px}
+    .gw-inp{
+      width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:12px;
+      font-size:15px;outline:none;transition:border .15s;text-align:center;
+      letter-spacing:3px;
+    }
+    .gw-inp:focus{border-color:var(--blue)}
+    .gw-btn{
+      width:100%;margin-top:14px;padding:14px;border:none;border-radius:12px;
+      background:var(--blue);color:#fff;font-size:15px;font-weight:700;
+      cursor:pointer;transition:background .15s;
+    }
+    .gw-btn:hover{background:var(--blue-d)}
+    .gw-err{font-size:12px;color:#ef4444;margin-top:8px;min-height:16px}
+    .gw-badge{
+      margin-top:20px;font-size:11px;color:rgba(255,255,255,.6);
+      display:flex;align-items:center;gap:5px;justify-content:center;
+    }
   </style>
 </head>
 <body>
+
+<!-- PASSWORD GATE -->
+<div id="pwGate">
+  <div class="gw">
+    <div class="gw-logo">
+      <img src="https://aboutfishing.kr/img/ai-assistant.webp" alt="어피"
+        onerror="this.src='';this.parentNode.textContent='AF'">
+    </div>
+    <div class="gw-title">어바웃피싱 AI Agent 데모</div>
+    <div class="gw-sub">내부 관계자 전용 접근 페이지입니다</div>
+    <input class="gw-inp" id="pwInput" type="password" placeholder="비밀번호"
+      maxlength="30" autocomplete="off" spellcheck="false">
+    <button class="gw-btn" onclick="checkPw()">입장하기</button>
+    <div class="gw-err" id="pwErr"></div>
+  </div>
+  <div class="gw-badge">🔒 어바웃피싱 내부 데모 · 외부 공개 금지</div>
+</div>
+
 <div class="app">
 
   <div class="hdr">
@@ -330,6 +386,33 @@
 </div>
 
 <script>
+// PASSWORD GATE
+(function(){
+  const PW='aboutfishing';
+  const KEY='af_demo_auth_v1';
+  if(sessionStorage.getItem(KEY)==='1'){
+    document.getElementById('pwGate').className='hidden';
+  }
+  window.checkPw=function(){
+    const v=document.getElementById('pwInput').value.trim();
+    if(v===PW){
+      sessionStorage.setItem(KEY,'1');
+      const g=document.getElementById('pwGate');
+      g.style.opacity='0';g.style.transition='opacity .35s';
+      setTimeout(()=>g.classList.add('hidden'),350);
+    }else{
+      document.getElementById('pwErr').textContent='비밀번호가 맞지 않습니다.';
+      document.getElementById('pwInput').value='';
+      document.getElementById('pwInput').focus();
+    }
+  };
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!document.getElementById('pwGate').classList.contains('hidden')){
+      window.checkPw();
+    }
+  });
+})();
+
 const CF = 'https://asia-northeast3-aboutfishingproduct.cloudfunctions.net/aboutfishing-gemini-chat';
 const LIVE = 'https://aboutfishing.kr/seat-data/{date}.json';
 const AV = 'https://aboutfishing.kr/img/ai-assistant.webp';
