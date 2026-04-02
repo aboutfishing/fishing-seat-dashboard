@@ -1,0 +1,131 @@
+name: BigQuery 투자자 뷰 초기 설정 (1회 실행)
+
+# 수동 실행 전용 — 처음 한 번만 실행하면 됩니다
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: GCP 인증 설정
+        run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
+          PROJECT=$(python3 -c "import json; print(json.load(open('/tmp/gcp-key.json'))['project_id'])")
+          SA_EMAIL=$(python3 -c "import json; print(json.load(open('/tmp/gcp-key.json'))['client_email'])")
+          echo "GCP_PROJECT=$PROJECT" >> $GITHUB_ENV
+          echo "SA_EMAIL=$SA_EMAIL"   >> $GITHUB_ENV
+          echo "✅ 프로젝트: $PROJECT"
+          echo "✅ 서비스 계정: $SA_EMAIL"
+
+      - name: gcloud 인증
+        run: |
+          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          gcloud config set project ${{ env.GCP_PROJECT }}
+
+      - name: BigQuery Python 클라이언트 설치
+        run: pip install google-cloud-bigquery --quiet
+
+      - name: BigQuery 뷰 생성 (bq_investor_setup.sql 실행)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+        run: |
+          python3 - <<'PYEOF'
+          import os
+          from google.cloud import bigquery
+
+          client = bigquery.Client()
+          project = client.project
+          print(f"✅ BigQuery 클라이언트 연결: {project}")
+
+          # SQL 파일 읽기
+          with open("scripts/bq_investor_setup.sql") as f:
+              sql_raw = f.read()
+
+          # 세미콜론 기준으로 문장 분리 (주석 포함 블록 처리)
+          statements = []
+          current = []
+          for line in sql_raw.splitlines():
+              stripped = line.strip()
+              # 빈 줄 또는 주석만 있는 줄 스킵
+              if not stripped or stripped.startswith("--"):
+                  continue
+              current.append(line)
+              if stripped.endswith(";"):
+                  stmt = "\n".join(current).strip().rstrip(";")
+                  if stmt:
+                      statements.append(stmt)
+                  current = []
+
+          print(f"총 {len(statements)}개 SQL 문 실행 예정")
+
+          for i, stmt in enumerate(statements, 1):
+              first_line = stmt.strip().splitlines()[0][:80]
+              print(f"\n[{i}/{len(statements)}] {first_line}...")
+              try:
+                  job = client.query(stmt)
+                  job.result()  # 완료 대기
+                  print(f"  ✅ 완료")
+              except Exception as e:
+                  err = str(e)
+                  # 이미 존재하는 경우 경고만 출력하고 계속 진행
+                  if "already exists" in err.lower():
+                      print(f"  ⚠️  이미 존재 (스킵): {err[:120]}")
+                  else:
+                      print(f"  ❌ 오류: {err[:200]}")
+                      raise
+
+          print("\n🎉 BigQuery 뷰 설정 완료!")
+          print("생성된 객체:")
+          print("  - fishing.naver_shopping_ext  (외부 테이블 - Sheets)")
+          print("  - fishing.v_investor_mastered (일간 마스터 뷰)")
+          print("  - fishing.v_investor_monthly  (월간 집계 뷰)")
+          print("  - fishing.v_investor_kpi_latest (최신 KPI 뷰)")
+          PYEOF
+
+      - name: 서비스 계정 이메일 출력 (Google Sheet 공유용)
+        run: |
+          echo ""
+          echo "══════════════════════════════════════════════════════"
+          echo "  ⚠️  중요: 아래 이메일을 Google Sheet에 공유하세요"
+          echo ""
+          echo "  서비스 계정: ${{ env.SA_EMAIL }}"
+          echo ""
+          echo "  시트 URL:"
+          echo "  https://docs.google.com/spreadsheets/d/1AGMVHBMBqNrC-HvLHz7iBAp_wk8kAGSgyPIztD-e-AM/edit"
+          echo ""
+          echo "  → 공유 → 뷰어로 위 이메일 추가"
+          echo "══════════════════════════════════════════════════════"
+
+      - name: 뷰 존재 검증
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+        run: |
+          python3 - <<'PYEOF'
+          from google.cloud import bigquery
+          client = bigquery.Client()
+          views = [
+              "v_investor_mastered",
+              "v_investor_monthly",
+              "v_investor_kpi_latest",
+          ]
+          print("뷰 생성 확인:")
+          all_ok = True
+          for v in views:
+              try:
+                  tbl = client.get_table(f"fishing.{v}")
+                  print(f"  ✅ fishing.{v}  ({tbl.table_type})")
+              except Exception as e:
+                  print(f"  ❌ fishing.{v} — {e}")
+                  all_ok = False
+          if all_ok:
+              print("\n✅ 모든 뷰 정상 생성됨")
+              print("다음 단계: '투자자 지표 내보내기' 워크플로우 실행")
+          else:
+              print("\n⚠️  일부 뷰 생성 실패 — 로그 확인 필요")
+          PYEOF
