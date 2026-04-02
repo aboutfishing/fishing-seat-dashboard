@@ -838,23 +838,29 @@ function getToday()   { return new Date().toISOString().slice(0,10); }
 function shipsToRows(ships){
   var rows = [];
   ships.forEach(function(s){
+    // seat-data JSON: ship 정보는 s.ship.* 중첩 객체, 나머지는 최상위 필드
+    var sh   = s.ship || {};
     var price = s.price ? Number(s.price).toLocaleString('ko-KR')+'원' : '-';
+    var areaMain = sh.area_main || s.area_main || (sh.area ? sh.area.split(' ')[0] : '');
+    var areaSub  = sh.area_sub  || s.area_sub  || sh.area || '';
     rows.push([
-      s.ship_no   || null,           // r[0]  AF boat_id
-      s.ship_name || '',             // r[1]  선박명
-      s.area_main || '',             // r[2]  광역
-      s.area_sub  || '',             // r[3]  항구
-      s.sdate     || '',             // r[4]  날짜
-      s.stime     || '',             // r[5]  출항
-      s.etime     || '',             // r[6]  귀항
-      s.fish_type || '',             // r[7]  어종
-      null,                          // r[8]  (미사용)
-      price,                         // r[9]  금액
-      99,                            // r[10] total (API 미제공)
-      s.schedule_no || null,         // r[11] schedule_no
-      s.remain != null ? s.remain : 0, // r[12] 남은좌석
-      s.status || 'ING',             // r[13] 상태
-      s.source || 'aboutfishing',     // r[14] 수집 출처
+      sh.no       || null,                          // r[0]  ship_no
+      sh.name     || s.ship_name || '',             // r[1]  선박명
+      areaMain,                                     // r[2]  광역
+      areaSub,                                      // r[3]  지역
+      s.sdate     || '',                            // r[4]  날짜
+      (s.stime    || '').slice(0,5),                // r[5]  출항
+      (s.etime    || '').slice(0,5),                // r[6]  귀항
+      s.fish_type || s.fishing_method || '',        // r[7]  어종
+      null,                                         // r[8]  (미사용)
+      price,                                        // r[9]  금액
+      99,                                           // r[10] 정원
+      s.schedule_no || null,                        // r[11] schedule_no
+      s.remain_embarkation_num != null
+        ? s.remain_embarkation_num
+        : (s.remain != null ? s.remain : 0),        // r[12] 남은좌석
+      s.schedule_status_code || s.status || 'ING',  // r[13] 상태코드
+      s.source || 'aboutfishing',                   // r[14] 수집 출처
     ]);
   });
   return rows;
@@ -938,7 +944,7 @@ function applyFilters() {
   var fishTerms = fish ? expandFishSynonyms(fish) : null;
 
   filtered = allRows.filter(function(r){
-    if(!r[0]) return false;                          // AF 파트너만 표시 (ship_no 없으면 제외)
+    // ship_no 필터 제거 — seat-data에서 전체 선박 표시
     if(fuseSet && !fuseSet.has(r)) return false;     // 통합 검색 필터
     if(boat && !(r[1]||'').toLowerCase().includes(boat)) return false;
     if(fishTerms) {
