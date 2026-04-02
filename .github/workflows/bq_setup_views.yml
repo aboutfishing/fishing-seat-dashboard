@@ -31,6 +31,31 @@ jobs:
       - name: BigQuery Python 클라이언트 설치
         run: pip install google-cloud-bigquery --quiet
 
+      - name: BigQuery 데이터셋 목록 확인 (디버그)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+        run: |
+          python3 - <<'PYEOF'
+          from google.cloud import bigquery
+          client = bigquery.Client()
+          project = client.project
+          print(f"✅ 프로젝트: {project}")
+          print("\n── 접근 가능한 데이터셋 목록 ──")
+          try:
+              datasets = list(client.list_datasets())
+              if datasets:
+                  for d in datasets:
+                      try:
+                          full = client.get_dataset(d.dataset_id)
+                          print(f"  {d.dataset_id}  →  location={full.location}")
+                      except Exception as ex:
+                          print(f"  {d.dataset_id}  →  (위치 조회 실패: {ex})")
+              else:
+                  print("  (데이터셋 없음 — 서비스 계정에 bigquery.datasets.list 권한이 없을 수 있음)")
+          except Exception as e:
+              print(f"  ❌ list_datasets 실패: {e}")
+          PYEOF
+
       - name: BigQuery 뷰 생성 (bq_investor_setup.sql 실행)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
@@ -38,21 +63,43 @@ jobs:
           python3 - <<'PYEOF'
           import os
           from google.cloud import bigquery
-
           import re
 
-          # 기본 클라이언트로 데이터셋 위치(location) 자동 감지
           client_default = bigquery.Client()
           project = client_default.project
           print(f"✅ BigQuery 프로젝트: {project}")
 
-          try:
-              ds = client_default.get_dataset("fishing")
-              location = ds.location
-              print(f"✅ fishing 데이터셋 위치: {location}")
-          except Exception as e:
-              location = "asia-northeast3"   # 기본값: 서울
-              print(f"⚠️  데이터셋 조회 실패, 기본 위치 사용: {location} ({e})")
+          # 모든 위치 후보 시도 순서
+          LOCATION_CANDIDATES = [
+              "asia-northeast3",   # 서울
+              "asia-northeast1",   # 도쿄
+              "US",
+              "us-central1",
+              "asia-east1",
+              "asia-southeast1",
+          ]
+
+          location = None
+          for loc in LOCATION_CANDIDATES:
+              try:
+                  test_client = bigquery.Client(project=project, location=loc)
+                  ds = test_client.get_dataset("fishing")
+                  location = ds.location
+                  print(f"✅ fishing 데이터셋 발견 — 위치: {location}")
+                  break
+              except Exception:
+                  pass
+
+          if location is None:
+              # 위치 없이 시도 (프로젝트 기본값 사용)
+              try:
+                  ds = client_default.get_dataset("fishing")
+                  location = ds.location
+                  print(f"✅ fishing 데이터셋 발견 (기본 클라이언트) — 위치: {location}")
+              except Exception as e:
+                  print(f"❌ fishing 데이터셋을 어느 위치에서도 찾을 수 없습니다: {e}")
+                  print("   → GCP Console에서 fishing 데이터셋의 실제 위치를 확인하세요.")
+                  raise
 
           # 올바른 location으로 클라이언트 재생성
           client = bigquery.Client(project=project, location=location)
