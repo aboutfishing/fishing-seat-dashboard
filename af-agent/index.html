@@ -2,1080 +2,526 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎣 어피 AF-Agent Demo - AboutFishing.kr</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>어피 AF-Agent Demo · 어바웃피싱</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js" crossorigin="anonymous"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #0052FF;
-      --accent: #FF6B35;
-      --bg-dark: #0D1117;
-      --bg-light: #F6F8FA;
-      --text-dark: #24292E;
-      --text-light: #6E7781;
-      --border: #D0D7DE;
-      --success: #28A745;
-      --warning: #FFC107;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
-      background: linear-gradient(135deg, #0052FF 0%, #003DAA 100%);
-      color: var(--text-dark);
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    /* ==================== HEADER ==================== */
-    .header {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .header-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .phase-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .phase-tab {
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1px solid var(--border);
-      background: var(--bg-light);
-      color: var(--text-dark);
-      cursor: default;
-      transition: all 0.2s;
-    }
-
-    .phase-tab.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-      box-shadow: 0 2px 8px rgba(0, 82, 255, 0.3);
-    }
-
-    .phase-tab.completed {
-      background: var(--success);
-      color: white;
-      border-color: var(--success);
-    }
-
-    /* ==================== MAIN LAYOUT ==================== */
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      gap: 1px;
-      background: var(--border);
-    }
-
-    .left-panel {
-      flex: 0 0 35%;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      overflow: hidden;
-    }
-
-    .right-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      overflow: hidden;
-    }
-
-    /* ==================== LEFT PANEL ==================== */
-    .phase-status-card {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-light);
-    }
-
-    .status-metric {
-      font-size: 13px;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .status-metric-value {
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-
-    .status-highlight {
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    .boats-section {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-      padding-left: 4px;
-    }
-
-    .boat-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .boat-card:hover {
-      box-shadow: 0 4px 12px rgba(0, 82, 255, 0.15);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .boat-name {
-      font-weight: 700;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .boat-live-badge {
-      display: inline-block;
-      background: #FFF3CD;
-      color: #856404;
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .boat-detail {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    .boat-detail strong {
-      color: var(--text-dark);
-      font-weight: 600;
-    }
-
-    .boat-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--bg-light);
-    }
-
-    .seat-indicator {
-      font-size: 13px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: var(--bg-light);
-    }
-
-    .seat-green { color: var(--success); }
-    .seat-orange { color: var(--accent); }
-    .seat-red { color: #D73A49; }
-
-    .boat-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .boat-btn:hover {
-      background: #0041CC;
-      box-shadow: 0 2px 6px rgba(0, 82, 255, 0.3);
-    }
-
-    .poi-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-
-    .poi-name {
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 6px;
-    }
-
-    .poi-meta {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-
-    /* ==================== RIGHT PANEL (CHAT) ==================== */
-    .chat-header {
-      padding: 16px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(135deg, var(--primary), #0041CC);
-      color: white;
-    }
-
-    .chat-header-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .chat-header-subtitle {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      display: flex;
-      gap: 10px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.user {
-      justify-content: flex-end;
-    }
-
-    .message-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
-    .message-bubble {
-      max-width: 70%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-
-    .message.bot .message-bubble {
-      background: var(--bg-light);
-      color: var(--text-dark);
-      border-radius: 12px 12px 12px 0;
-    }
-
-    .message.user .message-bubble {
-      background: var(--primary);
-      color: white;
-      border-radius: 12px 12px 0 12px;
-    }
-
-    .typing-indicator {
-      display: flex;
-      gap: 4px;
-      padding: 10px 14px;
-    }
-
-    .typing-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-light);
-      animation: typing 1.4s infinite;
-    }
-
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes typing {
-      0%, 60%, 100% { opacity: 0.3; }
-      30% { opacity: 1; }
-    }
-
-    .quick-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-
-    .action-chip {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 16px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      color: var(--text-dark);
-    }
-
-    .action-chip:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* ==================== CHAT INPUT ==================== */
-    .chat-input-area {
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      background: white;
-      display: flex;
-      gap: 8px;
-    }
-
-    .chat-input {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 10px 16px;
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .chat-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.1);
-    }
-
-    .send-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      transition: all 0.2s;
-    }
-
-    .send-btn:hover:not(:disabled) {
-      background: #0041CC;
-      box-shadow: 0 2px 8px rgba(0, 82, 255, 0.3);
-    }
-
-    .send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* ==================== BOOKING MODAL ==================== */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: modalSlide 0.3s ease-out;
-    }
-
-    @keyframes modalSlide {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: var(--text-dark);
-    }
-
-    .modal-section {
-      margin-bottom: 16px;
-    }
-
-    .modal-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-light);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .modal-input,
-    .modal-select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .modal-input:focus,
-    .modal-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.1);
-    }
-
-    .boat-summary {
-      background: var(--bg-light);
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      color: var(--text-dark);
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-
-    .boat-summary strong {
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .confirm-btn {
-      flex: 1;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-    }
-
-    .confirm-btn:hover {
-      background: #0041CC;
-      box-shadow: 0 2px 8px rgba(0, 82, 255, 0.3);
-    }
-
-    .cancel-btn {
-      flex: 1;
-      background: var(--bg-light);
-      color: var(--text-dark);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-    }
-
-    .cancel-btn:hover {
-      background: #E8EAED;
-    }
-
-    .success-message {
-      background: #D4EDDA;
-      color: #155724;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 16px;
-      border: 1px solid #C3E6CB;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    /* ==================== RESPONSIVE ==================== */
-    @media (max-width: 768px) {
-      .main {
-        flex-direction: column;
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{
+      --blue:#0052FF;--blue-d:#003DD6;--blue-l:#EAF0FF;
+      --bg:#F2F4F8;--white:#fff;
+      --txt:#1a1a2e;--txt-sub:#6B7280;
+      --border:#E5E7EB;
+      --green:#22C55E;--red:#EF4444;--amber:#F59E0B;
+      --radius:16px;
+    }
+    html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','Segoe UI',sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+    .app{display:flex;flex-direction:column;height:100vh;max-width:1200px;margin:0 auto}
+
+    /* HEADER */
+    .hdr{
+      background:linear-gradient(135deg,#0052FF 0%,#003DD6 100%);
+      padding:0 20px;height:58px;display:flex;align-items:center;gap:12px;
+      flex-shrink:0;box-shadow:0 2px 12px rgba(0,82,255,.25);
+    }
+    .hdr-avatar{
+      width:36px;height:36px;border-radius:50%;border:2.5px solid rgba(255,255,255,.7);
+      object-fit:cover;flex-shrink:0;background:#fff;
+    }
+    .hdr-fb{
+      width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);
+      display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;
+      color:#fff;flex-shrink:0;display:none;
+    }
+    .hdr-info{flex:1;min-width:0}
+    .hdr-info strong{display:block;font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hdr-info small{font-size:11px;color:rgba(255,255,255,.78);display:flex;align-items:center;gap:4px}
+    .hdr-dot{width:6px;height:6px;background:#22C55E;border-radius:50%;display:inline-block;flex-shrink:0}
+    .phase-pills{display:flex;gap:5px;flex-shrink:0}
+    .pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);white-space:nowrap}
+    .pill.done{background:rgba(255,255,255,.25);color:#fff}
+    .pill.active{background:#fff;color:var(--blue)}
+
+    /* MAIN */
+    .main{flex:1;display:flex;overflow:hidden}
+
+    /* LEFT PANEL */
+    .panel-l{
+      width:276px;flex-shrink:0;display:flex;flex-direction:column;
+      border-right:1px solid var(--border);background:var(--white);overflow:hidden;
+    }
+    .panel-l-inner{flex:1;overflow-y:auto;padding:12px 10px}
+    .panel-l-inner::-webkit-scrollbar{width:3px}
+    .panel-l-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+    .stats-card{
+      background:linear-gradient(135deg,#EFF4FF 0%,#E8EFFF 100%);
+      border-radius:12px;padding:10px 12px;margin-bottom:10px;
+    }
+    .stats-title{font-size:10px;font-weight:700;color:var(--blue);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+    .stat{background:#fff;border-radius:8px;padding:6px 8px}
+    .stat .v{font-size:13px;font-weight:800;color:var(--txt)}
+    .stat .v .up{font-size:10px;color:#16a34a;font-weight:700}
+    .stat .k{font-size:10px;color:var(--txt-sub);margin-top:1px}
+
+    .sec-lbl{font-size:10px;font-weight:700;color:var(--txt-sub);letter-spacing:.5px;text-transform:uppercase;padding:8px 2px 5px}
+
+    /* BOAT CARD */
+    .bcard{
+      background:#fff;border:1.5px solid var(--border);border-radius:12px;
+      padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .18s;
+    }
+    .bcard:hover{border-color:var(--blue);box-shadow:0 3px 14px rgba(0,82,255,.14);transform:translateY(-1px)}
+    .bcard:active{transform:scale(.98)}
+    .bc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .bc-name{font-size:13px;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+    .sbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;margin-left:6px}
+    .sg{background:#DCFCE7;color:#15803D}
+    .sa{background:#FEF3C7;color:#92400E}
+    .sr{background:#FEE2E2;color:#991B1B}
+    .bc-meta{font-size:11px;color:var(--txt-sub);line-height:1.7;margin-bottom:4px}
+    .bc-foot{display:flex;align-items:center;justify-content:space-between}
+    .bc-price{font-size:12px;font-weight:700;color:var(--blue)}
+    .live-lbl{font-size:9px;background:#FFF3CD;color:#856404;padding:2px 6px;border-radius:8px;font-weight:700;margin-left:4px}
+    .btn-bk{font-size:11px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:4px 11px;cursor:pointer;transition:background .15s}
+    .btn-bk:hover{background:var(--blue-d)}
+
+    /* POI */
+    .pcard{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:9px 11px;margin-bottom:6px}
+    .pc-name{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:3px}
+    .pc-meta{font-size:11px;color:var(--txt-sub);line-height:1.6}
+    .pc-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+    .pc-tag{font-size:10px;background:var(--blue-l);color:var(--blue);padding:1px 6px;border-radius:7px;font-weight:600}
+
+    /* RIGHT: CHAT */
+    .panel-r{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--white)}
+
+    .chat-msgs{
+      flex:1;overflow-y:auto;padding:16px 16px 8px;
+      display:flex;flex-direction:column;gap:12px;
+      scrollbar-width:thin;scrollbar-color:#e0e0e0 transparent;
+    }
+    .chat-msgs::-webkit-scrollbar{width:4px}
+    .chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+    .msg{display:flex;gap:8px;max-width:80%;animation:mi .2s ease-out}
+    @keyframes mi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .msg.bot{align-self:flex-start}
+    .msg.user{align-self:flex-end;flex-direction:row-reverse}
+    .mav{width:30px;height:30px;border-radius:50%;flex-shrink:0;overflow:hidden;background:var(--blue-l)}
+    .mav img{width:100%;height:100%;object-fit:cover;display:block}
+    .mav-fb{width:30px;height:30px;border-radius:50%;background:var(--blue);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+    .mb{padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.65;word-break:break-word;max-width:100%}
+    .msg.bot .mb{background:#F4F6FB;color:var(--txt);border-radius:4px 16px 16px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .msg.user .mb{background:var(--blue);color:#fff;border-radius:16px 4px 16px 16px}
+
+    .typing{display:flex;gap:4px;padding:11px 14px;background:#F4F6FB;border-radius:4px 16px 16px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .td{width:7px;height:7px;background:#B0BAD3;border-radius:50%;animation:dot .9s infinite}
+    .td:nth-child(2){animation-delay:.15s}
+    .td:nth-child(3){animation-delay:.3s}
+    @keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+    /* CHIPS */
+    .chips-area{padding:8px 16px 0;display:flex;gap:6px;flex-wrap:wrap}
+    .chip{
+      padding:6px 13px;background:var(--blue-l);color:var(--blue);border:none;
+      border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;
+      white-space:nowrap;transition:all .15s;font-family:inherit;
+    }
+    .chip:hover{background:var(--blue);color:#fff;transform:translateY(-1px)}
+    .chip:active{transform:scale(.95)}
+
+    /* INPUT */
+    .input-area{padding:10px 12px 12px;border-top:1px solid var(--border);flex-shrink:0}
+    .input-row{display:flex;gap:8px;align-items:center}
+    .chat-in{
+      flex:1;border:1.5px solid var(--border);border-radius:100px;
+      padding:10px 16px;font-size:14px;outline:none;font-family:inherit;
+      transition:border-color .2s;background:#fafafa;
+    }
+    .chat-in:focus{border-color:var(--blue);background:#fff}
+    .send-btn{
+      width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;
+      border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;transition:all .15s;
+    }
+    .send-btn:hover:not(:disabled){background:var(--blue-d);transform:scale(1.08)}
+    .send-btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+    .send-btn svg{width:17px;height:17px;fill:currentColor}
+    .input-hint{font-size:10px;color:#bbb;text-align:center;padding-top:5px}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+    .modal-bg.open{display:flex}
+    .modal{background:#fff;border-radius:20px;padding:22px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:mi2 .25s ease-out}
+    @keyframes mi2{from{transform:translateY(-12px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-tit{font-size:17px;font-weight:800;margin-bottom:14px}
+    .m-binfo{background:var(--blue-l);border-radius:10px;padding:10px 13px;font-size:13px;line-height:1.7;margin-bottom:14px}
+    .m-binfo strong{color:var(--blue);font-size:14px;display:block;margin-bottom:2px}
+    .field{margin-bottom:11px}
+    .field label{display:block;font-size:11px;font-weight:700;color:var(--txt-sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+    .field input,.field select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+    .field input:focus,.field select:focus{border-color:var(--blue)}
+    .m-btns{display:flex;gap:8px;margin-top:16px}
+    .btn-ok{flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+    .btn-ok:hover{background:var(--blue-d)}
+    .btn-no{flex:1;background:#F3F4F6;color:var(--txt);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .ok-box{background:#DCFCE7;color:#166534;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;border:1px solid #BBF7D0}
+
+    /* MOBILE */
+    @media(max-width:767px){
+      html,body{overflow:hidden}
+      .app{height:100dvh}
+      .main{flex-direction:column}
+      .panel-l{
+        width:100%;border-right:none;border-bottom:1px solid var(--border);
+        overflow:hidden;transition:max-height .3s ease;max-height:0;
       }
+      .panel-l.expanded{max-height:38vh}
+      .panel-l-inner{overflow-x:auto;overflow-y:hidden;padding:10px}
+      .boats-wrap{display:flex;gap:8px;min-width:max-content}
+      .bcard{min-width:195px;margin-bottom:0}
+      .stats-card,.sec-lbl.poi-lbl,.poi-section{display:none}
+      .phase-pills{display:none}
+      .hdr{height:54px;padding:0 14px;gap:10px}
+      .hdr-info strong{font-size:13px}
+      .panel-r{min-height:0}
+      .chat-msgs{padding:12px 12px 6px}
+      .msg{max-width:88%}
+      .chips-area{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:6px 12px 0}
+      .chips-area::-webkit-scrollbar{display:none}
+      .input-area{padding:8px 10px 10px}
+      .chat-in{font-size:16px;padding:9px 14px}
 
-      .left-panel {
-        flex: 0 0 35vh;
+      /* mobile top toggle */
+      .m-toggle{
+        display:flex;align-items:center;justify-content:space-between;
+        padding:9px 16px;background:#fff;border-bottom:1px solid var(--border);
+        cursor:pointer;flex-shrink:0;
       }
-
-      .right-panel {
-        flex: 1;
-      }
-
-      .message-bubble {
-        max-width: 85%;
-      }
-
-      .phase-tabs {
-        overflow-x: auto;
-      }
+      .m-toggle-lbl{font-size:12px;font-weight:700;color:var(--txt)}
+      .m-toggle-r{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt-sub)}
+      .m-arrow{font-size:11px;transition:transform .25s;color:var(--txt-sub)}
     }
-
-    /* ==================== SCROLLBAR ==================== */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    @media(min-width:768px){
+      .m-toggle{display:none}
+      .boats-wrap{display:block}
     }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #D0D7DE;
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #A4AEBB;
+    @media(min-width:768px) and (max-width:1023px){
+      .panel-l{width:240px}
+      .phase-pills .pill:not(.active){display:none}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- ==================== HEADER ==================== -->
-    <div class="header">
-      <div class="header-top">
-        <div class="header-title">🎣 어피 AF-Agent Demo</div>
-        <div style="font-size: 12px; color: var(--text-light);">AboutFishing.kr</div>
-      </div>
-      <div class="phase-tabs">
-        <div class="phase-tab completed" title="Phase 0: 선박 + Gemini 챗봇">🟢 Phase 0</div>
-        <div class="phase-tab active" title="Phase 1: 실시간 API">🟡 Phase 1</div>
-        <div class="phase-tab" title="Phase 2: RAG 조황 데이터">🟣 Phase 2</div>
-        <div class="phase-tab" title="Phase 3: 예약 Agent">🔵 Phase 3</div>
-      </div>
+<div class="app">
+
+  <div class="hdr">
+    <img class="hdr-avatar" id="hdrAv"
+      src="https://aboutfishing.kr/img/ai-assistant.webp" alt="어피"
+      onerror="this.style.display='none';document.getElementById('hdrFb').style.display='flex'">
+    <div class="hdr-fb" id="hdrFb">AF</div>
+    <div class="hdr-info">
+      <strong>어피 · 어바웃피싱 AI</strong>
+      <small><span class="hdr-dot"></span>어바웃피싱 AI 도우미</small>
     </div>
-
-    <!-- ==================== MAIN CONTENT ==================== -->
-    <div class="main">
-      <!-- LEFT PANEL -->
-      <div class="left-panel">
-        <div class="phase-status-card">
-          <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-dark);">📊 Today Stats</div>
-          <div class="status-metric">
-            <span>오늘 GMV</span>
-            <span class="status-metric-value"><span class="status-highlight">1,405,600원</span> ↑18.2%</span>
-          </div>
-          <div class="status-metric">
-            <span>전환율</span>
-            <span class="status-metric-value">48.32%</span>
-          </div>
-          <div class="status-metric">
-            <span>등록선박</span>
-            <span class="status-metric-value">765척</span>
-          </div>
-          <div class="status-metric">
-            <span>회원수</span>
-            <span class="status-metric-value">247,876명</span>
-          </div>
-        </div>
-
-        <div class="boats-section">
-          <div class="section-title">🚢 실시간 선박</div>
-          <div id="boats-container"></div>
-
-          <div class="section-title" style="margin-top: 24px;">📍 거제도 추천 포인트 (Phase 2)</div>
-          <div id="poi-container"></div>
-        </div>
-      </div>
-
-      <!-- RIGHT PANEL (CHAT) -->
-      <div class="right-panel">
-        <div class="chat-header">
-          <div class="chat-header-title">🎣 어피 AI 어시스턴트</div>
-          <div class="chat-header-subtitle">낚시배 예약 · 조황 정보 · 포인트 추천</div>
-        </div>
-
-        <div class="chat-messages" id="chat-messages">
-          <div class="message bot">
-            <div class="message-avatar">🎣</div>
-            <div class="message-bubble">
-              안녕하세요! 어바웃피싱의 AI 낚시 도우미 어피입니다. 원하는 어종과 지역을 말씀해주시면 맞춤 추천을 해드려요! 🐟
-            </div>
-          </div>
-        </div>
-
-        <div class="chat-input-area">
-          <input
-            type="text"
-            id="chat-input"
-            class="chat-input"
-            placeholder="낚시 관련 질문을 입력하세요..."
-            autocomplete="off"
-          >
-          <button class="send-btn" id="send-btn">➤</button>
-        </div>
-      </div>
+    <div class="phase-pills">
+      <span class="pill done">Phase 0</span>
+      <span class="pill active">Phase 1</span>
+      <span class="pill">Phase 2</span>
+      <span class="pill">Phase 3</span>
     </div>
   </div>
 
-  <!-- BOOKING MODAL -->
-  <div class="modal-overlay" id="booking-modal-overlay">
-    <div class="modal">
-      <div class="modal-title">🎣 낚시배 예약</div>
-      <div id="success-message-container"></div>
+  <div class="main">
 
-      <div class="boat-summary" id="modal-boat-info"></div>
+    <!-- LEFT -->
+    <div class="panel-l" id="panelL">
+      <div class="panel-l-inner">
+        <div class="stats-card">
+          <div class="stats-title">오늘 서비스 현황</div>
+          <div class="stats-grid">
+            <div class="stat"><div class="v">140만<span class="up"> ↑18%</span></div><div class="k">오늘 GMV</div></div>
+            <div class="stat"><div class="v">48.3%</div><div class="k">전환율</div></div>
+            <div class="stat"><div class="v">765척</div><div class="k">등록 선박</div></div>
+            <div class="stat"><div class="v">24.7만</div><div class="k">회원수</div></div>
+          </div>
+        </div>
+        <div class="sec-lbl">실시간 선박</div>
+        <div id="boatsList" class="boats-wrap"></div>
+        <div class="poi-section">
+          <div class="sec-lbl poi-lbl" style="margin-top:10px">거제도 추천 포인트</div>
+          <div id="poiList"></div>
+        </div>
+      </div>
+    </div>
 
-      <div class="modal-section">
-        <label class="modal-label">출조 날짜</label>
-        <input type="date" id="booking-date" class="modal-input">
+    <!-- RIGHT -->
+    <div class="panel-r">
+
+      <div class="m-toggle" id="mToggle" onclick="togglePanel()">
+        <span class="m-toggle-lbl">선박 보기</span>
+        <div class="m-toggle-r">
+          <span id="toggleMeta">5척</span>
+          <span class="m-arrow" id="mArrow">▼</span>
+        </div>
       </div>
 
-      <div class="modal-section">
-        <label class="modal-label">인원 수</label>
-        <select id="booking-guests" class="modal-select">
-          <option value="">인원을 선택하세요</option>
-          <option value="1">1명</option>
-          <option value="2">2명</option>
-          <option value="3">3명</option>
-          <option value="4">4명</option>
-          <option value="5">5명</option>
-          <option value="6">6명</option>
-        </select>
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="msg bot">
+          <div class="mav"><img src="https://aboutfishing.kr/img/ai-assistant.webp" alt="어피" onerror="this.parentNode.outerHTML='<div class=mav-fb>AF</div>'"></div>
+          <div class="mb">안녕하세요, 어바웃피싱 고객님의 비서 어피입니다.<br>원하시는 어종·지역을 알려주시면 딱 맞는 낚시배를 찾아드릴게요!</div>
+        </div>
       </div>
 
-      <div class="modal-section">
-        <label class="modal-label">연락처</label>
-        <input type="tel" id="booking-phone" class="modal-input" placeholder="010-0000-0000">
+      <!-- 예시 질문 칩 (실데이터 기반) -->
+      <div class="chips-area" id="chipsArea">
+        <button class="chip" onclick="sendChip(this)">4월 광어 잘 잡혀?</button>
+        <button class="chip" onclick="sendChip(this)">인천 쭈꾸미 배 있어?</button>
+        <button class="chip" onclick="sendChip(this)">우럭 시즌 언제야?</button>
+        <button class="chip" onclick="sendChip(this)">갑오징어 장비 추천</button>
+        <button class="chip" onclick="sendChip(this)">거제 감성돔 포인트</button>
+        <button class="chip" onclick="sendChip(this)">태안 낚시배 요금</button>
       </div>
 
-      <div class="modal-buttons">
-        <button class="confirm-btn" onclick="confirmBooking()">예약 확정하기</button>
-        <button class="cancel-btn" onclick="closeBookingModal()">취소</button>
+      <div class="input-area">
+        <div class="input-row">
+          <input id="chatIn" class="chat-in" type="text"
+            placeholder="무엇이든 물어보세요..." autocomplete="off" maxlength="200">
+          <button id="sendBtn" class="send-btn" onclick="send()" aria-label="전송">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <div class="input-hint">Powered by Google Gemini · 어바웃피싱 AI</div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // ==================== CONFIG ====================
-    const CF_URL = 'https://asia-northeast3-aboutfishingproduct.cloudfunctions.net/aboutfishing-gemini-chat';
-    const LIVE_DATA_URL = 'https://aboutfishing.kr/seat-data/{date}.json';
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-tit">낚시배 예약</div>
+    <div id="okBox"></div>
+    <div class="m-binfo" id="mBoat"></div>
+    <div class="field"><label>출조 날짜</label><input type="date" id="bkDate"></div>
+    <div class="field">
+      <label>인원 수</label>
+      <select id="bkGuests">
+        <option value="">선택하세요</option>
+        <option>1명</option><option>2명</option><option>3명</option>
+        <option>4명</option><option>5명</option><option>6명</option>
+      </select>
+    </div>
+    <div class="field"><label>연락처</label><input type="tel" id="bkPhone" placeholder="010-0000-0000"></div>
+    <div class="m-btns">
+      <button class="btn-ok" onclick="confirmBook()">예약 확정</button>
+      <button class="btn-no" onclick="closeModal()">취소</button>
+    </div>
+  </div>
+</div>
 
-    const DEMO_BOATS = [
-      { id:'B001', name:'킹콩2호', port:'인천 남항', species:'쭈꾸미,갑오징어', seats:6, price:65000, depart:'05:30', return:'13:00', status:'ING' },
-      { id:'B002', name:'에프원호', port:'인천 연안부두', species:'쭈꾸미,갑오징어', seats:3, price:70000, depart:'06:00', return:'14:00', status:'ING' },
-      { id:'B003', name:'태안마린', port:'태안 안면도', species:'광어,우럭', seats:10, price:80000, depart:'05:00', return:'12:00', status:'ING' },
-      { id:'B004', name:'군산대첩호', port:'군산 군산항', species:'넙치,우럭', seats:15, price:75000, depart:'04:30', return:'14:00', status:'ING' },
-      { id:'B005', name:'거제스타', port:'경남 거제', species:'감성돔,볼락,무늬오징어', seats:0, price:90000, depart:'06:00', return:'15:00', status:'END' },
-    ];
+<script>
+const CF = 'https://asia-northeast3-aboutfishingproduct.cloudfunctions.net/aboutfishing-gemini-chat';
+const LIVE = 'https://aboutfishing.kr/seat-data/{date}.json';
+const AV = 'https://aboutfishing.kr/img/ai-assistant.webp';
 
-    const RAG_DATA = {"fish_rag":{"주꾸미":{"monthly":{"11":3,"9":22,"10":8,"12":2,"3":2},"seas":["서해중부","남해동부"],"tips":[{"date":"2025-09-18","sea":"서해중부","tip":"오거스175M PR100L 세네라이트에기.","img":"https://image.aboutfishing.kr/uploads/2025/09/18/30b98bf3-71e7-4c40-8bfb-72d98fb78e37@--.jpg"},{"date":"2024-10-25","sea":"남해동부","tip":"국민단차를 주고 천천히 끌어 오는데 갑오징어 입질 같이 쪽쪽쪽 ㅎㅎ","img":"https://image.aboutfishing.kr/uploads/2024/10/26/09fc5f90-6ca9-4bde-b650-2b9f51fbd791@--.jpeg"}]},"갑오징어":{"monthly":{"3":2,"9":30,"10":17,"11":7,"4":3},"seas":["서해중부","남해동부"],"tips":[{"date":"2025-10-02","sea":"서해중부","tip":"믿고쓰는 요즈리틴셀 수박","img":"https://image.aboutfishing.kr/uploads/2025/10/02/ae83a893-2b98-4cd6-9dcf-29e69c7b6f85@--.jpg"},{"date":"2025-09-18","sea":"서해중부","tip":"쭈꾸미 낚시는 봉돌 하나에 에기 하나 간단하게!","img":"https://image.aboutfishing.kr/uploads/2025/09/18/30b98bf3-71e7-4c40-8bfb-72d98fb78e37@--.jpg"}]},"넙치":{"monthly":{"4":9,"5":8,"3":7,"6":5,"7":4,"8":4,"9":6,"10":7,"11":8,"12":7,"1":5,"2":4},"seas":["서해중부","남해서부"],"tips":[{"date":"2025-11-05","sea":"서해중부","tip":"무의도에는 사리 물때에는 가급적 피하는 것이 좋을 것 같아요.","img":"https://image.aboutfishing.kr/uploads/2025/11/05/img1.jpg"},{"date":"2025-04-18","sea":"서해중부","tip":"광어 낚시는 선장님 말씀대로 바닥을 긁어주면 입질이 와요!","img":"https://image.aboutfishing.kr/uploads/2025/04/18/img2.jpg"}]},"조피볼락":{"monthly":{"4":8,"3":9,"2":7,"1":5,"12":8,"11":6,"5":5,"6":3},"seas":["서해중부","남해동부"],"tips":[{"date":"2025-04-01","sea":"서해중부","tip":"우럭은 봄에 가장 잘 잡혀요. 수심 30m 바닥 공략!","img":"https://image.aboutfishing.kr/uploads/2025/04/01/img3.jpg"}]},"감성돔":{"monthly":{"4":1,"5":3,"10":8,"11":9,"3":2,"9":4},"seas":["남해동부","남해서부"],"tips":[{"date":"2025-11-10","sea":"남해동부","tip":"26m~28m 바닥을 공략했네요 감성돔 씨알이 굵어요","img":"https://image.aboutfishing.kr/uploads/2025/11/10/img4.jpg"}]},"참돔":{"monthly":{"4":2,"5":7,"6":8,"7":6,"9":12,"10":9,"11":5},"seas":["서해중부","남해서부"],"tips":[{"date":"2025-09-15","sea":"서해중부","tip":"타이라바 80g 오렌지 계열로 중층 공략했어요","img":"https://image.aboutfishing.kr/uploads/2025/09/15/img5.jpg"}]},"삼치":{"monthly":{"9":8,"10":12,"11":6,"8":4,"4":1},"seas":["동해남부","남해동부"],"tips":[{"date":"2025-10-20","sea":"남해동부","tip":"오늘 배에서 나온 삼치는 모두 폴링 10초 이내에서 잡혔습니다.","img":"https://image.aboutfishing.kr/uploads/2025/10/20/img6.jpg"}]}},"poi_content":[{"poi_id":"POI001","lat_lon":"34.777384, 128.652514","addr":"경상남도 거제시 동부면 학동리 150-1","name":"고촌방파제","type":"방파제","facilities":"주차장,화장실","fish":"감성돔,무늬오징어,벵에돔,볼락","video":"POI001_고촌방파제.mp4"},{"poi_id":"POI002","lat_lon":"34.764410, 128.585797","addr":"경상남도 거제시 남부면 탑포리 539-8","name":"쌍근방파제","type":"방파제","facilities":"주차장","fish":"감성돔,무늬오징어,벵에돔,볼락","video":"POI002_쌍근방파제.mp4"},{"poi_id":"POI003","lat_lon":"34.806701, 128.667858","addr":"경상남도 거제시 일운면 망치리 472-4","name":"망치몽돌해수욕장 끝자리","type":"해변","facilities":"주차장","fish":"농어,돌돔,무늬오징어,볼락,우럭","video":"POI003_망치몽돌해수욕장 끝자리.mp4"},{"poi_id":"POI004","lat_lon":"34.792391, 128.666903","addr":"경상남도 거제시 일운면 망치리 750","name":"양화방파제","type":"방파제","facilities":"주차장,화장실","fish":"감성돔,무늬오징어,벵에돔,볼락","video":"POI004_양화방파제.mp4"}]};
+const BOATS = [
+  {id:'B001',name:'킹콩2호',port:'인천 남항',sp:'쭈꾸미,갑오징어',seats:6,price:65000,dep:'05:30',ret:'13:00'},
+  {id:'B002',name:'에프원호',port:'인천 연안부두',sp:'쭈꾸미,갑오징어',seats:3,price:70000,dep:'06:00',ret:'14:00'},
+  {id:'B003',name:'태안마린',port:'태안 안면도',sp:'광어,우럭',seats:10,price:80000,dep:'05:00',ret:'12:00'},
+  {id:'B004',name:'군산대첩호',port:'군산항',sp:'넙치,우럭',seats:15,price:75000,dep:'04:30',ret:'14:00'},
+  {id:'B005',name:'거제스타',port:'경남 거제',sp:'감성돔,볼락,무늬오징어',seats:0,price:90000,dep:'06:00',ret:'15:00'},
+];
 
-    const FISH_KEYWORDS = ['쭈꾸미','주꾸미','갑오징어','광어','넙치','우럭','볼락','조피볼락','참돔','감성돔','농어','갈치','삼치','배스'];
+const RAG = {
+  주꾸미:{monthly:{9:22,10:8,11:3,3:2},seas:['서해중부','남해동부'],tips:[{date:'2025-09-18',sea:'서해중부',tip:'오거스175M PR100L 세네라이트에기 효과적'},{date:'2024-10-25',sea:'남해동부',tip:'국민단차로 천천히 끌어오면 갑오징어도 같이 올라와요'}]},
+  갑오징어:{monthly:{9:30,10:17,11:7,3:2,4:3},seas:['서해중부','남해동부'],tips:[{date:'2025-10-02',sea:'서해중부',tip:'요즈리틴셀 수박패턴이 잘 먹혔어요'},{date:'2025-09-18',sea:'서해중부',tip:'봉돌 하나에 에기 하나, 심플하게!'}]},
+  넙치:{monthly:{4:9,5:8,3:7,9:6,10:7,11:8,12:7,1:5,2:4},seas:['서해중부','남해서부'],tips:[{date:'2025-04-18',sea:'서해중부',tip:'선장님 말씀대로 바닥을 긁어주면 입질이 와요!'}]},
+  조피볼락:{monthly:{3:9,4:8,2:7,12:8,1:5,11:6,5:5},seas:['서해중부','남해동부'],tips:[{date:'2025-04-01',sea:'서해중부',tip:'봄 시즌! 수심 30m 바닥을 집중 공략하세요'}]},
+  감성돔:{monthly:{11:9,10:8,9:4,5:3,4:1},seas:['남해동부','남해서부'],tips:[{date:'2025-11-10',sea:'남해동부',tip:'26~28m 바닥 공략, 씨알이 굵어요'}]},
+  참돔:{monthly:{9:12,10:9,6:8,5:7,7:6,11:5,4:2},seas:['서해중부','남해서부'],tips:[{date:'2025-09-15',sea:'서해중부',tip:'타이라바 80g 오렌지 계열로 중층 공략'}]},
+  삼치:{monthly:{10:12,9:8,11:6,8:4,4:1},seas:['동해남부','남해동부'],tips:[{date:'2025-10-20',sea:'남해동부',tip:'폴링 10초 이내 집중, 배에서 나온 삼치 모두 이 타이밍'}]},
+};
 
-    const FALLBACK_RESPONSES = {
-      '주꾸미': '🦑 쭈꾸미/주꾸미는 9~11월이 피크 시즌이에요! 서해중부 출항 배에서 잘 잡힙니다.',
-      '갑오징어': '🦑 갑오징어는 9~10월 서해중부가 최고예요! 에기 낚시로 도전해보세요.',
-      '넙치': '🐟 광어(넙치)는 4월에도 서해중부에서 잘 잡혀요! 바닥을 긁어주는 게 포인트!',
-      '조피볼락': '🐟 우럭(조피볼락)은 봄(3-4월)이 시즌이에요! 수심 30m 바닥을 공략하세요.',
-      default: '어바웃피싱에서 전국 낚시배 예약이 가능합니다! 🎣 원하는 어종과 지역을 알려주시면 맞춤 추천해드려요.',
-    };
+const POIS = [
+  {name:'고촌방파제',type:'방파제',addr:'거제시 동부면 학동리',fac:'주차·화장실',fish:'감성돔,무늬오징어,벵에돔,볼락'},
+  {name:'쌍근방파제',type:'방파제',addr:'거제시 남부면 탑포리',fac:'주차',fish:'감성돔,무늬오징어,벵에돔,볼락'},
+  {name:'망치몽돌해수욕장',type:'해변',addr:'거제시 일운면 망치리',fac:'주차',fish:'농어,돌돔,무늬오징어,볼락'},
+  {name:'양화방파제',type:'방파제',addr:'거제시 일운면 망치리',fac:'주차·화장실',fish:'감성돔,무늬오징어,볼락'},
+];
 
-    // ==================== STATE ====================
-    let boats = [...DEMO_BOATS];
-    let selectedBoat = null;
-    let isLoading = false;
-    let fuseIndex = null;
+const FB = {
+  주꾸미:'쭈꾸미/주꾸미는 9~11월이 피크 시즌이에요! 9월 22건으로 서해중부 인천 출항 배에서 가장 많이 잡혀요.',
+  갑오징어:'갑오징어는 9~10월 피크! 9월 30건, 10월 17건 기록이에요. 에기 낚시로 도전해보세요.',
+  넙치:'광어(넙치)는 4월이 성수기예요. 이번 달 서해중부에서 9건 조과 중이에요. 바닥 긁기가 핵심이에요!',
+  조피볼락:'우럭(조피볼락)은 봄(3~4월) 서해중부가 최고예요! 수심 30m 바닥을 집중 공략하세요.',
+  default:'어바웃피싱에서 전국 낚시배 예약이 가능해요! 원하시는 어종·지역을 알려주시면 맞춤 배를 찾아드릴게요.',
+};
 
-    // ==================== INIT ====================
-    function initApp() {
-      renderBoats();
-      renderPOI();
-      buildFuseIndex();
-      setupEventListeners();
-      loadLiveBoatData();
-    }
+let boats=[...BOATS], sel=null, busy=false, expanded=false, fuseIdx=null;
 
-    function buildFuseIndex() {
-      fuseIndex = new Fuse(boats, {
-        keys: ['name', 'species', 'port'],
-        threshold: 0.3,
-      });
-    }
+// INIT
+window.addEventListener('DOMContentLoaded',()=>{
+  renderBoats(); renderPOI(); buildFuse(); loadLive();
+  document.getElementById('chatIn').addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
+  });
+});
 
-    function setupEventListeners() {
-      const chatInput = document.getElementById('chat-input');
-      const sendBtn = document.getElementById('send-btn');
+function buildFuse(){fuseIdx=new Fuse(boats,{keys:['name','sp','port'],threshold:0.3})}
 
-      chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      });
+function renderBoats(){
+  const isMob=window.innerWidth<768;
+  const c=document.getElementById('boatsList');
+  c.innerHTML='';
+  boats.forEach((b,i)=>{
+    const sc=b.seats>5?'sg':(b.seats>0?'sa':'sr');
+    const st=b.seats>0?b.seats+'석 남음':'마감';
+    const live=i===0?'<span class="live-lbl">실시간</span>':'';
+    const d=document.createElement('div');
+    d.className='bcard';
+    d.onclick=()=>openModal(b);
+    d.innerHTML=`<div class="bc-row"><span class="bc-name">${b.name}</span><span class="sbadge ${sc}">${st}</span></div>
+      <div class="bc-meta">${b.port} · ${b.sp}</div>
+      <div class="bc-meta">${b.dep}~${b.ret}</div>
+      <div class="bc-foot"><span class="bc-price">₩${b.price.toLocaleString()}${live}</span>
+      <button class="btn-bk" onclick="event.stopPropagation();openModal(boats.find(x=>x.id==='${b.id}'))">예약</button></div>`;
+    c.appendChild(d);
+  });
+  document.getElementById('toggleMeta').textContent=boats.length+'척';
+}
 
-      sendBtn.addEventListener('click', sendMessage);
-    }
+function renderPOI(){
+  const c=document.getElementById('poiList'); c.innerHTML='';
+  POIS.forEach(p=>{
+    const tags=p.fish.split(',').map(f=>`<span class="pc-tag">${f}</span>`).join('');
+    const d=document.createElement('div'); d.className='pcard';
+    d.innerHTML=`<div class="pc-name">📍 ${p.name} <span style="font-weight:400;color:var(--txt-sub);font-size:11px">${p.type}</span></div>
+      <div class="pc-meta">${p.addr} · ${p.fac}</div><div class="pc-tags">${tags}</div>`;
+    c.appendChild(d);
+  });
+}
 
-    // ==================== BOAT RENDERING ====================
-    function renderBoats() {
-      const container = document.getElementById('boats-container');
-      container.innerHTML = '';
+async function loadLive(){
+  try{
+    const kst=new Date(Date.now()+9*3600000);
+    const url=LIVE.replace('{date}',kst.toISOString().slice(0,10))+'?t='+Date.now();
+    const r=await fetch(url,{cache:'no-store'});
+    if(r.ok){const d=await r.json();if(d.boats){boats=d.boats;buildFuse();renderBoats();}}
+  }catch(e){/* use demo */}
+}
 
-      boats.forEach(boat => {
-        const card = document.createElement('div');
-        card.className = 'boat-card';
-        card.onclick = () => openBookingModal(boat);
+function togglePanel(){
+  expanded=!expanded;
+  const p=document.getElementById('panelL');
+  p.classList.toggle('expanded',expanded);
+  document.getElementById('mArrow').textContent=expanded?'▲':'▼';
+  renderBoats();
+}
 
-        const seatColor = boat.seats > 5 ? 'seat-green' : (boat.seats > 0 ? 'seat-orange' : 'seat-red');
-        const seatText = boat.seats > 0 ? `${boat.seats}석` : '마감';
-        const liveBadge = boats[0].id === boat.id ? '<span class="boat-live-badge">🟡 실시간 연동</span>' : '';
+function sendChip(btn){document.getElementById('chatIn').value=btn.textContent;send();}
 
-        card.innerHTML = `
-          <div class="boat-name">
-            ${boat.name}
-            ${liveBadge}
-          </div>
-          <div class="boat-detail"><strong>출항지:</strong> ${boat.port}</div>
-          <div class="boat-detail"><strong>어종:</strong> ${boat.species}</div>
-          <div class="boat-detail"><strong>시간:</strong> ${boat.depart} ~ ${boat.return}</div>
-          <div class="boat-detail"><strong>가격:</strong> ₩${boat.price.toLocaleString()}</div>
-          <div class="boat-footer">
-            <div class="seat-indicator ${seatColor}">${seatText}</div>
-            <button class="boat-btn" onclick="event.stopPropagation(); openBookingModal(boats.find(b => b.id === '${boat.id}'));">예약</button>
-          </div>
-        `;
+function detectFish(t){
+  const syn={쭈꾸미:'주꾸미',주꾸미:'주꾸미',광어:'넙치',우럭:'조피볼락',볼락:'조피볼락'};
+  for(const k of Object.keys(RAG)) if(t.includes(k)) return k;
+  for(const [k,v] of Object.entries(syn)) if(t.includes(k)) return v;
+  return null;
+}
 
-        container.appendChild(card);
-      });
-    }
+function buildRag(fn,month){
+  const d=RAG[fn]; if(!d) return '';
+  const peak=Object.entries(d.monthly).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([m])=>m+'월');
+  const cnt=d.monthly[String(month)]||0;
+  const tips=d.tips.map(t=>`[${t.date} ${t.sea}] ${t.tip}`).join(' | ');
+  return `[조황DB] ${fn}: 서식지=${d.seas.join(',')}, 피크=${peak.join(',')}, 이번달(${month}월)=${cnt}건. 팁: ${tips}`;
+}
 
-    // ==================== POI RENDERING ====================
-    function renderPOI() {
-      const container = document.getElementById('poi-container');
-      container.innerHTML = '';
+function mkAv(){
+  const d=document.createElement('div'); d.className='mav';
+  const img=document.createElement('img'); img.src=AV; img.alt='어피';
+  img.onerror=function(){this.parentNode.outerHTML='<div class="mav-fb">AF</div>';};
+  d.appendChild(img); return d;
+}
 
-      RAG_DATA.poi_content.forEach(poi => {
-        const card = document.createElement('div');
-        card.className = 'poi-card';
-        card.innerHTML = `
-          <div class="poi-name">📍 ${poi.name}</div>
-          <div class="poi-meta"><strong>타입:</strong> ${poi.type}</div>
-          <div class="poi-meta"><strong>주소:</strong> ${poi.addr}</div>
-          <div class="poi-meta"><strong>시설:</strong> ${poi.facilities}</div>
-          <div class="poi-meta"><strong>대상어종:</strong> ${poi.fish}</div>
-          <div class="poi-meta" style="margin-top: 8px; font-size: 11px; color: #999;">영상: ${poi.video}</div>
-        `;
-        container.appendChild(card);
-      });
-    }
+function addMsg(txt,isUser){
+  const w=document.getElementById('chatMsgs');
+  const row=document.createElement('div'); row.className='msg '+(isUser?'user':'bot');
+  const bub=document.createElement('div'); bub.className='mb'; bub.textContent=txt;
+  if(!isUser){row.appendChild(mkAv());}
+  row.appendChild(bub);
+  w.appendChild(row); w.scrollTop=w.scrollHeight;
+}
 
-    // ==================== LIVE DATA LOADING ====================
-    async function loadLiveBoatData() {
-      try {
-        const kst = new Date(Date.now() + 9*3600000);
-        const dateStr = kst.toISOString().slice(0,10);
-        const url = LIVE_DATA_URL.replace('{date}', dateStr) + `?t=${Date.now()}`;
+function showTyping(){
+  const id='ty'+Date.now();
+  const w=document.getElementById('chatMsgs');
+  const row=document.createElement('div'); row.id=id; row.className='msg bot';
+  row.appendChild(mkAv());
+  const t=document.createElement('div'); t.className='typing';
+  for(let i=0;i<3;i++){const d=document.createElement('div');d.className='td';t.appendChild(d);}
+  row.appendChild(t); w.appendChild(row); w.scrollTop=w.scrollHeight;
+  return id;
+}
+function rmTyping(id){const el=document.getElementById(id);if(el)el.remove();}
 
-        const response = await fetch(url, { cache: 'no-store' });
-        if (response.ok) {
-          const data = await response.json();
-          boats = data.boats || [...DEMO_BOATS];
-          buildFuseIndex();
-          renderBoats();
-        }
-      } catch (err) {
-        console.log('Live data load failed, using demo boats:', err.message);
-      }
-    }
+async function send(){
+  if(busy) return;
+  const inp=document.getElementById('chatIn');
+  const txt=inp.value.trim(); if(!txt) return;
+  inp.value=''; addMsg(txt,true); busy=true;
+  document.getElementById('sendBtn').disabled=true;
+  const tid=showTyping();
+  let fish=null;
+  try{
+    const kst=new Date(Date.now()+9*3600000);
+    const ds=kst.toISOString().slice(0,10);
+    const mo=kst.getMonth()+1;
+    fish=detectFish(txt);
+    const rag=fish?buildRag(fish,mo)+'\n\n':'';
+    const msg=`[오늘: ${ds} KST, ${mo}월] ${rag}${txt}`;
+    const r=await fetch(CF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg}),cache:'no-store'});
+    rmTyping(tid);
+    const reply=r.ok?((await r.json()).reply||FB.default):(FB[fish]||FB.default);
+    addMsg(reply,false);
+    if(/예약|잡아줘|예약해/.test(txt))
+      setTimeout(()=>addMsg('예약 도와드릴까요? 왼쪽 선박 목록에서 원하시는 배를 선택해 주세요!',false),600);
+  }catch(e){
+    rmTyping(tid);
+    addMsg(FB[fish]||FB.default,false);
+  }finally{
+    busy=false; document.getElementById('sendBtn').disabled=false;
+  }
+}
 
-    // ==================== CHAT FUNCTIONS ====================
-    function addMessage(text, isUser = false) {
-      const messagesDiv = document.getElementById('chat-messages');
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+// MODAL
+function openModal(b){
+  sel=b;
+  const sc=b.seats>5?'#16a34a':(b.seats>0?'#d97706':'#dc2626');
+  document.getElementById('mBoat').innerHTML=`<strong>${b.name}</strong>${b.port} · ${b.sp}<br>₩${b.price.toLocaleString()} · ${b.dep}~${b.ret} <span style="font-weight:700;color:${sc};float:right">${b.seats>0?b.seats+'석 남음':'마감'}</span>`;
+  document.getElementById('okBox').innerHTML='';
+  const kst=new Date(Date.now()+9*3600000);
+  document.getElementById('bkDate').valueAsDate=kst;
+  document.getElementById('bkGuests').value='';
+  document.getElementById('bkPhone').value='';
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');sel=null;}
+function confirmBook(){
+  const date=document.getElementById('bkDate').value;
+  const guests=document.getElementById('bkGuests').value;
+  const phone=document.getElementById('bkPhone').value;
+  if(!date||!guests||!phone){alert('모든 항목을 입력해주세요.');return;}
+  document.getElementById('okBox').innerHTML=`<div class="ok-box">예약이 완료되었습니다! 카카오톡으로 확인 메시지를 보내드릴게요.<br><small>${sel.name} · ${date} · ${guests} · ${phone}</small></div>`;
+  addMsg(`${sel.name} 예약 완료! ${date}, ${guests}, ${phone}`,true);
+  addMsg('예약이 완료되었어요! 카카오톡으로 확인 메시지를 보내드릴게요. 좋은 조과 있으시길 바라요!',false);
+  setTimeout(closeModal,2200);
+}
+document.getElementById('modalBg').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
-      if (!isUser) {
-        messageDiv.innerHTML = `
-          <div class="message-avatar">🎣</div>
-          <div class="message-bubble">${escapeHtml(text)}</div>
-        `;
-      } else {
-        messageDiv.innerHTML = `
-          <div class="message-bubble">${escapeHtml(text)}</div>
-        `;
-      }
-
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function showTyping() {
-      const messagesDiv = document.getElementById('chat-messages');
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'message bot';
-      typingDiv.id = 'typing-indicator';
-      typingDiv.innerHTML = `
-        <div class="message-avatar">🎣</div>
-        <div class="typing-indicator">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        </div>
-      `;
-      messagesDiv.appendChild(typingDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function hideTyping() {
-      const typing = document.getElementById('typing-indicator');
-      if (typing) typing.remove();
-    }
-
-    function detectFishQuery(text) {
-      const synonyms = {
-        '쭈꾸미':'주꾸미',
-        '쭈':'주꾸미',
-        '갑오':'갑오징어',
-        '광어':'넙치',
-        '우럭':'조피볼락',
-        '볼락':'조피볼락',
-      };
-
-      for (const kw of Object.keys(RAG_DATA.fish_rag)) {
-        if (text.includes(kw)) return kw;
-      }
-
-      for (const [kw, mapped] of Object.entries(synonyms)) {
-        if (text.includes(kw)) return mapped;
-      }
-
-      return null;
-    }
-
-    function buildRagContext(fishName, currentMonth) {
-      const d = RAG_DATA.fish_rag[fishName];
-      if (!d) return '';
-
-      const peakMonths = Object.entries(d.monthly).sort((a,b) => b[1] - a[1]).slice(0,3).map(([m]) => m+'월');
-      const thisMonthCnt = d.monthly[String(currentMonth)] || 0;
-      const tips = d.tips.map(t => `[${t.date} ${t.sea}] ${t.tip}`).join(' | ');
-
-      return `[조황 데이터] ${fishName}: 주요 서식지=${d.seas.join(',')}, 피크시즌=${peakMonths.join(',')}, 이번달(${currentMonth}월)조과=${thisMonthCnt}건. 최근팁: ${tips}`;
-    }
-
-    function detectBookingIntent(text) {
-      return /예약|잡아줘|예약해|booking/i.test(text);
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-
-      if (!text || isLoading) return;
-
-      input.value = '';
-      addMessage(text, true);
-      isLoading = true;
-      showTyping();
-
-      let fishName = null;
-      try {
-        const kst = new Date(Date.now() + 9*3600000);
-        const dateStr = kst.toISOString().slice(0,10);
-        const month = kst.getMonth() + 1;
-
-        let ragContext = '';
-        fishName = detectFishQuery(text);
-        if (fishName) {
-          ragContext = buildRagContext(fishName, month);
-        }
-
-        const contextMsg = `[오늘: ${dateStr} KST, ${month}월] ${ragContext ? ragContext + '\n\n' : ''}${text}`;
-
-        const response = await fetch(CF_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: contextMsg }),
-          cache: 'no-store',
-        });
-
-        hideTyping();
-
-        if (response.ok) {
-          const data = await response.json();
-          let reply = data.reply || FALLBACK_RESPONSES.default;
-          addMessage(reply, false);
-        } else {
-          const fallback = fishName ? (FALLBACK_RESPONSES[fishName] || FALLBACK_RESPONSES.default) : FALLBACK_RESPONSES.default;
-          addMessage(fallback, false);
-        }
-
-        if (detectBookingIntent(text)) {
-          setTimeout(() => {
-            addMessage('예약 도와드릴까요? 왼쪽 패널에서 배를 선택하거나 아래 버튼을 눌러주세요!', false);
-          }, 500);
-        }
-
-      } catch (err) {
-        console.error('Chat error:', err);
-        hideTyping();
-        const fallback = fishName ? (FALLBACK_RESPONSES[fishName] || FALLBACK_RESPONSES.default) : FALLBACK_RESPONSES.default;
-        addMessage(fallback, false);
-      } finally {
-        isLoading = false;
-      }
-    }
-
-    // ==================== BOOKING MODAL ====================
-    function openBookingModal(boat) {
-      selectedBoat = boat;
-      const overlay = document.getElementById('booking-modal-overlay');
-      const boatInfo = document.getElementById('modal-boat-info');
-      const successMsg = document.getElementById('success-message-container');
-
-      successMsg.innerHTML = '';
-      boatInfo.innerHTML = `
-        <strong>${boat.name}</strong><br>
-        📍 ${boat.port} | 🐟 ${boat.species}<br>
-        💰 ₩${boat.price.toLocaleString()} | ⏰ ${boat.depart} ~ ${boat.return}
-      `;
-
-      document.getElementById('booking-date').valueAsDate = new Date(Date.now() + 9*3600000);
-      document.getElementById('booking-guests').value = '';
-      document.getElementById('booking-phone').value = '';
-
-      overlay.classList.add('active');
-    }
-
-    function closeBookingModal() {
-      document.getElementById('booking-modal-overlay').classList.remove('active');
-      selectedBoat = null;
-    }
-
-    function confirmBooking() {
-      const date = document.getElementById('booking-date').value;
-      const guests = document.getElementById('booking-guests').value;
-      const phone = document.getElementById('booking-phone').value;
-
-      if (!date || !guests || !phone) {
-        alert('모든 항목을 입력해주세요.');
-        return;
-      }
-
-      const successMsg = document.getElementById('success-message-container');
-      successMsg.innerHTML = `
-        <div class="success-message">
-          ✅ <strong>예약이 완료되었습니다!</strong><br>
-          카카오톡으로 확인 메시지를 보내드릴게요.<br>
-          <small>${selectedBoat.name} · ${date} · ${guests}명 · ${phone}</small>
-        </div>
-      `;
-
-      addMessage(`${selectedBoat.name}을(를) ${guests}명이 ${date}에 예약했습니다! 연락처: ${phone}`, true);
-      addMessage('예약이 완료되었습니다! 📋 카카오톡으로 확인 메시지를 보내드릴게요.', false);
-
-      setTimeout(() => {
-        closeBookingModal();
-      }, 2000);
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // ==================== START ====================
-    window.addEventListener('DOMContentLoaded', initApp);
-  </script>
+let rsz;
+window.addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(renderBoats,200);});
+</script>
 </body>
 </html>
