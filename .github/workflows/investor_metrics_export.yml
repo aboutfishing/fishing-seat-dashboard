@@ -1,0 +1,105 @@
+name: 투자자 지표 내보내기 (BigQuery → GCS)
+
+# 매일 08:00 KST (23:00 UTC) 자동 실행
+# 수동 실행: Actions 탭 → "Run workflow"
+on:
+  schedule:
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (GCS 업로드 없이 JSON만 생성)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 환경 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: |
+          pip install --upgrade pip
+          pip install google-cloud-bigquery google-cloud-storage
+
+      - name: GCP 인증 설정
+        run: |
+          echo '${{ secrets.GCP_CREDENTIALS }}' > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+          PROJECT=$(python3 -c "import json; print(json.load(open('/tmp/gcp-key.json'))['project_id'])")
+          echo "GCP_PROJECT=$PROJECT" >> $GITHUB_ENV
+          echo "✅ GCP 인증 완료: $PROJECT"
+
+      - name: BigQuery → investor_metrics.json 내보내기
+        env:
+          GCS_BUCKET: booking-redirect-aboutfishing-kr
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          cd $GITHUB_WORKSPACE
+          python3 scripts/export_investor_metrics.py
+          echo "✅ investor_metrics.json 생성 완료"
+          python3 -c "
+          import json
+          with open('data/investor_metrics.json') as f:
+              d = json.load(f)
+          kpi = d.get('kpi', {})
+          print(f'  updated  : {d.get(\"updated\")}')
+          print(f'  source   : {d.get(\"source\")}')
+          print(f'  GMV      : {kpi.get(\"gmv_man\")} 만원')
+          print(f'  bookings : {kpi.get(\"bookings\")}')
+          print(f'  ships    : {kpi.get(\"ships\")}')
+          "
+
+      - name: investor_metrics.json → GCS 업로드
+        if: ${{ inputs.dry_run != 'true' }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-key.json
+        run: |
+          # gcloud 인증
+          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          gcloud config set project ${{ env.GCP_PROJECT }}
+
+          gsutil \
+            -h "Content-Type:application/json" \
+            -h "Cache-Control:no-store, no-cache" \
+            -h "Access-Control-Allow-Origin:*" \
+            cp data/investor_metrics.json \
+               gs://booking-redirect-aboutfishing-kr/data/investor_metrics.json
+
+          echo "✅ 업로드 완료: https://aboutfishing.kr/data/investor_metrics.json"
+
+      - name: git commit & push (investor_metrics.json 갱신)
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 변경이 있을 때만 커밋
+          if git diff --quiet data/investor_metrics.json; then
+            echo "investor_metrics.json 변경 없음 — 커밋 건너뜀"
+          else
+            git add data/investor_metrics.json
+            git commit -m "chore(data): 투자자 지표 자동 갱신 $(date '+%Y-%m-%d %H:%M KST')"
+            git push
+            echo "✅ investor_metrics.json git push 완료"
+          fi
+
+      - name: 완료 요약
+        run: |
+          echo "=================================================="
+          echo "  투자자 대시보드 URL"
+          echo "  https://aboutfishing.kr/investor/"
+          echo "  데이터 JSON"
+          echo "  https://aboutfishing.kr/data/investor_metrics.json"
+          echo "=================================================="
