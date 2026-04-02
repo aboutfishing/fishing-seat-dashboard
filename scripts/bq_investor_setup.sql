@@ -25,9 +25,9 @@ CREATE OR REPLACE EXTERNAL TABLE `fishing.naver_shopping_ext`
 )
 OPTIONS (
   format             = 'GOOGLE_SHEETS',
-  uris               = ['https://docs.google.com/spreadsheets/d/1AGMVHBMBqNrC-HvLHz7iBAp_wk8kAGSgyPIztD-e-AM/edit#gid=80217310'],
-  range              = 'A:I',       -- 실제 데이터 범위에 맞게 조정
-  skip_leading_rows  = 1            -- 헤더 1행 스킵
+  -- gid=80217310 탭을 직접 URI에 포함 (range 예약어 충돌 우회)
+  uris               = ['https://docs.google.com/spreadsheets/d/1AGMVHBMBqNrC-HvLHz7iBAp_wk8kAGSgyPIztD-e-AM/edit?range=A:I#gid=80217310'],
+  skip_leading_rows  = 1
 );
 
 -- ──────────────────────────────────────────────────────────────

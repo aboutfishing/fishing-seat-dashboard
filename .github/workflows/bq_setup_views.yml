@@ -47,20 +47,15 @@ jobs:
           with open("scripts/bq_investor_setup.sql") as f:
               sql_raw = f.read()
 
-          # 세미콜론 기준으로 문장 분리 (주석 포함 블록 처리)
-          statements = []
-          current = []
-          for line in sql_raw.splitlines():
-              stripped = line.strip()
-              # 빈 줄 또는 주석만 있는 줄 스킵
-              if not stripped or stripped.startswith("--"):
-                  continue
-              current.append(line)
-              if stripped.endswith(";"):
-                  stmt = "\n".join(current).strip().rstrip(";")
-                  if stmt:
-                      statements.append(stmt)
-                  current = []
+          # 주석 제거 후 세미콜론 기준으로 문장 분리
+          import re
+          # 한 줄 주석(--...) 제거
+          sql_clean = re.sub(r'--[^\n]*', '', sql_raw)
+          # 빈 줄 정리
+          sql_clean = re.sub(r'\n{3,}', '\n\n', sql_clean)
+          # 세미콜론으로 분리
+          raw_stmts = sql_clean.split(';')
+          statements = [s.strip() for s in raw_stmts if s.strip()]
 
           print(f"총 {len(statements)}개 SQL 문 실행 예정")
 
