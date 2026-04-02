@@ -64,13 +64,26 @@ def setup_credentials() -> bool:
 
 # ── BigQuery 쿼리 ─────────────────────────────────────────────────────────────
 
-def bq_query(sql: str) -> list[dict]:
-    """BigQuery bq CLI로 쿼리 실행, JSON 결과 반환."""
+def bq_query(sql: str, fallback_sql: str = None) -> list[dict]:
+    """BigQuery 쿼리 실행, JSON 결과 반환.
+    Drive credentials 오류(Google Sheet 미공유) 시 fallback_sql로 재시도."""
     try:
         from google.cloud import bigquery
         client = bigquery.Client(project=BQ_PROJECT)
-        rows = list(client.query(sql).result())
-        return [dict(row) for row in rows]
+        try:
+            rows = list(client.query(sql).result())
+            return [dict(row) for row in rows]
+        except Exception as e:
+            err = str(e)
+            if "Drive credentials" in err or "accessDenied" in err or "403" in err:
+                log.warning("⚠️  Drive 권한 오류 (Google Sheet 미공유): %s", err[:120])
+                if fallback_sql:
+                    log.info("   → 네이버 데이터 제외 폴백 쿼리 실행")
+                    rows = list(client.query(fallback_sql).result())
+                    return [dict(row) for row in rows]
+                log.warning("   → 폴백 없음, 빈 결과 반환")
+                return []
+            raise
     except ImportError:
         pass
 
@@ -136,6 +149,49 @@ FROM `{BQ_PROJECT}.fishing.v_investor_monthly`
 WHERE naver_spend_monthly > 0
 ORDER BY year_month ASC
 LIMIT 12
+"""
+
+# ── 폴백 쿼리 (Google Sheet 미공유 시 — 네이버 데이터 없이 직접 집계) ───────────
+
+SQL_KPI_FALLBACK = f"""
+SELECT
+  FORMAT_DATE('%Y-%m-%d', MAX(date)) AS report_date,
+  ROUND(COALESCE(MAX(gmv), 0) / 10000, 1)  AS gmv_man,
+  0.0                                        AS gmv_wow_pct,
+  COALESCE(MAX(bookings), 0)                AS bookings,
+  0.0                                        AS bookings_wow_pct,
+  COALESCE(MAX(cvr), 0)                     AS cvr_pct,
+  COALESCE(MAX(ships), 0)                   AS ships,
+  COALESCE(MAX(members), 0)                 AS members,
+  COALESCE(MAX(ad_spend_meta), 0)
+    + COALESCE(MAX(ad_spend_google), 0)      AS total_ad_spend
+FROM `{BQ_PROJECT}.fishing.report_metrics_daily`
+WHERE date = (SELECT MAX(date) FROM `{BQ_PROJECT}.fishing.report_metrics_daily`)
+"""
+
+SQL_MONTHLY_FALLBACK = f"""
+SELECT
+  FORMAT_DATE('%Y-%m', date)                  AS year_month,
+  ROUND(SUM(COALESCE(gmv, 0)) / 10000, 1)   AS gmv_man,
+  SUM(COALESCE(bookings, 0))                  AS bookings,
+  ROUND(AVG(COALESCE(cvr, 0)), 2)            AS cvr,
+  MAX(COALESCE(ships, 0))                     AS ships,
+  MAX(COALESCE(members, 0))                   AS members,
+  0.0                                          AS naver_spend,
+  SUM(COALESCE(ad_spend_meta, 0))             AS meta_spend,
+  SUM(COALESCE(ad_spend_google, 0))           AS google_spend,
+  SUM(COALESCE(ad_spend_meta, 0))
+    + SUM(COALESCE(ad_spend_google, 0))        AS total_ad_spend,
+  0                                            AS naver_conversions,
+  SAFE_DIVIDE(SUM(COALESCE(gmv, 0)),
+              NULLIF(SUM(COALESCE(bookings, 0)), 0)) AS aov,
+  SAFE_DIVIDE(SUM(COALESCE(ad_spend_meta, 0))
+    + SUM(COALESCE(ad_spend_google, 0)),
+              NULLIF(SUM(COALESCE(bookings, 0)), 0)) AS cac
+FROM `{BQ_PROJECT}.fishing.report_metrics_daily`
+GROUP BY year_month
+ORDER BY year_month ASC
+LIMIT 24
 """
 
 
@@ -301,9 +357,9 @@ def main():
         sys.exit(1)
 
     log.info("BigQuery 쿼리 시작...")
-    kpi_rows     = bq_query(SQL_KPI)
-    monthly_rows = bq_query(SQL_MONTHLY)
-    naver_rows   = bq_query(SQL_NAVER_LATEST)
+    kpi_rows     = bq_query(SQL_KPI,          fallback_sql=SQL_KPI_FALLBACK)
+    monthly_rows = bq_query(SQL_MONTHLY,      fallback_sql=SQL_MONTHLY_FALLBACK)
+    naver_rows   = bq_query(SQL_NAVER_LATEST, fallback_sql=None)   # 네이버 없으면 빈 리스트
 
     log.info("KPI: %d행, 월간: %d행, 네이버: %d행",
              len(kpi_rows), len(monthly_rows), len(naver_rows))
