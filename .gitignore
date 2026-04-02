@@ -9,3 +9,4 @@ __pycache__/
 *.log
 data/*.json
 !data/latest.json
+!data/stats.json

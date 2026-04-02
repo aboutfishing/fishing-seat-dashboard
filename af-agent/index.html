@@ -298,12 +298,12 @@
     <div class="panel-l" id="panelL">
       <div class="panel-l-inner">
         <div class="stats-card">
-          <div class="stats-title">오늘 서비스 현황</div>
+          <div class="stats-title">오늘 서비스 현황 <span id="statsDate" style="font-weight:400;opacity:.6;font-size:9px"></span></div>
           <div class="stats-grid">
-            <div class="stat"><div class="v">140만<span class="up"> ↑18%</span></div><div class="k">오늘 GMV</div></div>
-            <div class="stat"><div class="v">48.3%</div><div class="k">전환율</div></div>
-            <div class="stat"><div class="v">765척</div><div class="k">등록 선박</div></div>
-            <div class="stat"><div class="v">24.7만</div><div class="k">회원수</div></div>
+            <div class="stat"><div class="v" id="sGmv">390만<span class="up" id="sGmvChg"> ↑12%</span></div><div class="k" id="sGmvLbl">오늘 GMV</div></div>
+            <div class="stat"><div class="v" id="sCvr">2.9%</div><div class="k" id="sCvrLbl">전환율</div></div>
+            <div class="stat"><div class="v" id="sShips">765척</div><div class="k" id="sShipsLbl">등록 선박</div></div>
+            <div class="stat"><div class="v" id="sMembers">24.7만</div><div class="k" id="sMembersLbl">회원수</div></div>
           </div>
         </div>
         <div class="sec-lbl">실시간 선박</div>
@@ -449,8 +449,38 @@ const FB = {
 let boats=[...BOATS], sel=null, busy=false, expanded=false, fuseIdx=null;
 
 // INIT
+async function loadStats(){
+  try{
+    const r=await fetch('https://aboutfishing.kr/data/stats.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok) return;
+    const d=await r.json();
+    if(d.gmv){
+      const v=d.gmv.value+(d.gmv.change?'':'' );
+      document.getElementById('sGmv').childNodes[0].textContent=d.gmv.value;
+      const chgEl=document.getElementById('sGmvChg');
+      if(d.gmv.change){chgEl.textContent=' '+d.gmv.change;chgEl.style.display='';}else{chgEl.style.display='none';}
+      if(d.gmv.label) document.getElementById('sGmvLbl').textContent=d.gmv.label;
+    }
+    if(d.cvr){
+      document.getElementById('sCvr').textContent=d.cvr.value;
+      if(d.cvr.label) document.getElementById('sCvrLbl').textContent=d.cvr.label;
+    }
+    if(d.ships){
+      document.getElementById('sShips').textContent=d.ships.value;
+      if(d.ships.label) document.getElementById('sShipsLbl').textContent=d.ships.label;
+    }
+    if(d.members){
+      document.getElementById('sMembers').textContent=d.members.value;
+      if(d.members.label) document.getElementById('sMembersLbl').textContent=d.members.label;
+    }
+    if(d.updated){
+      document.getElementById('statsDate').textContent=d.updated+' 기준';
+    }
+  }catch(e){}
+}
+
 window.addEventListener('DOMContentLoaded',()=>{
-  renderBoats(); renderPOI(); buildFuse(); loadLive();
+  renderBoats(); renderPOI(); buildFuse(); loadLive(); loadStats();
   document.getElementById('chatIn').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
   });

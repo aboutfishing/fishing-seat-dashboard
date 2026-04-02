@@ -1,0 +1,10 @@
+{
+  "updated": "2026-04-02",
+  "source": "[어바웃피싱] 일일 광고 성과 종합 분석 리포트",
+  "gmv": { "value": "390만", "change": "↑12%", "label": "오늘 GMV" },
+  "cvr": { "value": "2.9%",  "label": "전환율" },
+  "ships": { "value": "765척", "label": "등록 선박" },
+  "members": { "value": "24.7만", "label": "회원수" },
+  "bookings": 400,
+  "sessions": 13500
+}
