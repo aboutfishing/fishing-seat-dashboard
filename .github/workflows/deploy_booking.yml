@@ -8,6 +8,7 @@ on:
       - 'booking.html'
       - 'index_google.html'
       - 'af-agent/**'
+      - 'data/stats.json'
 
 jobs:
   deploy:
@@ -53,6 +54,18 @@ jobs:
                  -h "Cache-Control:no-store" \
                  cp af-agent/index.html gs://booking-redirect-aboutfishing-kr/af-agent/index.html
           echo "✅ af-agent 데모 배포: https://aboutfishing.kr/af-agent/"
+
+      - name: data/stats.json → GCS 업로드 (서비스 지표)
+        run: |
+          if [ -f data/stats.json ]; then
+            gsutil -h "Content-Type:application/json" \
+                   -h "Cache-Control:no-store" \
+                   -h "Access-Control-Allow-Origin:*" \
+                   cp data/stats.json gs://booking-redirect-aboutfishing-kr/data/stats.json
+            echo "✅ stats.json 배포: https://aboutfishing.kr/data/stats.json"
+          else
+            echo "⚠️ data/stats.json 없음, 스킵"
+          fi
 
       - name: GCS 버킷 웹사이트 기본 페이지 설정 (index.html)
         run: |
