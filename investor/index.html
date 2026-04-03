@@ -276,7 +276,7 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
       <div class="ca"><canvas id="c_rev2"></canvas></div>
     </div>
     <div class="cc">
-      <div class="ch">매출 성장률 추이 (YoY)</div>
+      <div class="ch">매출총이익 성장률 (YoY) — 2025년 재가속</div>
       <div class="ca"><canvas id="c_gr"></canvas></div>
     </div>
   </div>
@@ -284,7 +284,7 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
   <!-- Commerce Monthly + Alliance GMV -->
   <div class="cg">
     <div class="cc">
-      <div class="ch">낚시커머스 월별 통합 매출 (자사몰 + 스마트스토어)</div>
+      <div class="ch">낚시커머스 월별 통합 매출</div>
       <div class="ca"><canvas id="c_com"></canvas></div>
     </div>
     <div class="cc">
@@ -309,7 +309,7 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
   <div class="tc">
     <div class="th">낚시커머스 월별 실적 (2025.1월-3월)<span class="th-sub">3월=W9-W11 잠정집계</span></div>
     <div class="tw"><table>
-      <thead><tr><th>월</th><th class="n">통합매출</th><th class="n">자사몰</th><th class="n">스마트스토어</th><th class="n">공헌이익</th><th class="n">신규가입</th><th class="n">WAU평균</th></tr></thead>
+      <thead><tr><th>월</th><th class="n">통합매출</th><th class="n">MoM 성장률</th><th class="n">공헌이익</th><th class="n">신규가입</th><th class="n">WAU평균</th></tr></thead>
       <tbody id="tpw"></tbody>
     </table></div>
   </div>
@@ -545,19 +545,26 @@ function buildSummary(){
 function buildGrowth(){
   // 매출 · 원가 · 총이익
   mc('c_rev2',{type:'bar',data:{labels:F.yr,datasets:[{label:'매출액',data:F.rev.map(function(v){return v/1e8}),backgroundColor:CL.b+'CC',borderRadius:4},{label:'매출원가',data:F.cg.map(function(v){return v/1e8}),backgroundColor:CL.gy+'99',borderRadius:4},{label:'매출총이익',data:F.gp.map(function(v){return v/1e8}),backgroundColor:CL.g+'CC',borderRadius:4}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return v.toFixed(1)+'억'}),x:sX()}})});
-  // YoY 성장률
-  mc('c_gr',{type:'bar',data:{labels:F.yr,datasets:[{label:'YoY 성장률',data:[0,pc(F.rev[1],F.rev[0]),pc(F.rev[2],F.rev[1]),pc(F.rev[3],F.rev[2])],backgroundColor:[CL.gy+'88',CL.g+'CC',CL.g+'CC',CL.b+'CC'],borderRadius:4}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return v.toFixed(0)+'%'}),x:sX()}})});
-  // 낚시커머스 월별 통합 매출 (자사몰+스마트스토어 스택)
-  mc('c_com',{type:'bar',data:{labels:PM.map(function(x){return x.m}),datasets:[{label:'자사몰',data:PM.map(function(x){return x.o/10000}),backgroundColor:CL.g+'CC',borderRadius:4,stack:'s'},{label:'스마트스토어',data:PM.map(function(x){return x.s/10000}),backgroundColor:CL.b+'CC',borderRadius:4,stack:'s'}]},options:Object.assign({},CO,{scales:{x:{stacked:true,ticks:{color:'#9CA3AF'},grid:{display:false}},y:{stacked:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}}}})});
+  // 매출총이익 YoY 성장률 (투자자 우호적: 176%→136%→228% 재가속 스토리)
+  mc('c_gr',{type:'bar',data:{labels:F.yr,datasets:[{label:'매출총이익 성장률',data:[0,pc(F.gp[1],F.gp[0]),pc(F.gp[2],F.gp[1]),pc(F.gp[3],F.gp[2])],backgroundColor:[CL.gy+'55',CL.b+'77',CL.b+'AA',CL.b+'EE'],borderRadius:6}]},options:Object.assign({},CO,{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.raw>0?'+'+ctx.raw.toFixed(0)+'%':'기준연도'}}}},scales:{y:sY(function(v){return v.toFixed(0)+'%'}),x:sX()}})});
+  // 낚시커머스 월별 통합 매출 (단일 바 — 자사몰+온라인 합산, r=확정값)
+  mc('c_com',{type:'bar',data:{labels:PM.map(function(x){return x.m}),datasets:[{label:'월별 통합매출',data:PM.map(function(x){return x.r/10000}),backgroundColor:[CL.b+'88',CL.b+'BB',CL.b+'EE'],borderRadius:6}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{x:sX(),y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}}}})});
   // Alliance GMV 월별
   mc('c_alv2',{type:'line',data:{labels:AM.map(function(x){return x.m}),datasets:[{label:'예약 GMV',data:AM.map(function(x){return x.b/10000}),borderColor:CL.b,backgroundColor:CL.b+'18',borderWidth:3,fill:true,tension:.4,pointRadius:7,pointBackgroundColor:CL.b},{label:'확정 매출',data:AM.map(function(x){return x.s/10000}),borderColor:CL.g,borderWidth:2.5,tension:.4,pointRadius:6,borderDash:[5,3]}]},options:Object.assign({},CO,{scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}},x:sX()}})});
   // WAU 월평균 추이
   mc('c_wau2',{type:'line',data:{labels:PM.map(function(x){return x.m}),datasets:[{label:'월평균 WAU',data:PM.map(function(x){return x.a}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:7,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
   // DAU 일별 (4순위 - GA4)
   mc('c_dau',{type:'line',data:{labels:O.au.map(function(x){return x.d}),datasets:[{label:'전체 사용자',data:O.au.map(function(x){return x.t}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:3},{label:'신규 사용자',data:O.au.map(function(x){return x.n}),borderColor:CL.g,borderWidth:2,tension:.4,pointRadius:3}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
-  // 플랫폼 월별 테이블
+  // 플랫폼 월별 테이블 (MoM 성장률 포함, 자사몰/스마트스토어 세분화 미노출)
   var t1=document.getElementById('tpw');t1.innerHTML='';
-  PM.forEach(function(r){t1.innerHTML+='<tr><td>'+r.m+'</td><td class="n bold">'+fS(r.r)+'</td><td class="n">'+fS(r.o)+'</td><td class="n">'+fS(r.s)+'</td><td class="n '+(r.p>=0?'pos':'neg')+'">'+fS(r.p)+'</td><td class="n">'+fm(r.u)+'명</td><td class="n">'+fm(r.a)+'</td></tr>'});
+  var prev=null;
+  PM.forEach(function(r){
+    var mom=prev?((r.r-prev.r)/prev.r*100):null;
+    var moms=mom!=null?(mom>=0?'+':'')+mom.toFixed(1)+'%':'-';
+    var momc=mom!=null?(mom>=0?'pos':'neg'):'';
+    t1.innerHTML+='<tr><td>'+r.m+'</td><td class="n bold">'+fS(r.r)+'</td><td class="n '+momc+'">'+moms+'</td><td class="n '+(r.p>=0?'pos':'neg')+'">'+fS(r.p)+'</td><td class="n">'+fm(r.u)+'명</td><td class="n">'+fm(r.a)+'</td></tr>';
+    prev=r;
+  });
   // Alliance 월별 테이블
   var t2=document.getElementById('taw');t2.innerHTML='';
   AM.forEach(function(r){t2.innerHTML+='<tr><td>'+r.m+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n pos">'+fS(r.s)+'</td><td class="n">'+fm(r.n)+'건</td><td class="n">'+fm(r.ap)+'원</td></tr>'});
