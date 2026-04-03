@@ -332,20 +332,34 @@ def build_metrics(kpi_rows, monthly_rows, naver_rows) -> dict:
 # ── GCS 업로드 ────────────────────────────────────────────────────────────────
 
 def upload_to_gcs(local_path: str) -> bool:
-    cmd = [
-        "gsutil",
-        "-h", "Content-Type:application/json",
-        "-h", "Cache-Control:no-store",
-        "-h", "Access-Control-Allow-Origin:*",
-        "cp", local_path,
-        f"gs://{GCS_BUCKET}/data/investor_metrics.json",
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        log.error("GCS 업로드 실패: %s", result.stderr)
-        return False
-    log.info("✅ GCS 업로드 완료: https://aboutfishing.kr/data/investor_metrics.json")
-    return True
+    """google-cloud-storage 라이브러리로 GCS 업로드.
+    GitHub Actions에서는 이 함수 외에 YAML의 gsutil 스텝도 실행됨 (중복 안전)."""
+    try:
+        from google.cloud import storage
+        client = storage.Client()
+        bucket = client.bucket(GCS_BUCKET)
+        blob = bucket.blob("data/investor_metrics.json")
+        blob.cache_control = "no-store, no-cache"
+        blob.content_type = "application/json"
+        blob.metadata = {"Access-Control-Allow-Origin": "*"}
+        blob.upload_from_filename(local_path, content_type="application/json")
+        log.info("✅ GCS 업로드 완료 (library): https://aboutfishing.kr/data/investor_metrics.json")
+        return True
+    except Exception as e:
+        # 라이브러리 실패 시 gsutil fallback
+        log.info("   → gsutil fallback 시도...")
+        cmd = [
+            "gsutil", "-h", "Content-Type:application/json",
+            "-h", "Cache-Control:no-store",
+            "cp", local_path,
+            f"gs://{GCS_BUCKET}/data/investor_metrics.json",
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            log.warning("⚠️  Python GCS 업로드 실패 (YAML 스텝에서 재업로드): %s", str(e)[:80])
+            return False
+        log.info("✅ GCS 업로드 완료 (gsutil): https://aboutfishing.kr/data/investor_metrics.json")
+        return True
 
 
 # ── 메인 ──────────────────────────────────────────────────────────────────────
