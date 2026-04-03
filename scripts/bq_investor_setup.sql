@@ -24,8 +24,7 @@ CREATE TABLE IF NOT EXISTS `fishing.naver_shopping_data`
   cvr_ad         FLOAT64 OPTIONS(description='광고 전환율 (%)')
 )
 OPTIONS(
-  description = '네이버 쇼핑 광고 일간 데이터 (Apps Script 자동 적재)',
-  require_partition_filter = false
+  description = '네이버 쇼핑 광고 일간 데이터 (Apps Script 자동 적재)'
 );
 
 -- ──────────────────────────────────────────────────────────────
