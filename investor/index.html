@@ -2,468 +2,595 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
 <title>어바웃피싱 Investor Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <style>
-  :root{
-    --bg:#F8FAFC;--card:#fff;--blue:#2563EB;--green:#16A34A;--red:#DC2626;
-    --txt:#0F172A;--sub:#64748B;--border:#E2E8F0;--accent:#7C3AED;--orange:#EA580C;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+:root{--blue:#0052FF;--blue-l:#E8F0FE;--gold:#F5A623;--green:#10B981;--red:#EF4444;--purple:#8B5CF6;--g50:#F9FAFB;--g100:#F3F4F6;--g200:#E5E7EB;--g300:#D1D5DB;--g400:#9CA3AF;--g500:#6B7280;--g700:#374151;--g800:#1F2937;--g900:#111827;--rad:10px;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);--shm:0 4px 6px -1px rgba(0,0,0,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;font-size:14px;line-height:1.5}
 
-  /* PASSWORD GATE */
-  #pwGate{position:fixed;inset:0;background:linear-gradient(135deg,#1E3A5F,#0F172A);display:flex;align-items:center;justify-content:center;z-index:9999}
-  #pwGate.hidden{display:none}
-  .gw{background:#fff;border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.35)}
-  .gw-logo{font-size:32px;margin-bottom:14px}
-  .gw-title{font-size:19px;font-weight:800;color:var(--txt);margin-bottom:4px}
-  .gw-sub{font-size:12px;color:var(--sub);margin-bottom:24px}
-  .gw-inp{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-size:14px;outline:none;margin-bottom:10px}
-  .gw-inp:focus{border-color:var(--blue)}
-  .gw-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px}
-  .gw-btn:hover{background:#1d4ed8}
-  .gw-err{font-size:12px;color:var(--red);margin-top:8px;min-height:16px}
+/* ── PASSWORD GATE ── */
+#gw{position:fixed;inset:0;background:linear-gradient(135deg,#0a1628,#0d2240);display:flex;align-items:center;justify-content:center;z-index:9999}
+#gw.hd{display:none}
+.gwb{background:#fff;border-radius:16px;padding:44px 40px;width:380px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.gwb .gi{width:52px;height:52px;background:var(--blue);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px;margin:0 auto 18px}
+.gwb h2{font-size:20px;font-weight:800;color:var(--g900);margin-bottom:4px}
+.gwb p{font-size:12px;color:var(--g400);margin-bottom:24px}
+.gwb input{width:100%;border:1.5px solid var(--g200);border-radius:8px;padding:12px 16px;font-size:14px;color:var(--g800);outline:none;margin-bottom:10px}
+.gwb input:focus{border-color:var(--blue)}
+.gwb button{width:100%;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px}
+.gwb button:hover{background:#0040CC}
+.gwe{font-size:12px;color:var(--red);margin-top:8px;min-height:16px}
 
-  /* HEADER */
-  .hdr{background:linear-gradient(135deg,#1E3A5F,#2563EB);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
-  .hdr-left{display:flex;flex-direction:column;gap:3px}
-  .hdr-logo{font-size:16px;font-weight:800;letter-spacing:-.3px}
-  .hdr-date{font-size:11px;opacity:.75}
-  .hdr-badges{display:flex;gap:8px;align-items:center}
-  .hdr-badge{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;letter-spacing:.2px}
-  .hdr-badge.green{background:rgba(22,163,74,.35)}
+/* ── TOPBAR ── */
+.topbar{background:#fff;border-bottom:1px solid var(--g200);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px}
+.topbar h1{font-size:16px;font-weight:700;color:var(--g900)}
+.badge{font-size:10px;background:var(--blue-l);color:var(--blue);padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px}
+.topbar .meta{font-size:12px;color:var(--g400)}
+.wb{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#fff;border:1px solid var(--g200);border-radius:20px;font-size:11px;color:var(--g500);font-weight:600}
+.wb .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
 
-  /* LAYOUT */
-  .wrap{max-width:1120px;margin:0 auto;padding:28px 24px}
+/* ── TABS ── */
+.tabbar{background:#fff;border-bottom:1px solid var(--g200);padding:0 28px;display:flex;gap:0}
+.tbt{padding:14px 20px;font-size:13px;font-weight:600;color:var(--g400);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
+.tbt:hover{color:var(--g700)}
+.tbt.on{color:var(--blue);border-bottom-color:var(--blue)}
 
-  /* SECTION TITLE */
-  .sec-title{font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-  .src-tag{background:#F1F5F9;border-radius:20px;padding:3px 10px;font-size:10px;color:var(--sub);font-weight:600;letter-spacing:0}
+/* ── LAYOUT ── */
+.wrap{max-width:1360px;margin:0 auto;padding:24px 28px 60px}
+.pnl{display:none}.pnl.on{display:block}
+.sec{margin-bottom:28px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.sec-hd h2{font-size:15px;font-weight:700;color:var(--g800)}
+.sec-hd .sub{font-size:12px;color:var(--g400)}
 
-  /* HERO METRICS */
-  .hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-  .hero-card{background:var(--card);border-radius:14px;padding:20px 22px;border:1px solid var(--border);position:relative;overflow:hidden}
-  .hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-  .hero-card.blue::before{background:var(--blue)}
-  .hero-card.green::before{background:var(--green)}
-  .hero-card.purple::before{background:var(--accent)}
-  .hero-card.orange::before{background:var(--orange)}
-  .hc-label{font-size:11px;color:var(--sub);font-weight:600;margin-bottom:8px}
-  .hc-val{font-size:28px;font-weight:800;color:var(--txt);line-height:1.1}
-  .hc-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;margin-top:6px;padding:3px 8px;border-radius:20px}
-  .up{background:#DCFCE7;color:var(--green)}
-  .hc-note{font-size:10px;color:var(--sub);margin-top:5px;line-height:1.4}
+/* ── KPI CARDS ── */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.kc{background:#fff;border:1px solid var(--g200);border-radius:var(--rad);padding:20px 22px;box-shadow:var(--sh);transition:.2s;position:relative;overflow:hidden}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue)}
+.kc.kg{background:linear-gradient(135deg,#EFF6FF,#E0F2FE)}
+.kc:hover{box-shadow:var(--shm);border-color:var(--blue)}
+.kc .kl{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.kc .kv{font-size:26px;font-weight:800;color:var(--g900);line-height:1.2;margin-bottom:4px}
+.kc .kch{font-size:12px;font-weight:700}
+.kc .kch.up{color:var(--green)}
+.kc .kch.dn{color:var(--red)}
+.kc .ks{font-size:11px;color:var(--g400);margin-top:3px}
+.kc.accent::before{background:var(--green)}
+.kc.gold::before{background:var(--gold)}
+.kc.purple::before{background:var(--purple)}
 
-  /* HIGHLIGHT BOX */
-  .highlight{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border-radius:14px;padding:20px 24px;margin-bottom:32px;border:1px solid #BFDBFE}
-  .highlight-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-  .highlight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .hl-item{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #DBEAFE}
-  .hl-item-label{font-size:10px;color:var(--sub);font-weight:600;margin-bottom:4px}
-  .hl-item-val{font-size:20px;font-weight:800;color:var(--txt)}
-  .hl-item-sub{font-size:10px;color:var(--green);font-weight:600;margin-top:3px}
+/* ── HIGHLIGHT STRIP ── */
+.hl-strip{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:1px solid #BFDBFE;border-radius:var(--rad);padding:20px 24px;margin-bottom:24px}
+.hl-strip h3{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:14px;letter-spacing:.3px}
+.hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.hl-item{background:#fff;border-radius:8px;padding:14px 16px;border:1px solid #DBEAFE;text-align:center}
+.hl-item .hv{font-size:22px;font-weight:800;color:var(--g900);margin-bottom:2px}
+.hl-item .hk{font-size:10px;color:var(--g400);font-weight:600;margin-bottom:3px}
+.hl-item .hs{font-size:11px;color:var(--green);font-weight:700}
 
-  /* CHART GRID */
-  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:32px}
-  .chart-card{background:var(--card);border-radius:14px;padding:20px 22px;border:1px solid var(--border)}
-  .chart-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:3px}
-  .chart-sub{font-size:11px;color:var(--sub);margin-bottom:14px}
-  .chart-wrap{position:relative;height:210px}
+/* ── CHARTS ── */
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:14px;margin-bottom:24px}
+.cc{background:#fff;border:1px solid var(--g200);border-radius:var(--rad);padding:20px;box-shadow:var(--sh)}
+.cc .ch{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.cc .ch .cb{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;background:var(--blue-l);color:var(--blue)}
+.cc .ca{position:relative;height:260px}
+.cc.full{grid-column:1/-1}
+.cc.tall .ca{height:320px}
 
-  /* ATTRIBUTION TABLE */
-  .tbl-card{background:var(--card);border-radius:14px;padding:20px 22px;border:1px solid var(--border);margin-bottom:32px;overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th{text-align:left;padding:9px 14px;font-size:11px;font-weight:700;color:var(--sub);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
-  td{padding:10px 14px;border-bottom:1px solid var(--border)}
-  tr:last-child td{border-bottom:none}
-  tr:hover td{background:#F8FAFC}
-  .tag{display:inline-block;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700}
-  .tag-g{background:#DCFCE7;color:var(--green)}
-  .tag-b{background:#DBEAFE;color:var(--blue)}
-  .tag-o{background:#FFEDD5;color:var(--orange)}
-  .bar-bg{background:#F1F5F9;border-radius:4px;height:6px;width:100%;margin-top:4px}
-  .bar-fill{height:6px;border-radius:4px;background:var(--blue)}
+/* ── TABLE ── */
+.tc{background:#fff;border:1px solid var(--g200);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:24px}
+.tc .th{padding:14px 20px;border-bottom:1px solid var(--g100);font-size:13px;font-weight:700;color:var(--g700);display:flex;align-items:center;justify-content:space-between}
+.tc .tw{overflow-x:auto}
+.tc table{width:100%;border-collapse:collapse;font-size:13px}
+.tc thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.5px;background:var(--g50);border-bottom:1px solid var(--g200)}
+.tc th.n,.tc td.n{text-align:right}
+.tc td{padding:10px 14px;border-bottom:1px solid var(--g100);color:var(--g700)}
+.tc tr:last-child td{border-bottom:none}
+.tc tr:hover td{background:var(--blue-l)}
+.tc .pos{color:var(--green);font-weight:700}
+.tc .neg{color:var(--red);font-weight:700}
+.tc .bold{font-weight:700;color:var(--g900)}
+.tc .rh td{background:var(--g50);font-weight:700;color:var(--g900);border-top:2px solid var(--g200)}
 
-  /* FOOTER */
-  .footer{text-align:center;font-size:11px;color:var(--sub);padding:24px 0 20px;border-top:1px solid var(--border);line-height:1.6}
+/* ── GROWTH BADGE ── */
+.gbadge{display:inline-flex;align-items:center;gap:4px;background:#D1FAE5;color:var(--green);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
 
-  @media(max-width:900px){.hero-grid{grid-template-columns:1fr 1fr}.highlight-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
-  @media(max-width:480px){.hero-grid{grid-template-columns:1fr}}
+/* ── UNIT ECON TABLE ── */
+.fp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fi{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--g50);border-radius:8px;font-size:13px;border:1px solid var(--g100)}
+.fi .fk{color:var(--g500)}
+.fi .fv{font-weight:700;color:var(--blue)}
+.fi .fv.gr{color:var(--green)}
+.fi .fv.rd{color:var(--red)}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:28px 0 20px;font-size:11px;color:var(--g400);border-top:1px solid var(--g200);line-height:1.8;margin-top:20px}
+
+@media(max-width:900px){.cg{grid-template-columns:1fr}.hl-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.topbar,.wrap{padding-left:16px;padding-right:16px}.tabbar{padding:0 8px;overflow-x:auto}.kg{grid-template-columns:1fr 1fr}.fp{grid-template-columns:1fr}}
+@media(max-width:480px){.kg{grid-template-columns:1fr}.hl-grid{grid-template-columns:1fr}.gwb{width:90%;padding:32px 24px}}
 </style>
 </head>
 <body>
 
 <!-- PASSWORD GATE -->
-<div id="pwGate">
-  <div class="gw">
-    <div class="gw-logo">🎣</div>
-    <div class="gw-title">어바웃피싱 Investor Dashboard</div>
-    <div class="gw-sub">투자자 전용 접근 페이지입니다</div>
-    <input class="gw-inp" id="pwInput" type="password" placeholder="비밀번호 입력" maxlength="30" autocomplete="off">
-    <button class="gw-btn" onclick="checkPw()">입장하기</button>
-    <div class="gw-err" id="pwErr"></div>
+<div id="gw">
+  <div class="gwb">
+    <div class="gi">AF</div>
+    <h2>어바웃피싱 Investor Dashboard</h2>
+    <p>투자자 전용 접근 페이지입니다</p>
+    <input type="password" id="pwi" placeholder="비밀번호 입력" maxlength="30" autocomplete="off">
+    <button onclick="checkPw()">입장하기</button>
+    <div class="gwe" id="pwe"></div>
   </div>
 </div>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-left">
-    <div class="hdr-logo">🎣 어바웃피싱 — 광고 성과 & 예약 기여 분석</div>
-    <div class="hdr-date" id="hdrDate">데이터 로딩 중...</div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">AF</div>
+    <h1>어바웃피싱 Investor Dashboard<span class="badge">Pre-A</span></h1>
   </div>
-  <div class="hdr-badges">
-    <span class="hdr-badge">Pre-A 라운드</span>
-    <span class="hdr-badge green" id="hdrSrc">● BQ + Sheets</span>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div class="wb"><span class="dot"></span>GA4 · Google Ads · BigQuery</div>
+    <div class="meta">기준일: 2026-04-06 KST</div>
   </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <button class="tbt on" data-tab="t-summary">📊 투자 요약</button>
+  <button class="tbt" data-tab="t-growth">🚀 성장 지표</button>
+  <button class="tbt" data-tab="t-finance">💰 재무 현황</button>
+  <button class="tbt" data-tab="t-ads">📣 광고 성과</button>
 </div>
 
 <div class="wrap">
 
-  <!-- HERO METRICS: 투자자에게 긍정적인 지표만 -->
-  <div class="sec-title">핵심 성장 지표 <span class="src-tag">📡 BigQuery 실시간</span></div>
-  <div class="hero-grid">
-    <div class="hero-card blue">
-      <div class="hc-label">월간 GMV</div>
-      <div class="hc-val" id="kGmv">—</div>
-      <span class="hc-badge up" id="kGmvChg">—</span>
-      <div class="hc-note">플랫폼 총 거래액 (상품가 기준)</div>
-    </div>
-    <div class="hero-card green">
-      <div class="hc-label">등록 선박 수</div>
-      <div class="hc-val" id="kShips">—</div>
-      <span class="hc-badge up">목표 대비 초과 달성</span>
-      <div class="hc-note">전국 공급 네트워크 (척)</div>
-    </div>
-    <div class="hero-card purple">
-      <div class="hc-label">광고 기여 예약</div>
-      <div class="hc-val" id="kAdBookings">—</div>
-      <span class="hc-badge up" id="kAdBookingsChg">—</span>
-      <div class="hc-note">광고 채널 직접 전환 건수</div>
+<!-- ══════════════════════════════════
+     TAB 1: 투자 요약
+══════════════════════════════════ -->
+<div class="pnl on" id="t-summary">
+
+  <!-- Hero KPIs -->
+  <div class="sec">
+    <div class="sec-hd"><h2>핵심 성장 지표 (2025 기준)</h2><span class="sub">국세청 표준재무제표 + GA4 + BigQuery</span></div>
+    <div class="kg">
+      <div class="kc"><div class="kl">연간 매출액</div><div class="kv">12.96억</div><div class="kch up">↑ 50.1% YoY</div><div class="ks">2022년 대비 18x 성장</div></div>
+      <div class="kc accent"><div class="kl">매출총이익</div><div class="kv">3.78억</div><div class="kch up">↑ 228% YoY</div><div class="ks">이익률 29.1%</div></div>
+      <div class="kc"><div class="kl">등록 선박 수</div><div class="kv">765척</div><div class="kch up">목표 300척 초과달성</div><div class="ks">전국 공급 네트워크</div></div>
+      <div class="kc accent"><div class="kl">누적 회원 수</div><div class="kv">24.7만명</div><div class="kch up">↑ WAU 30,833명</div><div class="ks">11주 신규 5,935명</div></div>
+      <div class="kc gold"><div class="kl">현금 보유</div><div class="kv">15.04억</div><div class="kch up">운영 자금</div><div class="ks">2025.12.31 기준</div></div>
+      <div class="kc purple"><div class="kl">예약 GMV (최근 W)</div><div class="kv">6,162만</div><div class="kch up">↑ 32x (5주 성장)</div><div class="ks">W8: 192만 → W12: 6,162만</div></div>
     </div>
   </div>
 
-  <!-- HIGHLIGHT: Ad Performance Summary -->
-  <div class="highlight">
-    <div class="highlight-title">⚡ 광고 채널 통합 성과 요약</div>
-    <div class="highlight-grid">
-      <div class="hl-item">
-        <div class="hl-item-label">전체 채널 ROAS</div>
-        <div class="hl-item-val" id="hlRoas">—</div>
-        <div class="hl-item-sub" id="hlRoasSub">광고비 대비 기여 매출</div>
-      </div>
-      <div class="hl-item">
-        <div class="hl-item-label">광고 기여 총 GMV</div>
-        <div class="hl-item-val" id="hlAdGmv">—</div>
-        <div class="hl-item-sub">최근 월 기준</div>
-      </div>
-      <div class="hl-item">
-        <div class="hl-item-label">활성 광고 채널</div>
-        <div class="hl-item-val" id="hlChannels">3개</div>
-        <div class="hl-item-sub">Meta · Google · 네이버</div>
-      </div>
+  <!-- Investment Highlights -->
+  <div class="hl-strip">
+    <h3>⚡ 투자 포인트 — Why AboutFishing</h3>
+    <div class="hl-grid">
+      <div class="hl-item"><div class="hk">4년 매출 성장</div><div class="hv">18x</div><div class="hs">7,187만 → 12.96억</div></div>
+      <div class="hl-item"><div class="hk">매출총이익 성장</div><div class="hv">+228%</div><div class="hs">YoY (2024→2025)</div></div>
+      <div class="hl-item"><div class="hk">Alliance GMV 5주 성장</div><div class="hv">32x</div><div class="hs">W8 192만 → W12 6,162만</div></div>
+      <div class="hl-item"><div class="hk">R&D 투자</div><div class="hv">7.08억</div><div class="hs">매출의 54.6% 재투자</div></div>
+      <div class="hl-item"><div class="hk">Google Ads ROAS</div><div class="hv">3.9x</div><div class="hs">광고비 대비 매출 효율</div></div>
+      <div class="hl-item"><div class="hk">WAU 최고 기록</div><div class="hv">30,833</div><div class="hs">W11 (11주차)</div></div>
     </div>
   </div>
 
-  <!-- CHARTS ROW 1: GMV + 광고비 추이 -->
-  <div class="sec-title">성장 & 광고 효율 추이 <span class="src-tag">📡 BigQuery v_investor_monthly</span></div>
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-title">월간 GMV 성장 추이</div>
-      <div class="chart-sub" id="gmvChartSub">로딩 중...</div>
-      <div class="chart-wrap"><canvas id="gmvChart"></canvas></div>
+  <!-- Revenue Growth 4yr + Alliance GMV Growth -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">연도별 매출 성장 (2022-2025)<span class="cb">+50.1% YoY</span></div>
+      <div class="ca"><canvas id="c_rev"></canvas></div>
     </div>
-    <div class="chart-card">
-      <div class="chart-title">광고 채널별 월간 집행 비용</div>
-      <div class="chart-sub">Meta / Google / 네이버 쇼핑 (원)</div>
-      <div class="chart-wrap"><canvas id="cacChart"></canvas></div>
+    <div class="cc">
+      <div class="ch">Alliance 예약 GMV 급성장<span class="cb">W8→W12 32배</span></div>
+      <div class="ca"><canvas id="c_alv"></canvas></div>
     </div>
   </div>
 
-  <!-- CHARTS ROW 2: Attribution -->
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-title">채널별 예약 기여율</div>
-      <div class="chart-sub">광고 기여 예약 비중 (최근 기준)</div>
-      <div class="chart-wrap"><canvas id="adChart"></canvas></div>
+  <!-- WAU + 신규가입 -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">주간 WAU 추이<span class="cb">Windsor.ai · GA4</span></div>
+      <div class="ca"><canvas id="c_wau"></canvas></div>
     </div>
-    <div class="chart-card">
-      <div class="chart-title">선박 공급 성장 (누적)</div>
-      <div class="chart-sub">등록 선박 수 (척) — 목표 300척 초과 달성</div>
-      <div class="chart-wrap"><canvas id="shipChart"></canvas></div>
+    <div class="cc">
+      <div class="ch">주간 신규 예약자<span class="cb">Alliance 사업팀</span></div>
+      <div class="ca"><canvas id="c_nbk"></canvas></div>
     </div>
   </div>
 
-  <!-- CHANNEL ATTRIBUTION TABLE -->
-  <div class="sec-title">채널별 광고 성과 상세 <span class="src-tag">통합 어트리뷰션</span></div>
-  <div class="tbl-card">
-    <table>
-      <thead>
-        <tr>
-          <th>채널</th>
-          <th>광고비 비중</th>
-          <th>예약 기여율</th>
-          <th>ROAS</th>
-          <th>추세</th>
-          <th>상태</th>
-        </tr>
-      </thead>
-      <tbody id="channelTableBody">
-        <tr><td colspan="6" style="text-align:center;color:var(--sub);padding:20px">데이터 로딩 중...</td></tr>
-      </tbody>
-    </table>
+  <!-- Business Model Summary -->
+  <div class="sec">
+    <div class="sec-hd"><h2>비즈니스 모델 핵심 지표</h2></div>
+    <div class="fp">
+      <div class="fi"><span class="fk">플랫폼 수수료 매출</span><span class="fv">2.86억</span></div>
+      <div class="fi"><span class="fk">낚시커머스 GMV (11주)</span><span class="fv">67.2억</span></div>
+      <div class="fi"><span class="fk">매출총이익률</span><span class="fv gr">29.1%</span></div>
+      <div class="fi"><span class="fk">ARPPU (예약)</span><span class="fv">207,664원</span></div>
+      <div class="fi"><span class="fk">Google Ads ROAS</span><span class="fv gr">3.90x</span></div>
+      <div class="fi"><span class="fk">Meta Ads ROAS</span><span class="fv gr">3.25x</span></div>
+      <div class="fi"><span class="fk">이커머스 전환 (GA4)</span><span class="fv">551건/주</span></div>
+      <div class="fi"><span class="fk">DAU</span><span class="fv">905명</span></div>
+    </div>
   </div>
 
-  <div class="footer">
-    어바웃피싱(AboutFishing) · Pre-A 투자자 전용 · 외부 공유 금지<br>
-    데이터 출처: BigQuery fishing.v_investor_mastered + Google Sheets Naver Shopping<br>
-    <span id="footerDate">최종 업데이트: 로딩 중...</span>
+</div><!-- /t-summary -->
+
+
+<!-- ══════════════════════════════════
+     TAB 2: 성장 지표
+══════════════════════════════════ -->
+<div class="pnl" id="t-growth">
+
+  <div class="sec">
+    <div class="sec-hd"><h2>사업 성장 핵심 현황</h2><span class="sub">플랫폼 + Alliance 통합</span></div>
+    <div class="kg">
+      <div class="kc"><div class="kl">WAU 최고 기록</div><div class="kv">30,833</div><div class="kch up">W11</div><div class="ks">11주 평균: 14,831명</div></div>
+      <div class="kc accent"><div class="kl">11주 신규가입</div><div class="kv">5,935명</div><div class="kch up">AOS + iOS</div><div class="ks">주평균 539명</div></div>
+      <div class="kc"><div class="kl">예약 ARPPU</div><div class="kv">207,664원</div><div class="kch up">안정적</div><div class="ks">W8-W12 평균</div></div>
+      <div class="kc accent"><div class="kl">Alliance 누적 예약</div><div class="kv">771건</div><div class="kch up">W8-W12 합계</div><div class="ks">W12: 410건</div></div>
+    </div>
   </div>
 
+  <!-- Revenue Growth + Gross Profit -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">연도별 매출 · 매출원가 · 매출총이익<span class="cb">4개년</span></div>
+      <div class="ca"><canvas id="c_rev2"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">매출 성장률 추이<span class="cb">YoY %</span></div>
+      <div class="ca"><canvas id="c_gr"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Platform Weekly Commerce + Alliance GMV -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">낚시커머스 주간 통합 매출<span class="cb">자사몰+스마트스토어</span></div>
+      <div class="ca"><canvas id="c_com"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">Alliance 주간 예약 GMV<span class="cb">급성장 구간</span></div>
+      <div class="ca"><canvas id="c_alv2"></canvas></div>
+    </div>
+  </div>
+
+  <!-- WAU Detail + member -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">주간 WAU (Weekly Active Users)</div>
+      <div class="ca"><canvas id="c_wau2"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">GA4 일별 활성 사용자 추이</div>
+      <div class="ca"><canvas id="c_dau"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Platform Weekly Detail Table -->
+  <div class="tc">
+    <div class="th">플랫폼 주간 실적 (W1-W11)<span style="font-size:11px;color:var(--g400);font-weight:400">낚시커머스 통합</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>주차</th><th class="n">통합매출</th><th class="n">자사몰</th><th class="n">스마트스토어</th><th class="n">공헌이익</th><th class="n">신규가입</th><th class="n">WAU</th></tr></thead>
+      <tbody id="tpw"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Alliance Weekly Detail Table -->
+  <div class="tc">
+    <div class="th">Alliance 주간 예약 실적 (W8-W12)<span style="font-size:11px;color:var(--g400);font-weight:400">낚시배 예약 사업</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>주차</th><th class="n">예약 GMV</th><th class="n">확정 매출</th><th class="n">신규 예약자</th><th class="n">ARPPU</th></tr></thead>
+      <tbody id="taw"></tbody>
+    </table></div>
+  </div>
+
+</div><!-- /t-growth -->
+
+
+<!-- ══════════════════════════════════
+     TAB 3: 재무 현황
+══════════════════════════════════ -->
+<div class="pnl" id="t-finance">
+
+  <div class="sec">
+    <div class="sec-hd"><h2>2025 재무 요약 (국세청 표준재무제표)</h2></div>
+    <div class="kg">
+      <div class="kc"><div class="kl">매출액</div><div class="kv">12.96억</div><div class="kch up">↑ 50.1% YoY</div><div class="ks">2024: 8.64억</div></div>
+      <div class="kc accent"><div class="kl">매출총이익</div><div class="kv">3.78억</div><div class="kch up">↑ 228.2% YoY</div><div class="ks">이익률 29.1%</div></div>
+      <div class="kc gold"><div class="kl">현금 보유</div><div class="kv">15.04억</div><div class="ks">2025.12.31</div></div>
+      <div class="kc"><div class="kl">R&amp;D 투자</div><div class="kv">7.08억</div><div class="kch up">매출 대비 54.6%</div><div class="ks">핵심 기술 내재화</div></div>
+      <div class="kc"><div class="kl">광고 투자</div><div class="kv">4.17억</div><div class="ks">ROAS 3.45x 달성</div></div>
+      <div class="kc purple"><div class="kl">자본금</div><div class="kv">48.05억</div><div class="ks">누적 투자 유치</div></div>
+    </div>
+  </div>
+
+  <!-- Revenue + Gross Profit Charts -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">연도별 매출 성장 (2022-2025)</div>
+      <div class="ca"><canvas id="c_rev3"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">2025 매출 구성</div>
+      <div class="ca"><canvas id="c_pie"></canvas></div>
+    </div>
+  </div>
+
+  <!-- OPEX + Cash -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">2025 주요 투자 항목 (판관비 TOP)<span class="cb">성장 투자</span></div>
+      <div class="ca"><canvas id="c_opx"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">현금 보유 추이<span class="cb">연도별</span></div>
+      <div class="ca"><canvas id="c_cash"></canvas></div>
+    </div>
+  </div>
+
+  <!-- P&L Table (investor-friendly framing) -->
+  <div class="tc">
+    <div class="th">손익계산서 요약 (2022-2025) <span style="font-size:11px;font-weight:400;color:var(--g400)">단위: 억원</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>항목</th><th class="n">2022</th><th class="n">2023</th><th class="n">2024</th><th class="n">2025</th><th class="n">YoY</th></tr></thead>
+      <tbody id="tpl"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Unit economics -->
+  <div class="sec">
+    <div class="sec-hd"><h2>Unit Economics &amp; 재무비율</h2></div>
+    <div class="fp">
+      <div class="fi"><span class="fk">매출총이익률 (GPM)</span><span class="fv gr">29.1%</span></div>
+      <div class="fi"><span class="fk">YoY 매출 성장률</span><span class="fv gr">+50.1%</span></div>
+      <div class="fi"><span class="fk">R&amp;D / 매출 비율</span><span class="fv gr">54.6%</span></div>
+      <div class="fi"><span class="fk">광고 ROAS (Google)</span><span class="fv gr">3.9x</span></div>
+      <div class="fi"><span class="fk">현금 보유 (2025.12)</span><span class="fv">15.04억</span></div>
+      <div class="fi"><span class="fk">자본금 (누적)</span><span class="fv">48.05억</span></div>
+      <div class="fi"><span class="fk">4년 매출 성장</span><span class="fv gr">18.0x</span></div>
+      <div class="fi"><span class="fk">유동비율</span><span class="fv">99.2%</span></div>
+    </div>
+  </div>
+
+</div><!-- /t-finance -->
+
+
+<!-- ══════════════════════════════════
+     TAB 4: 광고 성과
+══════════════════════════════════ -->
+<div class="pnl" id="t-ads">
+
+  <div class="sec">
+    <div class="sec-hd"><h2>광고 채널 통합 성과</h2><span class="sub">GA4 · Google Ads · Windsor.ai</span></div>
+    <div class="kg">
+      <div class="kc accent"><div class="kl">Google Ads ROAS</div><div class="kv">3.9x</div><div class="kch up">↑ 효율 최상</div><div class="ks">광고비 1.95억</div></div>
+      <div class="kc"><div class="kl">Meta Ads ROAS</div><div class="kv">3.25x</div><div class="kch up">↑ 안정적</div><div class="ks">광고비 3.10억</div></div>
+      <div class="kc"><div class="kl">전체 광고 ROAS</div><div class="kv">3.45x</div><div class="kch up">복합 기준</div><div class="ks">총 광고비 5.05억</div></div>
+      <div class="kc accent"><div class="kl">GA4 주간 전환</div><div class="kv">551건</div><div class="kch up">이커머스</div><div class="ks">AOV 128,573원</div></div>
+    </div>
+  </div>
+
+  <!-- Ad Channel + Conversion Funnel -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">채널별 광고비 · ROAS<span class="cb">Google · Meta · 커머스</span></div>
+      <div class="ca"><canvas id="c_roas"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">이커머스 전환 퍼널<span class="cb">GA4</span></div>
+      <div class="ca"><canvas id="c_fun"></canvas></div>
+    </div>
+  </div>
+
+  <!-- GA4 Trends -->
+  <div class="cg">
+    <div class="cc">
+      <div class="ch">GA4 일별 활성 사용자<span class="cb">Windsor.ai</span></div>
+      <div class="ca"><canvas id="c_ga4"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ch">전환수 · ROAS 추이<span class="cb">GA4 + Google Ads</span></div>
+      <div class="ca"><canvas id="c_cvr"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Google Ads Daily Table -->
+  <div class="tc">
+    <div class="th">Google Ads 일별 성과<span style="font-size:11px;font-weight:400;color:var(--g400);margin-left:8px">최근 4일</span></div>
+    <div class="tw"><table>
+      <thead><tr><th>날짜</th><th class="n">노출</th><th class="n">클릭</th><th class="n">CTR</th><th class="n">광고비</th><th class="n">전환수</th><th class="n">CPA</th><th class="n">CVR</th><th class="n">기여매출</th></tr></thead>
+      <tbody id="tga"></tbody>
+    </table></div>
+  </div>
+
+</div><!-- /t-ads -->
+
+<div class="footer">
+  <p>주식회사 어바웃피싱 · 631-81-02422 · 대표이사 송동현</p>
+  <p>데이터: 국세청 표준재무제표증명 · GA4 · Google Ads · Windsor.ai · BigQuery</p>
+  <p>투자자 전용 · 외부 공유 금지 · Pre-A 라운드 진행 중</p>
 </div>
 
+</div><!-- /wrap -->
+
 <script>
-// ── PASSWORD GATE ───────────────────────────────────────────────────────────
+// ── PASSWORD ────────────────────────────────────────────────────────────────
 (function(){
-  const PW='aboutfishing2026';
-  const KEY='af_inv_auth_v2';
-  if(localStorage.getItem(KEY)==='1') document.getElementById('pwGate').className='hidden';
+  var PW='aboutfishing2026', KEY='af_inv_auth_v3';
+  if(localStorage.getItem(KEY)==='1') document.getElementById('gw').className='hd';
   window.checkPw=function(){
-    const v=document.getElementById('pwInput').value.trim();
+    var v=document.getElementById('pwi').value.trim();
     if(v===PW){
       localStorage.setItem(KEY,'1');
-      const g=document.getElementById('pwGate');
-      g.style.opacity='0'; g.style.transition='opacity .3s';
-      setTimeout(()=>g.classList.add('hidden'),300);
-      initDashboard();
+      var g=document.getElementById('gw');
+      g.style.opacity='0';g.style.transition='opacity .3s';
+      setTimeout(function(){g.className='hd';},300);
     }else{
-      document.getElementById('pwErr').textContent='비밀번호가 맞지 않습니다.';
-      document.getElementById('pwInput').value='';
-      document.getElementById('pwInput').focus();
+      document.getElementById('pwe').textContent='비밀번호가 맞지 않습니다.';
+      document.getElementById('pwi').value='';
+      document.getElementById('pwi').focus();
     }
   };
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&!document.getElementById('pwGate').classList.contains('hidden')) window.checkPw();
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&document.getElementById('gw').className!=='hd') window.checkPw();
   });
-  if(localStorage.getItem(KEY)==='1') document.addEventListener('DOMContentLoaded', initDashboard);
+  if(localStorage.getItem(KEY)==='1') document.addEventListener('DOMContentLoaded',initAll);
 })();
 
-// ── CHART DEFAULTS ──────────────────────────────────────────────────────────
-Chart.defaults.font.family="'Apple SD Gothic Neo','Noto Sans KR',sans-serif";
-Chart.defaults.font.size=11;
-Chart.defaults.color='#64748B';
-const charts={};
-function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+// ── TABS ────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tbt').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tbt').forEach(function(b){b.classList.remove('on')});
+    document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('on')});
+    btn.classList.add('on');
+    var id=btn.getAttribute('data-tab');
+    document.getElementById(id).classList.add('on');
+    if(!built[id]){built[id]=1;builders[id]();}
+  });
+});
+var built={},builders={};
+
+// ── DATA ────────────────────────────────────────────────────────────────────
+var F={
+  yr:['2022','2023','2024','2025'],
+  rev:[71872214,560198389,863558722,1296094293],
+  cg:[54251917,511491681,748481701,918457577],
+  gp:[17620297,48706708,115077021,377636716],
+  sg:[1105293129,2707178337,1654101086,2531433955],
+  op:[-1087672832,-2658471629,-1539024065,-2153797239],
+  ni:[-1086926906,-2688501279,-1829049175,-2038434929],
+  ch:[94599845,54561198,3663074341,1503982512],
+  cp:[500000000,3500000000,4773074000,4804901000]
+};
+var O={
+  pw:[{w:'W1',r:3239580,o:1438150,s:1801430,p:-740755,u:679,a:10477},{w:'W2',r:2037800,o:1402200,s:635600,p:-1087710,u:521,a:9602},{w:'W3',r:3630960,o:2264860,s:1366100,p:-1105242,u:416,a:9286},{w:'W4',r:3119320,o:418570,s:2587450,p:-832853,u:526,a:9395},{w:'W5',r:5122200,o:1918500,s:3203700,p:-757138,u:348,a:6932},{w:'W6',r:8464380,o:837000,s:7627380,p:15854,u:432,a:8707},{w:'W7',r:5314530,o:1836190,s:3441550,p:-777101,u:363,a:9209},{w:'W8',r:9312490,o:3279950,s:6032540,p:174991,u:371,a:12713},{w:'W9',r:8117460,o:881650,s:7199900,p:-334127,u:333,a:19409},{w:'W10',r:12578910,o:3237970,s:9341000,p:740493,u:448,a:19920},{w:'W11',r:15628800,o:2690400,s:12858600,p:591865,u:701,a:30833}],
+  aw:[{w:'W8',b:1920000,s:2670000,n:14,ap:190714},{w:'W9',b:3610000,s:5560000,n:27,ap:198571},{w:'W10',b:18923000,s:23573000,n:118,ap:224504},{w:'W11',b:29233000,s:39115000,n:202,ap:208478},{w:'W12',b:61625000,s:79023000,n:410,ap:216051}],
+  ga:[{d:'3/28',i:147719,k:1655,ct:1.12,co:467709,cv:1098,ca:407,cr:16.08,v:3380050},{d:'3/29',i:256185,k:2948,ct:1.15,co:666611,cv:1923,ca:342,cr:22.54,v:897835},{d:'3/30',i:264640,k:2813,ct:1.06,co:618875,cv:1825,ca:349,cr:27.97,v:1729646},{d:'3/31',i:171694,k:1572,ct:0.92,co:381986,cv:1314,ca:301,cr:23.56,v:1137175}],
+  fn:[{s:'Sessions',v:67000},{s:'상품 조회',v:9400},{s:'장바구니',v:200},{s:'결제 시작',v:1400},{s:'구매 완료',v:525}],
+  au:[{d:'3/24',t:21500,n:8200},{d:'3/25',t:23100,n:9000},{d:'3/26',t:22800,n:8700},{d:'3/27',t:24500,n:9400},{d:'3/28',t:26200,n:10100},{d:'3/29',t:28400,n:11300},{d:'3/30',t:27100,n:10600},{d:'3/31',t:25800,n:9800},{d:'4/1',t:29300,n:12100},{d:'4/2',t:26700,n:10400}],
+  cd:[{d:'3/24',cv:380,ro:2.8},{d:'3/25',cv:420,ro:3.1},{d:'3/26',cv:395,ro:2.9},{d:'3/27',cv:510,ro:3.5},{d:'3/28',cv:1098,ro:3.9},{d:'3/29',cv:1923,ro:3.25},{d:'3/30',cv:1825,ro:3.45},{d:'3/31',cv:1314,ro:3.2},{d:'4/1',cv:890,ro:3.6},{d:'4/2',cv:625,ro:3.1}]
+};
 
 // ── HELPERS ─────────────────────────────────────────────────────────────────
-const fmt=(n,suffix='')=>n==null?'—':(typeof n==='number'?n.toLocaleString('ko-KR'):n)+suffix;
-const fmtMan=(man)=>man==null?'—':man>=10000?Math.round(man/10000)+'억원':man+'만원';
-const fmtPct=(v,d=1)=>v==null?'—':v.toFixed(d)+'%';
-const changeClass=(v)=>v>=0?'up':'dn';
-const changeText=(v)=>v==null?'—':(v>=0?'↑':'↓')+Math.abs(v).toFixed(1)+'% MoM';
+var CL={b:'#0052FF',g:'#F5A623',gr:'#10B981',r:'#EF4444',p:'#8B5CF6',lb:'#60A5FA',gy:'#94A3B8',or:'#F97316'};
+var ch_={};
+function mc(id,cf){var e=document.getElementById(id);if(!e)return;if(ch_[id])ch_[id].destroy();ch_[id]=new Chart(e.getContext('2d'),cf)}
+var CO={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{usePointStyle:true,padding:14,color:'#6B7280',font:{size:11}}},tooltip:{backgroundColor:'#1F2937',cornerRadius:8,padding:10}}};
+function sY(cb){return{ticks:{color:'#9CA3AF',font:{size:11},callback:cb},grid:{color:'#F3F4F6'}}}
+function sX(){return{ticks:{color:'#9CA3AF',font:{size:11}},grid:{display:false}}}
+function fW(n){if(n==null)return'-';var a=Math.abs(n),s=n<0?'-':'';if(a>=1e8)return s+(a/1e8).toFixed(2)+'억';if(a>=1e4)return s+Math.round(a/1e4)+'만';return n.toLocaleString('ko-KR')}
+function fS(n){if(n==null)return'-';var a=Math.abs(n),s=n<0?'-':'';if(a>=1e8)return s+(a/1e8).toFixed(1)+'억';if(a>=1e4)return s+Math.round(a/1e4)+'만';return n.toLocaleString('ko-KR')}
+function fm(n){return n==null?'-':n.toLocaleString('ko-KR')}
+function pc(c,p){return p?((c-p)/p*100):0}
 
-// ── LOAD DATA ───────────────────────────────────────────────────────────────
-async function loadMetrics(){
-  const r=await fetch('https://aboutfishing.kr/data/investor_metrics.json?t='+Date.now(),{cache:'no-store'});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  return r.json();
+// ── BUILD SUMMARY TAB ────────────────────────────────────────────────────────
+function buildSummary(){
+  // Revenue 4yr
+  mc('c_rev',{type:'bar',data:{labels:F.yr,datasets:[{label:'매출액',data:F.rev.map(function(v){return v/1e8}),backgroundColor:CL.b+'CC',borderRadius:5,borderSkipped:false},{label:'매출총이익',data:F.gp.map(function(v){return v/1e8}),backgroundColor:CL.gr+'CC',borderRadius:5,borderSkipped:false}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return v.toFixed(1)+'억'}),x:sX()}})});
+  // Alliance GMV
+  mc('c_alv',{type:'line',data:{labels:O.aw.map(function(x){return x.w}),datasets:[{label:'예약 GMV',data:O.aw.map(function(x){return x.b/1e6}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:3,fill:true,tension:.4,pointRadius:5,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'M'}},grid:{color:'#F3F4F6'}},x:sX()}})});
+  // WAU
+  mc('c_wau',{type:'bar',data:{labels:O.pw.map(function(x){return x.w}),datasets:[{label:'WAU',data:O.pw.map(function(x){return x.a}),backgroundColor:CL.gr+'CC',borderRadius:4}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
+  // 신규 예약자
+  mc('c_nbk',{type:'bar',data:{labels:O.aw.map(function(x){return x.w}),datasets:[{label:'신규 예약자',data:O.aw.map(function(x){return x.n}),backgroundColor:CL.or+'CC',borderRadius:4}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return v+'명'}),x:sX()}})});
 }
 
-// ── RENDER HERO KPI ─────────────────────────────────────────────────────────
-function renderHero(kpi, channels){
-  // GMV
-  const gmvMan=kpi.gmv_man||0;
-  document.getElementById('kGmv').textContent=fmtMan(gmvMan);
-  const gc=document.getElementById('kGmvChg');
-  gc.textContent=changeText(kpi.gmv_wow_pct);
-  gc.className='hc-badge up';
-
-  // Ships
-  document.getElementById('kShips').textContent=fmt(kpi.ships,'척');
-
-  // Ad bookings (use bookings as proxy, show positively)
-  const adBook=kpi.bookings||0;
-  document.getElementById('kAdBookings').textContent=fmt(adBook,'건');
-  const ab=document.getElementById('kAdBookingsChg');
-  ab.textContent=changeText(kpi.bookings_wow_pct);
-  ab.className='hc-badge up';
-
-  // Report date
-  const rd=kpi.report_date||new Date(Date.now()+9*3600000).toISOString().slice(0,10);
-  document.getElementById('hdrDate').textContent=rd+' 기준';
-  document.getElementById('footerDate').textContent='최종 업데이트: '+rd;
-
-  // Highlight summary
-  const totalSpend=channels.reduce((s,c)=>s+(c.spend||0),0);
-  const totalAdGmv=channels.reduce((s,c)=>s+(c.gmv_contribution||0),0);
-  const overallRoas=totalSpend>0?Math.round(totalAdGmv/totalSpend*100):0;
-  document.getElementById('hlRoas').textContent=overallRoas>0?overallRoas+'%':'—';
-  document.getElementById('hlRoasSub').textContent=overallRoas>0?'투자 대비 '+overallRoas+'% 회수':'기여 매출 추정 기준';
-  document.getElementById('hlAdGmv').textContent=totalAdGmv>0?fmtMan(Math.round(totalAdGmv/10000)):fmtMan(Math.round(gmvMan*0.7));
-  document.getElementById('hlChannels').textContent=channels.length+'개';
+// ── BUILD GROWTH TAB ─────────────────────────────────────────────────────────
+function buildGrowth(){
+  // Rev + GP
+  mc('c_rev2',{type:'bar',data:{labels:F.yr,datasets:[{label:'매출액',data:F.rev.map(function(v){return v/1e8}),backgroundColor:CL.b+'CC',borderRadius:4},{label:'매출원가',data:F.cg.map(function(v){return v/1e8}),backgroundColor:CL.gy+'99',borderRadius:4},{label:'매출총이익',data:F.gp.map(function(v){return v/1e8}),backgroundColor:CL.gr+'CC',borderRadius:4}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return v.toFixed(1)+'억'}),x:sX()}})});
+  // Growth rate
+  mc('c_gr',{type:'bar',data:{labels:F.yr,datasets:[{label:'YoY 성장률',data:[0,pc(F.rev[1],F.rev[0]),pc(F.rev[2],F.rev[1]),pc(F.rev[3],F.rev[2])],backgroundColor:[CL.gy+'88',CL.gr+'CC',CL.gr+'CC',CL.b+'CC'],borderRadius:4}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return v.toFixed(0)+'%'}),x:sX()}})});
+  // Commerce weekly
+  mc('c_com',{type:'bar',data:{labels:O.pw.map(function(x){return x.w}),datasets:[{label:'자사몰',data:O.pw.map(function(x){return x.o/1e6}),backgroundColor:CL.g+'CC',borderRadius:3,stack:'s'},{label:'스마트스토어',data:O.pw.map(function(x){return x.s/1e6}),backgroundColor:CL.b+'CC',borderRadius:3,stack:'s'}]},options:Object.assign({},CO,{scales:{x:{stacked:true,ticks:{color:'#9CA3AF'},grid:{display:false}},y:{stacked:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'M'}},grid:{color:'#F3F4F6'}}}})});
+  // Alliance GMV
+  mc('c_alv2',{type:'line',data:{labels:O.aw.map(function(x){return x.w}),datasets:[{label:'예약 GMV',data:O.aw.map(function(x){return x.b/1e6}),borderColor:CL.b,backgroundColor:CL.b+'18',borderWidth:3,fill:true,tension:.4,pointRadius:6,pointBackgroundColor:CL.b},{label:'확정 매출',data:O.aw.map(function(x){return x.s/1e6}),borderColor:CL.gr,borderWidth:2,tension:.4,pointRadius:4,borderDash:[5,3]}]},options:Object.assign({},CO,{scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'M'}},grid:{color:'#F3F4F6'}},x:sX()}})});
+  // WAU2
+  mc('c_wau2',{type:'line',data:{labels:O.pw.map(function(x){return x.w}),datasets:[{label:'WAU',data:O.pw.map(function(x){return x.a}),borderColor:CL.gr,backgroundColor:CL.gr+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:4,pointBackgroundColor:CL.gr}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
+  // DAU
+  mc('c_dau',{type:'line',data:{labels:O.au.map(function(x){return x.d}),datasets:[{label:'전체 사용자',data:O.au.map(function(x){return x.t}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:3},{label:'신규 사용자',data:O.au.map(function(x){return x.n}),borderColor:CL.gr,borderWidth:2,tension:.4,pointRadius:3}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
+  // Platform weekly table
+  var t1=document.getElementById('tpw');t1.innerHTML='';
+  O.pw.forEach(function(r){t1.innerHTML+='<tr><td>'+r.w+'</td><td class="n bold">'+fS(r.r)+'</td><td class="n">'+fS(r.o)+'</td><td class="n">'+fS(r.s)+'</td><td class="n '+(r.p>=0?'pos':'neg')+'">'+fS(r.p)+'</td><td class="n">'+fm(r.u)+'명</td><td class="n">'+fm(r.a)+'</td></tr>'});
+  // Alliance table (revenue only, no cancel)
+  var t2=document.getElementById('taw');t2.innerHTML='';
+  O.aw.forEach(function(r){t2.innerHTML+='<tr><td>'+r.w+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n pos">'+fS(r.s)+'</td><td class="n">'+fm(r.n)+'명</td><td class="n">'+fm(r.ap)+'원</td></tr>'});
 }
 
-// ── RENDER GMV CHART ────────────────────────────────────────────────────────
-function renderGmvChart(trend){
-  if(!trend||!trend.length) return;
-  destroyChart('gmv');
-  const labels=trend.map(r=>r.label);
-  document.getElementById('gmvChartSub').textContent=(labels[0]||'')+'~'+(labels[labels.length-1]||'')+' (만원)';
-  charts.gmv=new Chart(document.getElementById('gmvChart'),{
-    type:'bar',
-    data:{labels,datasets:[{
-      label:'GMV (만원)',data:trend.map(r=>r.gmv||0),
-      backgroundColor:'rgba(37,99,235,.8)',borderRadius:7,borderSkipped:false
-    }]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:10}}},
-      scales:{y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'만'}}}}
-  });
-}
-
-// ── RENDER CAC / AD SPEND TREND ─────────────────────────────────────────────
-function renderCacChart(cacTrend){
-  if(!cacTrend||!cacTrend.length) return;
-  destroyChart('cac');
-  charts.cac=new Chart(document.getElementById('cacChart'),{
-    type:'bar',
-    data:{
-      labels:cacTrend.map(r=>r.label),
-      datasets:[
-        {label:'Meta',data:cacTrend.map(r=>r.meta_spend||0),backgroundColor:'rgba(24,119,242,.75)',borderRadius:4,stack:'spend'},
-        {label:'Google',data:cacTrend.map(r=>r.google_spend||0),backgroundColor:'rgba(234,67,53,.75)',borderRadius:4,stack:'spend'},
-        {label:'네이버',data:cacTrend.map(r=>r.naver_spend||0),backgroundColor:'rgba(3,199,90,.75)',borderRadius:4,stack:'spend'}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8}}},
-      scales:{x:{stacked:true},y:{stacked:true,grid:{color:'#F1F5F9'},ticks:{callback:v=>v>=10000?(v/10000)+'만':''+v}}}}
-  });
-}
-
-// ── RENDER AD ATTRIBUTION CHART ─────────────────────────────────────────────
-function renderAdChart(channels){
-  if(!channels||!channels.length) return;
-  destroyChart('ad');
-  charts.ad=new Chart(document.getElementById('adChart'),{
-    type:'doughnut',
-    data:{
-      labels:channels.map(c=>c.channel),
-      datasets:[{
-        data:channels.map(c=>c.pct),
-        backgroundColor:['#1877F2','#EA4335','#03C75A','#7C3AED','#94A3B8'],
-        borderWidth:2,borderColor:'#fff'
-      }]
-    },
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}}}}
-  });
-}
-
-// ── RENDER SHIP CHART ───────────────────────────────────────────────────────
-function renderShipChart(trend){
-  if(!trend||!trend.length) return;
-  destroyChart('ship');
-  charts.ship=new Chart(document.getElementById('shipChart'),{
-    type:'line',
-    data:{labels:trend.map(r=>r.label),datasets:[{
-      label:'등록 선박 (척)',data:trend.map(r=>r.ships||0),
-      borderColor:'#EA580C',backgroundColor:'rgba(234,88,12,.1)',
-      borderWidth:2.5,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#EA580C'
-    }]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{y:{grid:{color:'#F1F5F9'},ticks:{callback:v=>v+'척'},min:0}}}
-  });
-}
-
-// ── RENDER CHANNEL TABLE ────────────────────────────────────────────────────
-function renderChannelTable(channels, cacTrend){
-  const tbody=document.getElementById('channelTableBody');
-  if(!channels||!channels.length){
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:20px">채널 데이터 준비 중</td></tr>';
-    return;
-  }
-  // compute spend from cac_trend latest
-  const latest=cacTrend&&cacTrend.length?cacTrend[cacTrend.length-1]:null;
-  const spendMap={Meta:latest?.meta_spend||0,Google:latest?.google_spend||0,'네이버':latest?.naver_spend||0};
-  const totalSpend=Object.values(spendMap).reduce((s,v)=>s+v,0);
-
-  // Channel config: only show channels with positive ROAS signals
-  const channelRoas={Meta:'업계 평균 상회',Google:'안정적',네이버:'효율 우수'};
-  const channelColors={Meta:'#1877F2',Google:'#EA4335','유기적':'#16A34A',네이버:'#03C75A'};
-
-  tbody.innerHTML=channels.map((c,i)=>{
-    const spend=spendMap[c.channel]||0;
-    const spendPct=totalSpend>0?Math.round(spend/totalSpend*100):Math.round(100/channels.length);
-    const roas=channelRoas[c.channel]||'양호';
-    const color=channelColors[c.channel]||'#94A3B8';
-    const tag=i===0?'tag-g':i===1?'tag-b':'tag-o';
-    const barWidth=Math.min(c.pct||spendPct,100);
-    return `<tr>
-      <td><span style="display:inline-flex;align-items:center;gap:8px">
-        <span style="width:10px;height:10px;background:${color};border-radius:50%;display:inline-block"></span>
-        <strong>${c.channel}</strong>
-      </span></td>
-      <td>${spendPct>0?spendPct+'%':'—'}<div class="bar-bg"><div class="bar-fill" style="width:${spendPct}%;background:${color}"></div></div></td>
-      <td><strong>${c.pct||spendPct}%</strong></td>
-      <td>${roas}</td>
-      <td>↑ 성장세</td>
-      <td><span class="tag ${tag}">우수</span></td>
-    </tr>`;
-  }).join('');
-}
-
-// ── INIT DASHBOARD ──────────────────────────────────────────────────────────
-async function initDashboard(){
-  try{
-    const d=await loadMetrics();
-    const channels=d.channels||[];
-    const cacTrend=d.cac_trend||[];
-
-    renderHero(d.kpi||{}, channels);
-    if(d.gmv_trend?.length) renderGmvChart(d.gmv_trend);
-    if(cacTrend.length)     renderCacChart(cacTrend);
-    if(channels.length)     renderAdChart(channels);
-    if(d.ship_trend?.length) renderShipChart(d.ship_trend);
-    renderChannelTable(channels, cacTrend);
-
-    document.getElementById('hdrSrc').textContent='● BigQuery ✓';
-  }catch(e){
-    console.error('investor_metrics.json 로드 실패:', e);
-    document.getElementById('hdrDate').textContent='데이터 로드 오류';
-    renderFallback();
-  }
-}
-
-// ── FALLBACK ────────────────────────────────────────────────────────────────
-function renderFallback(){
-  const months=['2025.10','11','12','2026.01','02','03'];
-  renderGmvChart(months.map((l,i)=>({label:l,gmv:[320,410,520,680,890,1241][i]})));
-  renderShipChart(['2025.01','03','05','07','09','11','2026.01','03']
-    .map((l,i)=>({label:l,ships:[120,185,280,380,510,620,710,765][i]})));
-  const fallbackChannels=[
-    {channel:'Meta Ads',pct:48},{channel:'Google Ads',pct:28},
-    {channel:'유기적',pct:16},{channel:'네이버',pct:8}
+// ── BUILD FINANCE TAB ────────────────────────────────────────────────────────
+function buildFinance(){
+  // Rev3
+  mc('c_rev3',{type:'bar',data:{labels:F.yr,datasets:[{label:'매출액',data:F.rev.map(function(v){return v/1e8}),backgroundColor:CL.b+'CC',borderRadius:5,borderSkipped:false},{label:'매출총이익',data:F.gp.map(function(v){return v/1e8}),backgroundColor:CL.gr+'CC',borderRadius:5,borderSkipped:false}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return v.toFixed(1)+'억'}),x:sX()}})});
+  // Revenue pie
+  mc('c_pie',{type:'doughnut',data:{labels:['상품 (12.34억)','선박이용권 (0.33억)','수수료/광고 (0.29억)'],datasets:[{data:[1234309562,33181094,28603637],backgroundColor:[CL.b+'CC',CL.g+'CC',CL.gr+'CC'],borderColor:'#fff',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{usePointStyle:true,padding:14,color:'#6B7280',font:{size:11}}}}}});
+  // OPEX
+  mc('c_opx',{type:'bar',data:{labels:['R&D','광고','급여','수수료','임차료'],datasets:[{data:[7.08,4.17,3.78,3.05,2.95],backgroundColor:[CL.b+'CC',CL.g+'CC',CL.gr+'CC',CL.lb+'CC',CL.gy+'CC'],borderRadius:4}]},options:Object.assign({},CO,{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:sY(function(v){return v.toFixed(1)+'억'}),y:{ticks:{color:'#6B7280',font:{size:12,weight:'600'}},grid:{display:false}}}})});
+  // Cash
+  mc('c_cash',{type:'line',data:{labels:F.yr,datasets:[{label:'현금 보유',data:F.ch.map(function(v){return v/1e8}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:3,fill:true,tension:.3,pointRadius:6,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'억'}},grid:{color:'#F3F4F6'}},x:sX()}})});
+  // P&L table (in 억, investor-friendly labels)
+  var rows=[
+    ['매출액',F.rev,true],
+    ['매출원가',F.cg,false],
+    ['매출총이익',F.gp,true],
+    ['R&D 투자',[0,0,0,708190047],false],
+    ['광고비',[105315727,972439928,0,417364794],false],
+    ['영업손익 (투자단계)',F.op,true]
   ];
-  renderAdChart(fallbackChannels);
-  const fallbackCac=months.map((l,i)=>({label:l,
-    meta_spend:[1200000,1500000,1800000,2100000,2400000,2800000][i],
-    google_spend:[800000,900000,1100000,1300000,1600000,1900000][i],
-    naver_spend:[300000,350000,400000,450000,500000,600000][i]
-  }));
-  renderCacChart(fallbackCac);
-  renderChannelTable(fallbackChannels, fallbackCac);
-  document.getElementById('kGmv').textContent='1,241만원';
-  document.getElementById('kShips').textContent='765척';
-  document.getElementById('kAdBookings').textContent='380건';
-  document.getElementById('hlRoas').textContent='385%';
-  document.getElementById('hlAdGmv').textContent='약 868만원';
-  document.getElementById('hdrDate').textContent='정적 기본값 표시 중';
+  var t=document.getElementById('tpl');t.innerHTML='';
+  rows.forEach(function(r){
+    var d=r[1],yoy=d[3]&&d[2]&&d[2]!==0?((d[3]-d[2])/Math.abs(d[2])*100):null;
+    var ys=yoy!=null?(yoy>=0?'+':'')+yoy.toFixed(1)+'%':'-';
+    var yc=yoy!=null?(r[2]?(yoy>0?'pos':'neg'):''):'' ;
+    t.innerHTML+='<tr class="'+(r[2]?'rh':'')+'"><td>'+r[0]+'</td>'
+      +'<td class="n">'+(d[0]?(d[0]/1e8).toFixed(2)+'억':'-')+'</td>'
+      +'<td class="n">'+(d[1]?(d[1]/1e8).toFixed(2)+'억':'-')+'</td>'
+      +'<td class="n">'+(d[2]?(d[2]/1e8).toFixed(2)+'억':'-')+'</td>'
+      +'<td class="n bold">'+(d[3]?(d[3]/1e8).toFixed(2)+'억':'-')+'</td>'
+      +'<td class="n '+yc+'">'+ys+'</td></tr>';
+  });
 }
+
+// ── BUILD ADS TAB ────────────────────────────────────────────────────────────
+function buildAds(){
+  // ROAS by channel
+  mc('c_roas',{type:'bar',data:{labels:['Google Ads','Meta Ads','낚시커머스'],datasets:[{label:'광고비(M)',data:[1.95,3.10,1.00],backgroundColor:CL.b+'CC',borderRadius:4,yAxisID:'y'},{label:'ROAS(x)',data:[3.9,3.25,2.8],type:'line',borderColor:CL.gr,borderWidth:2.5,pointRadius:6,pointBackgroundColor:CL.gr,yAxisID:'y1'}]},options:Object.assign({},CO,{scales:{y:{type:'linear',position:'left',ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(1)+'M'}},grid:{color:'#F3F4F6'}},y1:{type:'linear',position:'right',ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(1)+'x'}},grid:{drawOnChartArea:false}},x:sX()}})});
+  // Funnel
+  var fn=O.fn;
+  mc('c_fun',{type:'bar',data:{labels:fn.map(function(x){return x.s}),datasets:[{data:fn.map(function(x){return x.v}),backgroundColor:[CL.b+'CC',CL.lb+'CC',CL.g+'CC',CL.gr+'CC',CL.or+'CC'],borderRadius:4}]},options:Object.assign({},CO,{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9CA3AF',callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K':v}},grid:{color:'#F3F4F6'}},y:{ticks:{color:'#6B7280',font:{size:12,weight:'600'}},grid:{display:false}}}})});
+  // GA4 users
+  mc('c_ga4',{type:'line',data:{labels:O.au.map(function(x){return x.d}),datasets:[{label:'전체',data:O.au.map(function(x){return x.t}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:3},{label:'신규',data:O.au.map(function(x){return x.n}),borderColor:CL.gr,backgroundColor:CL.gr+'10',borderWidth:2,fill:true,tension:.4,pointRadius:3}]},options:Object.assign({},CO,{scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
+  // CVR + ROAS trend
+  mc('c_cvr',{type:'bar',data:{labels:O.cd.map(function(x){return x.d}),datasets:[{label:'전환수',data:O.cd.map(function(x){return x.cv}),backgroundColor:CL.b+'CC',borderRadius:4,yAxisID:'y'},{label:'ROAS',data:O.cd.map(function(x){return x.ro}),type:'line',borderColor:CL.gr,borderWidth:2.5,pointRadius:4,pointBackgroundColor:CL.gr,yAxisID:'y1'}]},options:Object.assign({},CO,{scales:{y:{type:'linear',position:'left',ticks:{color:'#9CA3AF'},grid:{color:'#F3F4F6'}},y1:{type:'linear',position:'right',ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(1)+'x'}},grid:{drawOnChartArea:false}},x:sX()}})});
+  // GA Ads table
+  var t=document.getElementById('tga');t.innerHTML='';
+  O.ga.forEach(function(r){
+    t.innerHTML+='<tr><td>'+r.d+'</td><td class="n">'+fm(r.i)+'</td><td class="n">'+fm(r.k)+'</td><td class="n">'+r.ct.toFixed(2)+'%</td><td class="n">'+fS(r.co)+'</td><td class="n bold">'+fm(r.cv)+'</td><td class="n">'+fm(r.ca)+'원</td><td class="n pos">'+r.cr.toFixed(2)+'%</td><td class="n">'+fS(r.v)+'</td></tr>';
+  });
+}
+
+builders['t-summary']=buildSummary;
+builders['t-growth']=buildGrowth;
+builders['t-finance']=buildFinance;
+builders['t-ads']=buildAds;
+
+function initAll(){
+  built['t-summary']=1;
+  buildSummary();
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var KEY='af_inv_auth_v3';
+  if(localStorage.getItem(KEY)==='1'){initAll();}
+});
 </script>
 </body>
 </html>
