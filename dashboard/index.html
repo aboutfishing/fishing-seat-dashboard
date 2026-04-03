@@ -60,17 +60,6 @@
   .chart-sub{font-size:11px;color:var(--sub);margin-bottom:14px}
   .chart-wrap{position:relative;height:200px}
 
-  /* NAVER SECTION */
-  .naver-card{background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:18px 20px;border:1px solid #BBF7D0;margin-bottom:28px}
-  .naver-title{font-size:13px;font-weight:700;color:#15803D;margin-bottom:4px}
-  .naver-sub{font-size:11px;color:#4ADE80;margin-bottom:14px}
-  .naver-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
-  .naver-chart-wrap{position:relative;height:160px}
-  .naver-kpi-col{display:flex;flex-direction:column;gap:10px}
-  .naver-stat{background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #D1FAE5}
-  .naver-stat-v{font-size:18px;font-weight:800;color:var(--txt)}
-  .naver-stat-k{font-size:10px;color:var(--sub);margin-top:2px}
-
   /* NARRATIVE */
   .narrative{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border-radius:12px;padding:16px 20px;margin-bottom:28px;border:1px solid #BFDBFE}
   .narrative-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px}
@@ -97,7 +86,6 @@
   @media(max-width:768px){
     .kpi-grid{grid-template-columns:1fr 1fr}
     .chart-grid{grid-template-columns:1fr}
-    .naver-grid{grid-template-columns:1fr}
   }
   @media(max-width:480px){
     .kpi-grid{grid-template-columns:1fr}
@@ -195,32 +183,6 @@
       <div class="chart-title">어종별 예약 비중</div>
       <div class="chart-sub">최근 기준 (유효 예약)</div>
       <div class="chart-wrap"><canvas id="fishChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- NAVER SHOPPING SECTION -->
-  <div class="sec-title">네이버 쇼핑 성과 <span class="src-tag">📊 Google Sheets 연동</span></div>
-  <div class="naver-card">
-    <div class="naver-title">🟢 네이버 쇼핑 광고 월간 성과</div>
-    <div class="naver-sub" id="naverSub">로딩 중...</div>
-    <div class="naver-grid">
-      <div>
-        <div class="naver-chart-wrap"><canvas id="naverChart"></canvas></div>
-      </div>
-      <div class="naver-kpi-col">
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkConversions">—</div>
-          <div class="naver-stat-k">최근월 전환수</div>
-        </div>
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkRoas">—</div>
-          <div class="naver-stat-k">ROAS</div>
-        </div>
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkClicks">—</div>
-          <div class="naver-stat-k">최근월 클릭수</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -517,59 +479,6 @@ function renderAdChart(channels){
   });
 }
 
-// ── RENDER NAVER CHART ──────────────────────────────────────────────────────
-function renderNaverSection(naverData){
-  if(!naverData||!naverData.length){
-    document.getElementById('naverSub').textContent='데이터 없음 (Google Sheets 연동 후 표시됩니다)';
-    // show placeholder
-    destroyChart('naver');
-    charts.naver=new Chart(document.getElementById('naverChart'),{
-      type:'bar',data:{labels:['데이터 없음'],datasets:[{data:[0],backgroundColor:'#BBF7D0'}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{y:{ticks:{display:false},grid:{display:false}},x:{grid:{display:false}}}}
-    });
-    return;
-  }
-
-  const latest=naverData[naverData.length-1];
-  document.getElementById('naverSub').textContent=
-    (naverData[0]?.ym||'')+'~'+(latest.ym||'')+' · Google Sheets 자동 연동';
-  document.getElementById('nkConversions').textContent=fmt(latest.conversions,'건');
-  document.getElementById('nkRoas').textContent=latest.roas?latest.roas.toFixed(0)+'%':'—';
-  document.getElementById('nkClicks').textContent=latest.clicks?(latest.clicks/1000).toFixed(1)+'K':'—';
-
-  destroyChart('naver');
-  charts.naver=new Chart(document.getElementById('naverChart'),{
-    type:'bar',
-    data:{
-      labels:naverData.map(r=>r.label),
-      datasets:[{
-        label:'전환수',
-        data:naverData.map(r=>r.conversions||0),
-        backgroundColor:'rgba(22,163,74,.7)',
-        borderRadius:5,
-        yAxisID:'y',
-      },{
-        label:'ROAS (%)',
-        data:naverData.map(r=>r.roas||0),
-        type:'line',
-        borderColor:'#0891B2',
-        borderWidth:2,
-        pointRadius:3,
-        fill:false,
-        tension:.4,
-        yAxisID:'y2',
-      }]
-    },
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:8}}},
-      scales:{
-        y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{callback:v=>v+'건'},position:'left'},
-        y2:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%'}}
-      }}
-  });
-}
-
 // ── RENDER CAC / AD SPEND TREND ─────────────────────────────────────────────
 function renderCacChart(cacTrend){
   if(!cacTrend||!cacTrend.length) return;
@@ -622,7 +531,6 @@ async function initDashboard(){
     if(d.species?.length)    renderFishChart(d.species);
     if(d.regions?.length)    renderRegionChart(d.regions);
     if(d.channels?.length)   renderAdChart(d.channels);
-    renderNaverSection(d.naver||[]);
     if(d.cac_trend?.length)  renderCacChart(d.cac_trend);
 
     document.getElementById('hdrSrc').textContent='BigQuery ✓';
@@ -662,7 +570,6 @@ async function renderFallback(){
   renderFishChart([{name:'쭈꾸미/주꾸미',pct:38},{name:'광어(넙치)',pct:22},{name:'우럭',pct:18},{name:'갑오징어',pct:11},{name:'감성돔',pct:6},{name:'기타',pct:5}]);
   renderRegionChart([{region:'인천',pct:34},{region:'태안·충남',pct:22},{region:'여수·전남',pct:18},{region:'거제·경남',pct:12},{region:'부산',pct:8},{region:'기타',pct:6}]);
   renderAdChart([{channel:'Meta Ads',pct:48},{channel:'Google Ads',pct:28},{channel:'유기적',pct:16},{channel:'네이버',pct:8}]);
-  renderNaverSection([]);
 }
 </script>
 </body>

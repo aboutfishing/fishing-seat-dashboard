@@ -87,22 +87,11 @@
   .bar-bg{background:#F1F5F9;border-radius:4px;height:6px;width:100%;margin-top:4px}
   .bar-fill{height:6px;border-radius:4px;background:var(--blue)}
 
-  /* NAVER SECTION */
-  .naver-card{background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:14px;padding:20px 22px;border:1px solid #BBF7D0;margin-bottom:32px}
-  .naver-title{font-size:13px;font-weight:700;color:#15803D;margin-bottom:3px}
-  .naver-sub{font-size:11px;color:#22c55e;margin-bottom:14px}
-  .naver-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
-  .naver-chart-wrap{position:relative;height:170px}
-  .naver-kpi-col{display:flex;flex-direction:column;gap:10px}
-  .naver-stat{background:#fff;border-radius:10px;padding:12px 16px;border:1px solid #D1FAE5}
-  .naver-stat-v{font-size:20px;font-weight:800;color:var(--txt)}
-  .naver-stat-k{font-size:10px;color:var(--sub);margin-top:3px;font-weight:600}
-
   /* FOOTER */
   .footer{text-align:center;font-size:11px;color:var(--sub);padding:24px 0 20px;border-top:1px solid var(--border);line-height:1.6}
 
   @media(max-width:900px){.hero-grid{grid-template-columns:1fr 1fr}.highlight-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:768px){.chart-grid{grid-template-columns:1fr}.naver-grid{grid-template-columns:1fr}}
+  @media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
   @media(max-width:480px){.hero-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -155,12 +144,6 @@
       <span class="hc-badge up" id="kAdBookingsChg">—</span>
       <div class="hc-note">광고 채널 직접 전환 건수</div>
     </div>
-    <div class="hero-card orange">
-      <div class="hc-label">네이버 쇼핑 ROAS</div>
-      <div class="hc-val" id="kRoas">—</div>
-      <span class="hc-badge up">광고 효율 우수</span>
-      <div class="hc-note">최근 기준 광고비 대비 매출</div>
-    </div>
   </div>
 
   <!-- HIGHLIGHT: Ad Performance Summary -->
@@ -211,32 +194,6 @@
       <div class="chart-title">선박 공급 성장 (누적)</div>
       <div class="chart-sub">등록 선박 수 (척) — 목표 300척 초과 달성</div>
       <div class="chart-wrap"><canvas id="shipChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- NAVER SHOPPING -->
-  <div class="sec-title">네이버 쇼핑 광고 성과 <span class="src-tag">📊 Google Sheets 연동</span></div>
-  <div class="naver-card">
-    <div class="naver-title">🟢 네이버 쇼핑 광고 월간 성과</div>
-    <div class="naver-sub" id="naverSub">로딩 중...</div>
-    <div class="naver-grid">
-      <div>
-        <div class="naver-chart-wrap"><canvas id="naverChart"></canvas></div>
-      </div>
-      <div class="naver-kpi-col">
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkRoas">—</div>
-          <div class="naver-stat-k">최근월 ROAS</div>
-        </div>
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkConversions">—</div>
-          <div class="naver-stat-k">전환 건수</div>
-        </div>
-        <div class="naver-stat">
-          <div class="naver-stat-v" id="nkAdRevenue">—</div>
-          <div class="naver-stat-k">광고 기여 매출</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -316,7 +273,7 @@ async function loadMetrics(){
 }
 
 // ── RENDER HERO KPI ─────────────────────────────────────────────────────────
-function renderHero(kpi, naverData, channels){
+function renderHero(kpi, channels){
   // GMV
   const gmvMan=kpi.gmv_man||0;
   document.getElementById('kGmv').textContent=fmtMan(gmvMan);
@@ -333,12 +290,6 @@ function renderHero(kpi, naverData, channels){
   const ab=document.getElementById('kAdBookingsChg');
   ab.textContent=changeText(kpi.bookings_wow_pct);
   ab.className='hc-badge up';
-
-  // Naver ROAS
-  if(naverData&&naverData.length){
-    const latest=naverData[naverData.length-1];
-    document.getElementById('kRoas').textContent=latest.roas?latest.roas.toFixed(0)+'%':'—';
-  }
 
   // Report date
   const rd=kpi.report_date||new Date(Date.now()+9*3600000).toISOString().slice(0,10);
@@ -429,47 +380,6 @@ function renderShipChart(trend){
   });
 }
 
-// ── RENDER NAVER SECTION ────────────────────────────────────────────────────
-function renderNaverSection(naverData){
-  if(!naverData||!naverData.length){
-    document.getElementById('naverSub').textContent='데이터 연동 준비 중 (Google Sheets 연동 후 표시됩니다)';
-    destroyChart('naver');
-    charts.naver=new Chart(document.getElementById('naverChart'),{
-      type:'bar',data:{labels:['—'],datasets:[{data:[0],backgroundColor:'#BBF7D0'}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{y:{ticks:{display:false},grid:{display:false}},x:{grid:{display:false}}}}
-    });
-    return;
-  }
-  const latest=naverData[naverData.length-1];
-  document.getElementById('naverSub').textContent=
-    (naverData[0]?.ym||'')+'~'+(latest.ym||'')+' · Google Sheets 자동 연동';
-  document.getElementById('nkRoas').textContent=latest.roas?latest.roas.toFixed(0)+'%':'—';
-  document.getElementById('nkConversions').textContent=fmt(latest.conversions,'건');
-  document.getElementById('nkAdRevenue').textContent=
-    latest.ad_revenue?fmtMan(Math.round(latest.ad_revenue/10000)):'—';
-
-  destroyChart('naver');
-  charts.naver=new Chart(document.getElementById('naverChart'),{
-    type:'bar',
-    data:{
-      labels:naverData.map(r=>r.label||r.ym),
-      datasets:[
-        {label:'ROAS (%)',data:naverData.map(r=>r.roas||0),backgroundColor:'rgba(3,199,90,.75)',borderRadius:5,yAxisID:'y'},
-        {label:'전환수',data:naverData.map(r=>r.conversions||0),type:'line',
-          borderColor:'#2563EB',borderWidth:2,pointRadius:3,fill:false,tension:.4,yAxisID:'y2'}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:8,padding:8}}},
-      scales:{
-        y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{callback:v=>v+'%'},position:'left'},
-        y2:{position:'right',grid:{display:false},ticks:{callback:v=>v+'건'}}
-      }}
-  });
-}
-
 // ── RENDER CHANNEL TABLE ────────────────────────────────────────────────────
 function renderChannelTable(channels, cacTrend){
   const tbody=document.getElementById('channelTableBody');
@@ -512,15 +422,13 @@ async function initDashboard(){
   try{
     const d=await loadMetrics();
     const channels=d.channels||[];
-    const naverData=d.naver||[];
     const cacTrend=d.cac_trend||[];
 
-    renderHero(d.kpi||{}, naverData, channels);
+    renderHero(d.kpi||{}, channels);
     if(d.gmv_trend?.length) renderGmvChart(d.gmv_trend);
     if(cacTrend.length)     renderCacChart(cacTrend);
     if(channels.length)     renderAdChart(channels);
     if(d.ship_trend?.length) renderShipChart(d.ship_trend);
-    renderNaverSection(naverData);
     renderChannelTable(channels, cacTrend);
 
     document.getElementById('hdrSrc').textContent='● BigQuery ✓';
@@ -548,12 +456,10 @@ function renderFallback(){
     naver_spend:[300000,350000,400000,450000,500000,600000][i]
   }));
   renderCacChart(fallbackCac);
-  renderNaverSection([]);
   renderChannelTable(fallbackChannels, fallbackCac);
   document.getElementById('kGmv').textContent='1,241만원';
   document.getElementById('kShips').textContent='765척';
   document.getElementById('kAdBookings').textContent='380건';
-  document.getElementById('kRoas').textContent='420%';
   document.getElementById('hlRoas').textContent='385%';
   document.getElementById('hlAdGmv').textContent='약 868만원';
   document.getElementById('hdrDate').textContent='정적 기본값 표시 중';
