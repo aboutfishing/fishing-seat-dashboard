@@ -351,7 +351,7 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
   <div class="tc">
     <div class="th">Alliance 월별 예약 실적 (2025.2월-3월)<span class="th-sub">낚시배 예약 사업</span></div>
     <div class="tw"><table>
-      <thead><tr><th>월</th><th class="n">예약 GMV</th><th class="n">확정 매출</th><th class="n">예약 건수</th><th class="n">ARPPU</th></tr></thead>
+      <thead><tr><th>월</th><th class="n">예약 GMV</th><th class="n">예약 건수</th><th class="n">ARPPU</th></tr></thead>
       <tbody id="taw"></tbody>
     </table></div>
   </div>
@@ -599,7 +599,7 @@ function buildGrowth(){
   // 낚시커머스 월별 통합 매출 (단일 바 — 자사몰+온라인 합산, r=확정값)
   mc('c_com',{type:'bar',data:{labels:PM.map(function(x){return x.m}),datasets:[{label:'월별 통합매출',data:PM.map(function(x){return x.r/10000}),backgroundColor:[CL.b+'88',CL.b+'BB',CL.b+'EE'],borderRadius:6}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{x:sX(),y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}}}})});
   // Alliance GMV 월별
-  mc('c_alv2',{type:'line',data:{labels:AM.map(function(x){return x.m}),datasets:[{label:'예약 GMV',data:AM.map(function(x){return x.b/10000}),borderColor:CL.b,backgroundColor:CL.b+'18',borderWidth:3,fill:true,tension:.4,pointRadius:7,pointBackgroundColor:CL.b},{label:'확정 매출',data:AM.map(function(x){return x.s/10000}),borderColor:CL.g,borderWidth:2.5,tension:.4,pointRadius:6,borderDash:[5,3]}]},options:Object.assign({},CO,{scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}},x:sX()}})});
+  mc('c_alv2',{type:'line',data:{labels:AM.map(function(x){return x.m}),datasets:[{label:'예약 GMV',data:AM.map(function(x){return x.b/10000}),borderColor:CL.b,backgroundColor:CL.b+'18',borderWidth:3,fill:true,tension:.4,pointRadius:7,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#9CA3AF',callback:function(v){return v.toFixed(0)+'만'}},grid:{color:'#F1F3F5'}},x:sX()}})});
   // WAU 월평균 추이
   mc('c_wau2',{type:'line',data:{labels:PM.map(function(x){return x.m}),datasets:[{label:'월평균 WAU',data:PM.map(function(x){return x.a}),borderColor:CL.b,backgroundColor:CL.b+'15',borderWidth:2.5,fill:true,tension:.4,pointRadius:7,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{y:sY(function(v){return fm(v)}),x:sX()}})});
   // DAU 일별 (4순위 - GA4)
@@ -616,7 +616,7 @@ function buildGrowth(){
   });
   // Alliance 월별 테이블
   var t2=document.getElementById('taw');t2.innerHTML='';
-  AM.forEach(function(r){t2.innerHTML+='<tr><td>'+r.m+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n pos">'+fS(r.s)+'</td><td class="n">'+fm(r.n)+'건</td><td class="n">'+fm(r.ap)+'원</td></tr>'});
+  AM.forEach(function(r){t2.innerHTML+='<tr><td>'+r.m+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n">'+fm(r.n)+'건</td><td class="n">'+fm(r.ap)+'원</td></tr>'});
 }
 
 // ── BUILD FINANCE TAB ────────────────────────────────────────────────────────
