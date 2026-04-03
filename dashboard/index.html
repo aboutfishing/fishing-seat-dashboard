@@ -290,14 +290,14 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
   <div class="chart-grid">
     <div class="chart-card"><div class="chart-title">주간 GMV<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_agmv"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">예약 건수<span class="sub">(건)</span></div><div class="ch-wrap"><canvas id="c_abook"></canvas></div></div>
-    <div class="chart-card"><div class="chart-title">GMV vs 확정매출<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_acomp"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">GMV 월별 성장<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_acomp"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">ARPPU<span class="sub">(원)</span></div><div class="ch-wrap"><canvas id="c_aarp"></canvas></div></div>
   </div>
 
   <div class="sec-hdr"><span class="sec-title">Alliance 주간 상세</span><span class="sec-badge">W8~W12</span></div>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>주차</th><th class="n">GMV (배정)</th><th class="n">확정매출</th><th class="n">예약건수</th><th class="n">ARPPU</th><th class="n">GMV WoW</th><th class="n">예약 WoW</th></tr></thead>
+      <thead><tr><th>주차</th><th class="n">GMV (배정)</th><th class="n">예약건수</th><th class="n">ARPPU</th><th class="n">GMV WoW</th><th class="n">예약 WoW</th></tr></thead>
       <tbody id="tAlly"></tbody>
     </table>
   </div>
@@ -510,7 +510,6 @@ function buildTab0(){
   var bgW=(a12.b-a11.b)/a11.b*100, nW=(a12.n-a11.n)/a11.n*100;
   var ka=[
     {l:'GMV (W12)',v:fS(a12.b),w:fW(bgW),c:'kblue'},
-    {l:'확정매출 (W12)',v:fS(a12.s),w:'-',c:'kgold'},
     {l:'예약건수 (W12)',v:a12.n+'건',w:fW(nW),c:'kgreen'},
     {l:'ARPPU (W12)',v:fS(a12.ap),w:'-',c:'kgray'}
   ];
@@ -572,7 +571,7 @@ function buildTab2(){
 
   mc('c_abook',{type:'bar',data:{labels:al,datasets:[{data:aw.map(function(x){return x.n;}),backgroundColor:aw.map(function(x,i){return i===4?CL.g+'EE':CL.g+'88';}),borderRadius:6}]},options:Object.assign({},CO,{scales:{x:sX(),y:sY(function(v){return v.toFixed(0)+'건';})}})});
 
-  mc('c_acomp',{type:'bar',data:{labels:al,datasets:[{label:'GMV',data:aw.map(function(x){return x.b/10000;}),backgroundColor:CL.b+'88',borderRadius:4},{label:'확정매출',data:aw.map(function(x){return x.s/10000;}),backgroundColor:CL.g+'AA',borderRadius:4}]},options:Object.assign({},CO,{plugins:{legend:{display:true,labels:{color:'#555',font:{size:11}}}},scales:{x:sX(),y:sY(function(v){return v.toFixed(0)+'만';})}})});
+  mc('c_acomp',{type:'bar',data:{labels:al,datasets:[{label:'GMV',data:aw.map(function(x){return x.b/10000;}),backgroundColor:aw.map(function(x,i){return i===4?CL.b+'EE':CL.b+'66';}),borderRadius:6}]},options:Object.assign({},CO,{plugins:{legend:{display:false}},scales:{x:sX(),y:sY(function(v){return v.toFixed(0)+'만';})}})});
 
   mc('c_aarp',{type:'line',data:{labels:al,datasets:[{data:aw.map(function(x){return x.ap;}),borderColor:CL.gr,backgroundColor:CL.gr+'22',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:CL.gr}]},options:Object.assign({},CO,{scales:{x:sX(),y:sY(function(v){return (v/10000).toFixed(0)+'만';})}})});
 
@@ -583,7 +582,7 @@ function buildTab2(){
     var bws=bw!=null?fW(bw):'-', nws=nw!=null?fW(nw):'-';
     var bwc=bw!=null?(bw>=0?'pos':'neg'):'', nwc=nw!=null?(nw>=0?'pos':'neg'):'';
     var latest=i===aw.length-1?' class="latest"':'';
-    tb.innerHTML+='<tr'+latest+'><td>'+r.w+(i===aw.length-1?'<span class="wlabel">최신</span>':'')+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n">'+fS(r.s)+'</td><td class="n">'+fm(r.n)+'건</td><td class="n">'+fm(r.ap)+'원</td><td class="n '+bwc+'">'+bws+'</td><td class="n '+nwc+'">'+nws+'</td></tr>';
+    tb.innerHTML+='<tr'+latest+'><td>'+r.w+(i===aw.length-1?'<span class="wlabel">최신</span>':'')+'</td><td class="n bold">'+fS(r.b)+'</td><td class="n">'+fm(r.n)+'건</td><td class="n">'+fm(r.ap)+'원</td><td class="n '+bwc+'">'+bws+'</td><td class="n '+nwc+'">'+nws+'</td></tr>';
   });
 }
 
