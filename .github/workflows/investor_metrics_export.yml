@@ -98,8 +98,10 @@ jobs:
       - name: 완료 요약
         run: |
           echo "=================================================="
-          echo "  투자자 대시보드 URL"
+          echo "  투자자 대시보드 (광고 성과 & 예약 기여)"
           echo "  https://aboutfishing.kr/investor/"
+          echo "  내부 대시보드"
+          echo "  https://aboutfishing.kr/dashboard/"
           echo "  데이터 JSON"
           echo "  https://aboutfishing.kr/data/investor_metrics.json"
           echo "=================================================="

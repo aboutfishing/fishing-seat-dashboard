@@ -11,6 +11,7 @@ on:
       - 'data/stats.json'
       - 'data/investor_metrics.json'
       - 'investor/**'
+      - 'dashboard/**'
 
 jobs:
   deploy:
@@ -57,7 +58,7 @@ jobs:
                  cp af-agent/index.html gs://booking-redirect-aboutfishing-kr/af-agent/index.html
           echo "✅ af-agent 데모 배포: https://aboutfishing.kr/af-agent/"
 
-      - name: investor/index.html → GCS 업로드 (투자자 대시보드)
+      - name: investor/index.html → GCS 업로드 (투자자 광고성과 대시보드)
         run: |
           if [ -f investor/index.html ]; then
             gsutil -h "Content-Type:text/html; charset=utf-8" \
@@ -66,6 +67,17 @@ jobs:
             echo "✅ investor 대시보드 배포: https://aboutfishing.kr/investor/"
           else
             echo "⚠️ investor/index.html 없음, 스킵"
+          fi
+
+      - name: dashboard/index.html → GCS 업로드 (내부 대시보드)
+        run: |
+          if [ -f dashboard/index.html ]; then
+            gsutil -h "Content-Type:text/html; charset=utf-8" \
+                   -h "Cache-Control:no-store" \
+                   cp dashboard/index.html gs://booking-redirect-aboutfishing-kr/dashboard/index.html
+            echo "✅ 내부 대시보드 배포: https://aboutfishing.kr/dashboard/"
+          else
+            echo "⚠️ dashboard/index.html 없음, 스킵"
           fi
 
       - name: data/investor_metrics.json → GCS 업로드 (투자자 지표)
@@ -113,8 +125,17 @@ jobs:
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/index.html
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/index_google.html
           gsutil ls -la gs://booking-redirect-aboutfishing-kr/af-agent/index.html
+          gsutil ls -la gs://booking-redirect-aboutfishing-kr/investor/index.html || echo "investor/index.html 없음"
+          gsutil ls -la gs://booking-redirect-aboutfishing-kr/dashboard/index.html || echo "dashboard/index.html 없음"
           echo "=== 버킷 웹사이트 설정 ==="
           gsutil web get gs://booking-redirect-aboutfishing-kr
           echo "=== HTTP 응답 확인 ==="
           sleep 5
           curl -s -o /dev/null -w "aboutfishing.kr: HTTP %{http_code}\n" https://aboutfishing.kr/
+          echo ""
+          echo "=================================================="
+          echo "  투자자 대시보드 (광고 성과)"
+          echo "  https://aboutfishing.kr/investor/"
+          echo "  내부 대시보드"
+          echo "  https://aboutfishing.kr/dashboard/"
+          echo "=================================================="
