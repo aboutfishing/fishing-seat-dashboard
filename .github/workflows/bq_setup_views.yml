@@ -155,24 +155,26 @@ jobs:
 
           print("\n🎉 BigQuery 뷰 설정 완료!")
           print("생성된 객체:")
-          print("  - fishing.naver_shopping_ext  (외부 테이블 - Sheets)")
+          print("  - fishing.naver_shopping_data (일반 테이블 — Apps Script 적재)")
           print("  - fishing.v_investor_mastered (일간 마스터 뷰)")
           print("  - fishing.v_investor_monthly  (월간 집계 뷰)")
           print("  - fishing.v_investor_kpi_latest (최신 KPI 뷰)")
           PYEOF
 
-      - name: 서비스 계정 이메일 출력 (Google Sheet 공유용)
+      - name: Apps Script 배포 안내 출력
         run: |
           echo ""
           echo "══════════════════════════════════════════════════════"
-          echo "  ⚠️  중요: 아래 이메일을 Google Sheet에 공유하세요"
+          echo "  ✅ BigQuery 설정 완료"
           echo ""
-          echo "  서비스 계정: ${{ env.SA_EMAIL }}"
-          echo ""
-          echo "  시트 URL:"
-          echo "  https://docs.google.com/spreadsheets/d/1AGMVHBMBqNrC-HvLHz7iBAp_wk8kAGSgyPIztD-e-AM/edit"
-          echo ""
-          echo "  → 공유 → 뷰어로 위 이메일 추가"
+          echo "  📌 다음 단계: Google Apps Script 배포"
+          echo "     1. Google Sheet 열기:"
+          echo "        https://docs.google.com/spreadsheets/d/1AGMVHBMBqNrC-HvLHz7iBAp_wk8kAGSgyPIztD-e-AM/edit"
+          echo "     2. 확장 프로그램 → Apps Script"
+          echo "     3. scripts/gas_naver_to_bq.js 전체 내용 붙여넣기"
+          echo "     4. CONFIG.SHEET_TAB_NAME 을 실제 탭명으로 수정"
+          echo "     5. syncNaverToBigQuery 함수 실행 → 권한 승인"
+          echo "     6. 트리거: 매일 오전 7시 자동 실행 설정"
           echo "══════════════════════════════════════════════════════"
 
       - name: 뷰 존재 검증

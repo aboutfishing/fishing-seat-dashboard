@@ -66,7 +66,8 @@ def setup_credentials() -> bool:
 
 def bq_query(sql: str, fallback_sql: str = None) -> list[dict]:
     """BigQuery 쿼리 실행, JSON 결과 반환.
-    Drive credentials 오류(Google Sheet 미공유) 시 fallback_sql로 재시도."""
+    naver_shopping_data는 일반 BQ 테이블이므로 Drive 오류 없음.
+    fallback_sql은 일반 BQ 오류 시 재시도용으로만 사용."""
     try:
         from google.cloud import bigquery
         client = bigquery.Client(project=BQ_PROJECT)
@@ -75,15 +76,12 @@ def bq_query(sql: str, fallback_sql: str = None) -> list[dict]:
             return [dict(row) for row in rows]
         except Exception as e:
             err = str(e)
-            if "Drive credentials" in err or "accessDenied" in err or "403" in err:
-                log.warning("⚠️  Drive 권한 오류 (Google Sheet 미공유): %s", err[:120])
-                if fallback_sql:
-                    log.info("   → 네이버 데이터 제외 폴백 쿼리 실행")
-                    rows = list(client.query(fallback_sql).result())
-                    return [dict(row) for row in rows]
-                log.warning("   → 폴백 없음, 빈 결과 반환")
-                return []
-            raise
+            if fallback_sql:
+                log.warning("⚠️  쿼리 실패, 폴백 실행: %s", err[:120])
+                rows = list(client.query(fallback_sql).result())
+                return [dict(row) for row in rows]
+            log.warning("⚠️  쿼리 실패, 빈 결과 반환: %s", err[:120])
+            return []
     except ImportError:
         pass
 
