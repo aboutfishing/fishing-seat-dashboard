@@ -118,6 +118,22 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
 .ss-val{font-size:16px;font-weight:800;color:var(--txt)}
 .ss-sub{font-size:10px;color:var(--sub);margin-top:2px}
 
+/* UNIT ECONOMICS 2-COL */
+.ue-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ue-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.ue-hd{padding:10px 15px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.ue-hd span{font-size:10px;font-weight:400;opacity:.85}
+.ue-hd.hblue{background:var(--blue)}
+.ue-hd.hgold{background:#C8870F}
+.ue-row{display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);gap:6px}
+.ue-row:last-child{border-bottom:none}
+.ue-row.nd{background:var(--bg)}
+.ue-k{font-size:11px;color:var(--sub);flex:0 0 120px;line-height:1.3}
+.ue-v{font-size:12px;font-weight:700;color:var(--txt);flex:1;text-align:right}
+.ue-v.ok{color:var(--green)}
+.ue-v.na{color:var(--sub);font-weight:400;font-size:11px;font-style:italic}
+.ue-tag{font-size:9px;color:var(--sub);background:var(--bg);padding:1px 5px;border-radius:3px;white-space:nowrap;flex-shrink:0;font-family:monospace}
+
 /* RESPONSIVE */
 @media(max-width:1024px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -209,6 +225,38 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
     <div class="chart-card"><div class="chart-title">WAU 추이<span class="sub">(명)</span></div><div class="ch-wrap"><canvas id="c_t0_wau"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">공헌이익 추이<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_t0_cm"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">Alliance GMV 추이<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_t0_gmv"></canvas></div></div>
+  </div>
+
+  <!-- 비즈니스 모델 핵심 지표 -->
+  <div class="sec-hdr" style="margin-top:8px"><span class="sec-title">비즈니스 모델 핵심 지표</span><span class="sec-badge">검증값 기준 · 수식 표시</span></div>
+  <div class="ue-wrap">
+    <div class="ue-panel">
+      <div class="ue-hd hblue">낚시커머스 <span>플랫폼 이커머스 사업</span></div>
+      <div class="ue-row"><span class="ue-k">매출 Q1 2026</span><span class="ue-v ok" id="d_c_rev">—</span><span class="ue-tag">∑ PM.r</span></div>
+      <div class="ue-row"><span class="ue-k">MAU (2026)</span><span class="ue-v ok">84,000명</span><span class="ue-tag">2026 기준</span></div>
+      <div class="ue-row"><span class="ue-k">신규가입 Q1</span><span class="ue-v" id="d_c_new">—</span><span class="ue-tag">∑ PM.u</span></div>
+      <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v">13,317명</span><span class="ue-tag">O.pw 11주 평균</span></div>
+      <div class="ue-row"><span class="ue-k">WAU 최고 (W11)</span><span class="ue-v ok">30,833명</span><span class="ue-tag">W11 기록</span></div>
+      <div class="ue-row"><span class="ue-k">회원수 (Q1 신규)</span><span class="ue-v" id="d_c_mem">—</span><span class="ue-tag">∑ PM.u</span></div>
+      <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">광고비÷신규가입</span></div>
+      <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPU×잔존기간</span></div>
+      <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
+      <div class="ue-row nd"><span class="ue-k">재구매율</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">재구매÷전체</span></div>
+    </div>
+    <div class="ue-panel">
+      <div class="ue-hd hgold">낚시예약 (Alliance) <span>선박 예약 사업</span></div>
+      <div class="ue-row"><span class="ue-k">총거래금액 GMV</span><span class="ue-v ok" id="d_a_gmv">—</span><span class="ue-tag">∑ AM.b</span></div>
+      <div class="ue-row"><span class="ue-k">확정매출 Q1</span><span class="ue-v" id="d_a_rev">—</span><span class="ue-tag">∑ AM.s</span></div>
+      <div class="ue-row"><span class="ue-k">ARPPU</span><span class="ue-v ok" id="d_a_arp">—</span><span class="ue-tag">∑(n×ap)÷∑n</span></div>
+      <div class="ue-row"><span class="ue-k">예약건수 Q1</span><span class="ue-v ok" id="d_a_n">—</span><span class="ue-tag">∑ AM.n</span></div>
+      <div class="ue-row nd"><span class="ue-k">MAU</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
+      <div class="ue-row nd"><span class="ue-k">회원수</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
+      <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">마케팅비÷예약자</span></div>
+      <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPPU×재예약빈도</span></div>
+      <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
+      <div class="ue-row nd"><span class="ue-k">재예약율</span><span class="ue-v na">집계 시작 (2026.3)</span><span class="ue-tag">2026.3 start</span></div>
+      <div class="ue-row nd"><span class="ue-k">등록 선박</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">플랫폼 등록수</span></div>
+    </div>
   </div>
 
 </div>
@@ -353,6 +401,19 @@ var aw=[
   {w:'W12',b:61625000, s:79023000, n:410, ap:216051}
 ];
 
+// 월별 집계 (재무제표 1순위 기준) — Unit Economics 검증용
+// r=통합매출, p=공헌이익, u=신규가입, a=WAU월평균
+var PM=[
+  {m:'1월',r:12027660,p:-3766560,u:2142,a:9690},
+  {m:'2월',r:28213600,p:-1343394,u:1514,a:9390},
+  {m:'3월',r:36325170,p:998231, u:1482,a:23387}
+];
+// Alliance 월별: b=GMV, s=확정매출, n=예약건수, ap=ARPPU(n가중평균)
+var AM=[
+  {m:'2월',b:1920000, s:2670000, n:14, ap:190714},
+  {m:'3월',b:113391000,s:147271000,n:757,ap:214724}
+];
+
 // 광고 주간 (W8~W12) — 추정치 기반
 var adw=[
   {w:'W8', imp:210000, clk:4200, spend:7800000,  cv:42,  rev:39000000},
@@ -397,6 +458,29 @@ function switchTab(i){
   tns.forEach(function(t,j){t.classList.toggle('active',j===i);});
   panes.forEach(function(p,j){p.classList.toggle('active',j===i);});
   if(!built[i]){builders[i]();built[i]=true;}
+}
+
+// ============================================================
+// UNIT ECONOMICS — 검증값 채우기
+// ============================================================
+function fillUE_d(){
+  var q1r=PM.reduce(function(s,x){return s+x.r;},0);
+  var q1n=PM.reduce(function(s,x){return s+x.u;},0);
+  var agmv=AM.reduce(function(s,x){return s+x.b;},0);
+  var arev=AM.reduce(function(s,x){return s+x.s;},0);
+  var an=AM.reduce(function(s,x){return s+x.n;},0);
+  // ARPPU: n가중평균 (aw 주간 데이터 기준)
+  var wpS=aw.reduce(function(s,x){return s+x.n*x.ap;},0);
+  var wn=aw.reduce(function(s,x){return s+x.n;},0);
+  var warp=Math.round(wpS/wn);
+  function se(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  se('d_c_rev',fS(q1r)+'원');
+  se('d_c_new',fm(q1n)+'명');
+  se('d_c_mem',fm(q1n)+'명');
+  se('d_a_gmv',fS(agmv)+'원');
+  se('d_a_rev',fS(arev)+'원');
+  se('d_a_arp',fm(warp)+'원');
+  se('d_a_n',fm(an)+'건');
 }
 
 // ============================================================
@@ -449,6 +533,8 @@ function buildTab0(){
   var l4a=aw.slice(0,4);
   var l4aw=l4a.map(function(x){return x.w;});
   mc('c_t0_gmv',{type:'line',data:{labels:l4aw,datasets:[{data:l4a.map(function(x){return x.b/10000;}),borderColor:CL.g,backgroundColor:CL.g+'22',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:CL.g}]},options:Object.assign({},CO,{scales:{x:sX(),y:sY(function(v){return v.toFixed(0)+'만';})}})});
+
+  fillUE_d();
 }
 
 // ============================================================
