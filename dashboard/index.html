@@ -235,7 +235,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
     <!-- 공통 지표 (풀너비) -->
     <div class="ue-panel ue-full">
       <div class="ue-hd hcommon">공통 플랫폼 지표 <span>커머스 · Alliance 공통</span></div>
-      <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">39,810명</span><span class="ue-tag">2026.3월 기준</span></div>
+      <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">83,942명</span><span class="ue-tag">2026.3월 GA4 기준</span></div>
       <div class="ue-row"><span class="ue-k">신규가입 합계 (Q1)</span><span class="ue-v ok" id="d_c_new">—</span><span class="ue-tag">∑ PM.u</span></div>
       <div class="ue-row" style="background:var(--bg)"><span class="ue-k" style="padding-left:12px;font-size:10px;color:var(--sub)">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 1,482</span><span class="ue-tag">PM.u</span></div>
       <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v" id="d_wau_avg">—</span><span class="ue-tag">pw 11주 평균</span></div>
@@ -375,17 +375,17 @@ window.onload=function(){
 // 커머스 주간 (W1~W11)
 // r=통합매출, p=공헌이익, u=신규가입, a=WAU
 var pw=[
-  {w:'W1', r:3239580,  p:-740755, u:679,  a:10477},
-  {w:'W2', r:3629400,  p:-611453, u:1027, a:7568},
-  {w:'W3', r:2539200,  p:-542018, u:952,  a:9427},
-  {w:'W4', r:2619480,  p:-576484, u:659,  a:9428},
-  {w:'W5', r:6618960,  p:-407424, u:1024, a:8851},
-  {w:'W6', r:7003920,  p:-457456, u:959,  a:8879},
-  {w:'W7', r:6878240,  p:-318562, u:771,  a:7997},
-  {w:'W8', r:7712480,  p:-160952, u:727,  a:9498},
-  {w:'W9', r:7773800,  p:-217498, u:764,  a:12284},
-  {w:'W10',r:12584300, p:372064,  u:701,  a:19937},
-  {w:'W11',r:15628800, p:591865,  u:701,  a:30833}
+  {w:'W1', r:3239580,  p:-740755, u:679,  a:4502},
+  {w:'W2', r:3629400,  p:-611453, u:1027, a:9748},
+  {w:'W3', r:2539200,  p:-542018, u:952,  a:9056},
+  {w:'W4', r:2619480,  p:-576484, u:659,  a:8840},
+  {w:'W5', r:6618960,  p:-407424, u:1024, a:8871},
+  {w:'W6', r:7003920,  p:-457456, u:959,  a:8186},
+  {w:'W7', r:6878240,  p:-318562, u:771,  a:8290},
+  {w:'W8', r:7712480,  p:-160952, u:727,  a:8756},
+  {w:'W9', r:7773800,  p:-217498, u:764,  a:12019},
+  {w:'W10',r:12584300, p:372064,  u:701,  a:18602},
+  {w:'W11',r:15628800, p:591865,  u:701,  a:18748}
 ];
 
 // Alliance 주간 (W8~W12)
@@ -401,9 +401,9 @@ var aw=[
 // 월별 집계 (재무제표 1순위 기준) — Unit Economics 검증용
 // r=통합매출, p=공헌이익, u=신규가입, a=WAU월평균
 var PM=[
-  {m:'1월',r:12027660,p:-3766560,u:2142,a:9690},
-  {m:'2월',r:28213600,p:-1343394,u:1514,a:9390},
-  {m:'3월',r:36325170,p:998231, u:1482,a:23387}
+  {m:'1월',r:12027660,p:-3766560,u:2142,a:8037},
+  {m:'2월',r:28213600,p:-1343394,u:1514,a:8526},
+  {m:'3월',r:36325170,p:998231, u:1482,a:21732}
 ];
 // Alliance 월별: b=GMV, s=확정매출, n=예약건수, ap=ARPPU(n가중평균)
 var AM=[
