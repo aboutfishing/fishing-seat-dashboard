@@ -192,7 +192,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
     <div class="tb-badge">INTERNAL</div>
   </div>
   <div class="tb-right">
-    <div class="meta">기준일: 2026.04.06 &nbsp;|&nbsp; W12 기준</div>
+    <div class="meta">기준일: 2026.04.06 &nbsp;|&nbsp; W13 기준</div>
     <button class="tb-logout" onclick="logout()">로그아웃</button>
   </div>
 </div>
@@ -213,7 +213,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
 <div class="wrap">
 
   <!-- 커머스 스냅샷 -->
-  <div class="sec-hdr"><span class="sec-title">커머스 주간 스냅샷</span><span class="sec-badge">W11 (3/10~3/16)</span></div>
+  <div class="sec-hdr"><span class="sec-title">커머스 주간 스냅샷</span><span class="sec-badge">W13 (3/29~4/4)</span></div>
   <div class="kpi-grid" id="kpiComm"></div>
 
   <!-- Alliance 스냅샷 -->
@@ -221,7 +221,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
   <div class="kpi-grid" id="kpiAlly"></div>
 
   <!-- 최근 4주 트렌드 -->
-  <div class="sec-hdr"><span class="sec-title">최근 4주 트렌드</span><span class="sec-badge">W8~W11</span></div>
+  <div class="sec-hdr"><span class="sec-title">최근 4주 트렌드</span><span class="sec-badge">W10~W13</span></div>
   <div class="chart-grid">
     <div class="chart-card"><div class="chart-title">통합매출 추이<span class="sub">(만원)</span></div><div class="ch-wrap"><canvas id="c_t0_rev"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">WAU 추이<span class="sub">(명)</span></div><div class="ch-wrap"><canvas id="c_t0_wau"></canvas></div></div>
@@ -237,9 +237,9 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
       <div class="ue-hd hcommon">공통 플랫폼 지표 <span>커머스 · Alliance 공통</span></div>
       <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">83,942명</span><span class="ue-tag">2026.3월 GA4 기준</span></div>
       <div class="ue-row"><span class="ue-k">신규가입 합계 (Q1)</span><span class="ue-v ok" id="d_c_new">—</span><span class="ue-tag">∑ PM.u</span></div>
-      <div class="ue-row" style="background:var(--bg)"><span class="ue-k" style="padding-left:12px;font-size:10px;color:var(--sub)">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 1,482</span><span class="ue-tag">PM.u</span></div>
-      <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v" id="d_wau_avg">—</span><span class="ue-tag">pw 11주 평균</span></div>
-      <div class="ue-row"><span class="ue-k">WAU 최고 (W11)</span><span class="ue-v ok" id="d_wau_max">—</span><span class="ue-tag">pw.a max</span></div>
+      <div class="ue-row" style="background:var(--bg)"><span class="ue-k" style="padding-left:12px;font-size:10px;color:var(--sub)">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 2,688</span><span class="ue-tag">PM.u</span></div>
+      <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v" id="d_wau_avg">—</span><span class="ue-tag">pw 13주 평균</span></div>
+      <div class="ue-row"><span class="ue-k">WAU 최고 (W12)</span><span class="ue-v ok" id="d_wau_max">—</span><span class="ue-tag">pw.a max</span></div>
     </div>
     <!-- 낚시커머스 -->
     <div class="ue-panel">
@@ -263,7 +263,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
 <div class="tab-pane" id="t1">
 <div class="wrap">
 
-  <div class="sec-hdr"><span class="sec-title">커머스 주간 매출</span><span class="sec-badge">W1~W11</span></div>
+  <div class="sec-hdr"><span class="sec-title">커머스 주간 매출</span><span class="sec-badge">W1~W13</span></div>
   <div class="chart-grid">
     <div class="chart-card wide"><div class="chart-title">주간 통합매출<span class="sub">(만원)</span></div><div class="ch-wrap tall"><canvas id="c_wrev"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">WAU<span class="sub">(명)</span></div><div class="ch-wrap"><canvas id="c_wwau"></canvas></div></div>
@@ -271,7 +271,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
     <div class="chart-card"><div class="chart-title">신규가입<span class="sub">(명)</span></div><div class="ch-wrap"><canvas id="c_wnew"></canvas></div></div>
   </div>
 
-  <div class="sec-hdr"><span class="sec-title">주간 커머스 상세</span><span class="sec-badge">W1~W11</span></div>
+  <div class="sec-hdr"><span class="sec-title">주간 커머스 상세</span><span class="sec-badge">W1~W13</span></div>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>주차</th><th class="n">통합매출</th><th class="n">WoW</th><th class="n">공헌이익</th><th class="n">WAU</th><th class="n">신규가입</th></tr></thead>
@@ -372,7 +372,7 @@ window.onload=function(){
 // DATA
 // ============================================================
 
-// 커머스 주간 (W1~W11)
+// 커머스 주간 (W1~W13)
 // r=통합매출, p=공헌이익, u=신규가입, a=WAU
 var pw=[
   {w:'W1', r:3239580,  p:-740755, u:679,  a:4502},
@@ -385,7 +385,9 @@ var pw=[
   {w:'W8', r:7712480,  p:-160952, u:727,  a:8756},
   {w:'W9', r:7773800,  p:-217498, u:764,  a:12019},
   {w:'W10',r:12584300, p:372064,  u:701,  a:18602},
-  {w:'W11',r:15628800, p:591865,  u:701,  a:18748}
+  {w:'W11',r:15628800, p:591865,  u:701,  a:18748},
+  {w:'W12',r:18601440, p:900047,  u:797,  a:29772},
+  {w:'W13',r:24801650, p:1406528, u:584,  a:29517}
 ];
 
 // Alliance 주간 (W8~W12)
@@ -401,9 +403,9 @@ var aw=[
 // 월별 집계 (재무제표 1순위 기준) — Unit Economics 검증용
 // r=통합매출, p=공헌이익, u=신규가입, a=WAU월평균
 var PM=[
-  {m:'1월',r:12027660,p:-3766560,u:2142,a:8037},
-  {m:'2월',r:28213600,p:-1343394,u:1514,a:8526},
-  {m:'3월',r:36325170,p:998231, u:1482,a:21732}
+  {m:'1월',r:14532880,p:-4093488,u:2142,a:8037},
+  {m:'2월',r:28213600,p:-1820689,u:1514,a:8526},
+  {m:'3월',r:63323400,p:3272545, u:2688,a:21732}
 ];
 // Alliance 월별: b=GMV, s=확정매출, n=예약건수, ap=ARPPU(n가중평균)
 var AM=[
@@ -488,17 +490,17 @@ function fillUE_d(){
 // ============================================================
 function buildTab0(){
   built[0]=true;
-  var w11=pw[10], w10=pw[9], w8=pw[7];
+  var w11=pw[12], w10=pw[11], w8=pw[7];
   var a12=aw[4], a11=aw[3];
 
   // 커머스 KPI
-  var rW=wow(pw,10,'r'), pW=null, aW=wow(pw,10,'a');
+  var rW=wow(pw,12,'r'), pW=null, aW=wow(pw,12,'a');
   var pPrev=w10.p, pCur=w11.p;
   var kc=[
-    {l:'통합매출 (W11)',v:fS(w11.r),w:rW!=null?fW(rW):'-',c:'kblue'},
-    {l:'공헌이익 (W11)',v:fS(w11.p),w:pCur>=0?'흑자 2주 연속':'적자',c:pCur>=0?'kgreen':'kred'},
-    {l:'WAU (W11)',v:fm(w11.a),w:aW!=null?fW(aW)+' (최고기록)':'-',c:'kgold'},
-    {l:'신규가입 (W11)',v:fm(w11.u),w:'-',c:'kgray'}
+    {l:'통합매출 (W13)',v:fS(w11.r),w:rW!=null?fW(rW):'-',c:'kblue'},
+    {l:'공헌이익 (W13)',v:fS(w11.p),w:pCur>=0?'흑자 4주 연속':'적자',c:pCur>=0?'kgreen':'kred'},
+    {l:'WAU (W13)',v:fm(w11.a),w:aW!=null?fW(aW)+' (최고기록)':'-',c:'kgold'},
+    {l:'신규가입 (W13)',v:fm(w11.u),w:'-',c:'kgray'}
   ];
   var kc_el=document.getElementById('kpiComm');
   kc.forEach(function(k){
@@ -519,8 +521,8 @@ function buildTab0(){
     ka_el.innerHTML+='<div class="kpi '+k.c+'"><div class="kpi-label">'+k.l+'</div><div class="kpi-val">'+k.v+'</div><div class="kpi-wow'+wc+'">'+k.w+'</div></div>';
   });
 
-  // 최근 4주 트렌드 W8~W11
-  var last4=pw.slice(7,11);
+  // 최근 4주 트렌드 W10~W13
+  var last4=pw.slice(9,13);
   var l4w=last4.map(function(x){return x.w;});
 
   mc('c_t0_rev',{type:'line',data:{labels:l4w,datasets:[{data:last4.map(function(x){return x.r/10000;}),borderColor:CL.b,backgroundColor:CL.b+'22',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:CL.b}]},options:Object.assign({},CO,{scales:{x:sX(),y:sY(function(v){return v.toFixed(0)+'만';})}})});
