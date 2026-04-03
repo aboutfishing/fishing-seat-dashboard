@@ -118,7 +118,9 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
 
 /* ── UNIT ECONOMICS 2-COL ── */
 .ue-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ue-full{grid-column:1/-1}
 .ue-panel{background:#fff;border:1px solid var(--g200);border-radius:var(--rad);overflow:hidden;box-shadow:var(--sh)}
+.ue-hd.hcommon{background:#334155}
 .ue-hd{padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;color:#fff}
 .ue-hd span{font-size:11px;font-weight:400;opacity:.8}
 .ue-hd.hblue{background:var(--blue)}
@@ -257,34 +259,27 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
   <div class="sec">
     <div class="sec-hd"><h2>비즈니스 모델 핵심 지표</h2><span class="sub">낚시커머스 · Alliance — 수식 검증값 기준</span></div>
     <div class="ue-wrap">
-      <div class="ue-panel">
-        <div class="ue-hd hblue">낚시커머스 <span>플랫폼 이커머스 사업</span></div>
-        <div class="ue-row"><span class="ue-k">매출 Q1 2026</span><span class="ue-v ok" id="ue_c_rev">—</span><span class="ue-tag">∑ PM.r</span></div>
+      <!-- 공통 지표 (풀너비) -->
+      <div class="ue-panel ue-full">
+        <div class="ue-hd hcommon">공통 플랫폼 지표 <span>커머스 · Alliance 공통</span></div>
         <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">84,000명</span><span class="ue-tag">2026.3월 기준</span></div>
         <div class="ue-row"><span class="ue-k">신규가입 합계 (Q1)</span><span class="ue-v ok" id="ue_c_new">—</span><span class="ue-tag">∑ PM.u</span></div>
         <div class="ue-row" style="background:#F8F9FA"><span class="ue-k" style="padding-left:14px;font-size:10px;color:#9CA3AF">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 1,482</span><span class="ue-tag">PM.u</span></div>
-        <div class="ue-row nd"><span class="ue-k">전체 회원수 (누적)</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">누적 가입자</span></div>
-        <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v">13,317명</span><span class="ue-tag">O.pw 11주 평균</span></div>
-        <div class="ue-row"><span class="ue-k">WAU 최고 (W11)</span><span class="ue-v ok">30,833명</span><span class="ue-tag">O.pw.a max</span></div>
-        <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">광고비÷신규가입</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPU×잔존기간</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
-        <div class="ue-row nd"><span class="ue-k">재구매율</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">재구매÷전체</span></div>
+        <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v" id="ue_wau_avg">—</span><span class="ue-tag">O.pw 11주 평균</span></div>
+        <div class="ue-row"><span class="ue-k">WAU 최고 (W11)</span><span class="ue-v ok" id="ue_wau_max">—</span><span class="ue-tag">O.pw.a max</span></div>
       </div>
+      <!-- 낚시커머스 -->
+      <div class="ue-panel">
+        <div class="ue-hd hblue">낚시커머스 <span>플랫폼 이커머스 사업</span></div>
+        <div class="ue-row"><span class="ue-k">매출 Q1 2026</span><span class="ue-v ok" id="ue_c_rev">—</span><span class="ue-tag">∑ PM.r</span></div>
+      </div>
+      <!-- 낚시예약 Alliance -->
       <div class="ue-panel">
         <div class="ue-hd hgold">낚시예약 (Alliance) <span>선박 예약 사업</span></div>
         <div class="ue-row"><span class="ue-k">총거래금액 GMV</span><span class="ue-v ok" id="ue_a_gmv">—</span><span class="ue-tag">∑ AM.b</span></div>
-        <div class="ue-row nd"><span class="ue-k">확정매출 (참고)</span><span class="ue-v" id="ue_a_rev" style="font-size:11px;color:#6C757D">—</span><span class="ue-tag" style="background:#FFF3CD;color:#92400E">수수료만 인식</span></div>
         <div class="ue-row"><span class="ue-k">ARPPU</span><span class="ue-v ok" id="ue_a_arp">—</span><span class="ue-tag">∑(n×ap)÷∑n</span></div>
         <div class="ue-row"><span class="ue-k">예약건수 합계 (Q1)</span><span class="ue-v ok" id="ue_a_n">—</span><span class="ue-tag">∑ AM.n</span></div>
         <div class="ue-row" style="background:#F8F9FA"><span class="ue-k" style="padding-left:14px;font-size:10px;color:#9CA3AF">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">2월 14건 · 3월 757건</span><span class="ue-tag">AM.n</span></div>
-        <div class="ue-row nd"><span class="ue-k">MAU</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
-        <div class="ue-row nd"><span class="ue-k">회원수 (누적)</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
-        <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">마케팅비÷예약자</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPPU×재예약빈도</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
-        <div class="ue-row nd"><span class="ue-k">재예약율</span><span class="ue-v na">집계 시작 (2026.3)</span><span class="ue-tag">2026.3 start</span></div>
-        <div class="ue-row nd"><span class="ue-k">등록 선박</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">플랫폼 등록수</span></div>
       </div>
     </div>
   </div>
@@ -414,35 +409,29 @@ body{background:var(--g50);color:var(--g800);font-family:-apple-system,BlinkMacS
   <div class="sec">
     <div class="sec-hd"><h2>Unit Economics &amp; 핵심 지표</h2><span class="sub">낚시커머스 · Alliance — 수식 검증값 기준</span></div>
     <div class="ue-wrap">
+      <!-- 공통 지표 (풀너비) -->
+      <div class="ue-panel ue-full">
+        <div class="ue-hd hcommon">공통 플랫폼 지표 <span>커머스 · Alliance 공통</span></div>
+        <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">84,000명</span><span class="ue-tag">2026.3월 기준</span></div>
+        <div class="ue-row"><span class="ue-k">신규가입 합계 (Q1)</span><span class="ue-v ok" id="ue_c_new2">—</span><span class="ue-tag">∑ PM.u</span></div>
+        <div class="ue-row" style="background:#F8F9FA"><span class="ue-k" style="padding-left:14px;font-size:10px;color:#9CA3AF">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 1,482</span><span class="ue-tag">PM.u</span></div>
+        <div class="ue-row"><span class="ue-k">WAU 평균 (Q1)</span><span class="ue-v" id="ue_wau_avg2">—</span><span class="ue-tag">O.pw 11주 평균</span></div>
+        <div class="ue-row"><span class="ue-k">WAU 최고 (W11)</span><span class="ue-v ok" id="ue_wau_max2">—</span><span class="ue-tag">O.pw.a max</span></div>
+      </div>
+      <!-- 낚시커머스 -->
       <div class="ue-panel">
         <div class="ue-hd hblue">낚시커머스 <span>플랫폼 이커머스 사업</span></div>
         <div class="ue-row"><span class="ue-k">매출 Q1 2026</span><span class="ue-v ok" id="ue_c_rev2">—</span><span class="ue-tag">∑ PM.r</span></div>
         <div class="ue-row"><span class="ue-k">매출총이익률 2025</span><span class="ue-v ok">29.1%</span><span class="ue-tag">F.gp/F.rev</span></div>
         <div class="ue-row"><span class="ue-k">YoY 매출 성장</span><span class="ue-v ok">+50.1%</span><span class="ue-tag">2024→2025</span></div>
-        <div class="ue-row"><span class="ue-k">MAU (2026년 3월)</span><span class="ue-v ok">84,000명</span><span class="ue-tag">2026.3월 기준</span></div>
-        <div class="ue-row"><span class="ue-k">WAU 평균 Q1</span><span class="ue-v">13,317명</span><span class="ue-tag">O.pw 11주 평균</span></div>
-        <div class="ue-row"><span class="ue-k">신규가입 합계 (Q1)</span><span class="ue-v ok" id="ue_c_new2">—</span><span class="ue-tag">∑ PM.u</span></div>
-        <div class="ue-row" style="background:#F8F9FA"><span class="ue-k" style="padding-left:14px;font-size:10px;color:#9CA3AF">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">1월 2,142 · 2월 1,514 · 3월 1,482</span><span class="ue-tag">PM.u</span></div>
-        <div class="ue-row nd"><span class="ue-k">전체 회원수 (누적)</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">누적 가입자</span></div>
-        <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">광고비÷신규가입</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPU×잔존기간</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
-        <div class="ue-row nd"><span class="ue-k">재구매율</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">재구매÷전체</span></div>
       </div>
+      <!-- 낚시예약 Alliance -->
       <div class="ue-panel">
         <div class="ue-hd hgold">낚시예약 (Alliance) <span>선박 예약 사업</span></div>
         <div class="ue-row"><span class="ue-k">총거래금액 GMV</span><span class="ue-v ok" id="ue_a_gmv2">—</span><span class="ue-tag">∑ AM.b</span></div>
-        <div class="ue-row nd"><span class="ue-k">확정매출 (참고)</span><span class="ue-v" id="ue_a_rev2" style="font-size:11px;color:#6C757D">—</span><span class="ue-tag" style="background:#FFF3CD;color:#92400E">수수료만 인식</span></div>
         <div class="ue-row"><span class="ue-k">ARPPU</span><span class="ue-v ok" id="ue_a_arp2">—</span><span class="ue-tag">∑(n×ap)÷∑n</span></div>
         <div class="ue-row"><span class="ue-k">예약건수 합계 (Q1)</span><span class="ue-v ok" id="ue_a_n2">—</span><span class="ue-tag">∑ AM.n</span></div>
         <div class="ue-row" style="background:#F8F9FA"><span class="ue-k" style="padding-left:14px;font-size:10px;color:#9CA3AF">↳ 월별</span><span class="ue-v" style="font-size:11px;font-weight:400;color:#495057">2월 14건 · 3월 757건</span><span class="ue-tag">AM.n</span></div>
-        <div class="ue-row nd"><span class="ue-k">MAU</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
-        <div class="ue-row nd"><span class="ue-k">회원수 (누적)</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">—</span></div>
-        <div class="ue-row nd"><span class="ue-k">CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">마케팅비÷예약자</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">ARPPU×재예약빈도</span></div>
-        <div class="ue-row nd"><span class="ue-k">LTV / CAC</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">LTV÷CAC</span></div>
-        <div class="ue-row nd"><span class="ue-k">재예약율</span><span class="ue-v na">집계 시작 (2026.3)</span><span class="ue-tag">2026.3 start</span></div>
-        <div class="ue-row nd"><span class="ue-k">등록 선박</span><span class="ue-v na">집계 준비중</span><span class="ue-tag">플랫폼 등록수</span></div>
       </div>
     </div>
   </div>
@@ -670,24 +659,29 @@ function fillUE(){
   var q1n=PM.reduce(function(s,x){return s+x.u;},0);
   // Alliance Q1 (2-3월)
   var agmv=AM.reduce(function(s,x){return s+x.b;},0);
-  var arev=AM.reduce(function(s,x){return s+x.s;},0);
   var an=AM.reduce(function(s,x){return s+x.n;},0);
   // ARPPU: n가중평균 (O.aw weekly 기준)
   var wpS=O.aw.reduce(function(s,x){return s+x.n*x.ap;},0);
   var warp=Math.round(wpS/O.aw.reduce(function(s,x){return s+x.n;},0));
+  // WAU 평균/최고 (O.pw 기준)
+  var wauArr=O.pw.map(function(x){return x.a;});
+  var wauAvg=Math.round(wauArr.reduce(function(s,x){return s+x;},0)/wauArr.length);
+  var wauMax=Math.max.apply(null,wauArr);
   function se(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   // Tab 1 IDs
   se('ue_c_rev',fS(q1r)+'원');
   se('ue_c_new',fm(q1n)+'명');
+  se('ue_wau_avg',fm(wauAvg)+'명');
+  se('ue_wau_max',fm(wauMax)+'명');
   se('ue_a_gmv',fS(agmv)+'원');
-  se('ue_a_rev',fS(arev)+'원 (GMV 기준)');
   se('ue_a_arp',fm(warp)+'원');
   se('ue_a_n',fm(an)+'건');
   // Tab 3 IDs
   se('ue_c_rev2',fS(q1r)+'원');
   se('ue_c_new2',fm(q1n)+'명');
+  se('ue_wau_avg2',fm(wauAvg)+'명');
+  se('ue_wau_max2',fm(wauMax)+'명');
   se('ue_a_gmv2',fS(agmv)+'원');
-  se('ue_a_rev2',fS(arev)+'원 (GMV 기준)');
   se('ue_a_arp2',fm(warp)+'원');
   se('ue_a_n2',fm(an)+'건');
 }
