@@ -17,19 +17,41 @@
 
 // ── 설정 ──────────────────────────────────────────────────────────────────────
 
+// ── 시트 구조 확인 결과 (2026-04-06) ───────────────────────────────────────────
+// 현재 시트 탭 목록:
+//   - Main
+//   - 2026 Weekly dashboard(플랫폼 사업팀)
+//   - 2026 Monthly dashboard(플랫폼 사업팀)
+//   - 2026 플랫폼 보조지표(Week)
+//   - 2026 플랫폼 보조지표(Month)
+//   - 회원탈퇴_RAW(DB_manual)
+//   - 커뮤니티/쇼핑탭 체류시간(DB_manual)  ← GID 80217310 (커뮤니티/쇼핑 페이지뷰)
+//   - 주별 총 사용자_RAW(manual)
+//   - 주별 활성 사용자_RAW(manual)
+//   - 샵바이_퍼널_RAW(manual)
+//   - 월별 총 사용자_RAW(manual)
+//   - 월별 활성 사용자_RAW(manual)
+//
+// ⚠️ 네이버 쇼핑 광고(노출수/클릭수/전환수/광고비/ROAS) 탭이 없음
+// → 아래 SHEET_TAB_NAME을 실제 네이버 광고 데이터가 있는 탭명으로 수정하거나
+//    새 탭을 추가한 뒤 이 스크립트를 실행하세요.
+//
+// 새 탭 생성 시 권장 헤더 (2행부터 데이터):
+//   날짜 | 노출수 | 클릭수 | 전환수 | 광고비 | 광고기여매출 | ROAS | CTR | 전환율
+
 const CONFIG = {
-  SHEET_TAB_NAME: 'naver_shopping',   // 시트 탭 이름 (실제 탭명으로 수정)
-  SHEET_GID:      '80217310',          // 탭 GID (URL에서 확인)
-  HEADER_ROW:     1,                   // 헤더가 있는 행 번호
-  DATA_START_ROW: 2,                   // 데이터 시작 행
+  SHEET_TAB_NAME: 'naver_shopping_RAW', // ← 실제 네이버 쇼핑 광고 탭명으로 수정
+  SHEET_GID:      '',                    // 탭 GID (URL ?gid=XXXXXX에서 확인, 없으면 비워둠)
+  HEADER_ROW:     1,                     // 헤더가 있는 행 번호
+  DATA_START_ROW: 2,                     // 데이터 시작 행
   BQ_PROJECT:     'aboutfishingproduct',
   BQ_DATASET:     'fishing',
   BQ_TABLE:       'naver_shopping_data',
 
-  // 시트 컬럼 순서 (실제 헤더명과 매칭)
-  // 헤더명이 다르면 아래 배열의 값을 실제 헤더명으로 수정
+  // 시트 컬럼명 → BQ 필드 매핑
+  // 실제 시트 헤더명이 다르면 오른쪽 값을 맞춰서 수정
   COLUMN_MAP: {
-    report_date:  '날짜',           // DATE 형식: YYYY-MM-DD
+    report_date:  '날짜',           // DATE 형식: YYYY-MM-DD 또는 YYYYMMDD
     impressions:  '노출수',
     clicks:       '클릭수',
     conversions:  '전환수',
