@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-05",
+  "updated": "2026-04-06",
   "source": "BigQuery fishing.v_investor_mastered + Google Sheets Naver",
   "kpi": {
     "report_date": null,
