@@ -1,8 +1,8 @@
 {
-  "updated": "2026-04-06",
+  "updated": "2026-04-07",
   "source": "BigQuery fishing.v_investor_mastered + Google Sheets Naver",
   "kpi": {
-    "report_date": "2026-04-06",
+    "report_date": "2026-04-07",
     "gmv_man": 390.0,
     "gmv_wow_pct": 12.0,
     "bookings": 400,
