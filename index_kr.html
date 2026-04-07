@@ -40,6 +40,24 @@
   gtag('config', 'G-0RER617PJF');
 </script>
 
+<!-- index_kr.html <head> 최상단 삽입 -->
+<script>
+(function(){
+  var ua = (navigator.userAgent || '').toLowerCase();
+  var bots = [
+    'googlebot','bingbot','yeti','naverbot','daumoa',  // 검색엔진
+    'gptbot','claudebot','anthropic','perplexity',     // AI 크롤러(AEO)
+    'semrushbot','ahrefsbot','mj12bot','dotbot',       // SEO 툴
+    'facebookexternalhit','twitterbot','linkedinbot',  // SNS
+    'bot','spider','crawl','curl','wget'              // 일반 봇
+  ];
+  var isBot = bots.some(function(b){ return ua.indexOf(b) !== -1; });
+  if (!isBot) {
+    window.location.replace('https://booking.aboutfishing.kr');
+  }
+})();
+</script>
+
 <title>인천배낚시 · 쭈꾸미낚시 체험 예약 | 전국 선상낚시 - 어바웃피싱</title>
 <meta name="description" content="인천배낚시 체험 예약 봄 쭈꾸미 낚시 시즌 할인 가격 추천, 인천·태안·군산·강릉·부산·제주 배낚시 20% 쿠폰, 전국 실시간 선상낚시 사이트.">
 <meta name="author" content="어바웃피싱">
