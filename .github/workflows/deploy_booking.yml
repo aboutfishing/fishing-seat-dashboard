@@ -7,6 +7,7 @@ on:
     paths:
       - 'booking.html'
       - 'index_google.html'
+      - 'index_kr.html'
       - 'af-agent/**'
       - 'data/stats.json'
       - 'data/investor_metrics.json'
@@ -35,15 +36,22 @@ jobs:
                  cp booking.html gs://booking-redirect-aboutfishing-kr/booking.html
           echo "✅ booking.html 배포: https://aboutfishing.kr/booking.html"
 
-      - name: index_google.html → GCS 업로드 (index.html + index_google.html)
+      - name: index_kr.html → GCS 업로드 (index.html, 봇감지+SEO 마스터)
         run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:no-store" \
-                 cp index_google.html gs://booking-redirect-aboutfishing-kr/index.html
+                 cp index_kr.html gs://booking-redirect-aboutfishing-kr/index.html
+          gsutil -h "Content-Type:text/html; charset=utf-8" \
+                 -h "Cache-Control:no-store" \
+                 cp index_kr.html gs://booking-redirect-aboutfishing-kr/index_kr.html
+          echo "✅ index.html (index_kr.html) 배포 완료"
+
+      - name: index_google.html → GCS 업로드 (index_google.html 보존)
+        run: |
           gsutil -h "Content-Type:text/html; charset=utf-8" \
                  -h "Cache-Control:no-store" \
                  cp index_google.html gs://booking-redirect-aboutfishing-kr/index_google.html
-          echo "✅ index.html + index_google.html 배포 완료"
+          echo "✅ index_google.html 보존 배포 완료"
 
       - name: images/ → GCS 업로드
         run: |
