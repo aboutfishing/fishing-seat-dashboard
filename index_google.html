@@ -7,8 +7,10 @@
 <!-- ═══════════════════════════════════════════════════════════
      SEO/AEO/GEO 색인 유지 + 실제 사용자 booking 사이트 이동
      ▸ 구글·네이버 크롤러 → 이 페이지 전체 콘텐츠 색인
-     ▸ 실제 방문자  → booking.aboutfishing.kr 즉시 이동
+     ▸ 실제 방문자  → booking.aboutfishing.kr 즉시 이동 (깜박임 없음)
      ═══════════════════════════════════════════════════════════ -->
+<!-- 사용자 리다이렉트 시 깜박임 방지: 스크립트 실행 전 화면 숨김 -->
+<style>html{display:none}</style>
 <script>
 (function(){
   var ua = (navigator.userAgent || '').toLowerCase();
@@ -24,10 +26,12 @@
   ];
   var isBot = bots.some(function(b){ return ua.indexOf(b) !== -1; });
   if (!isBot) {
-    /* 사용자: booking 사이트로 즉시 이동 (뒤로가기 방지) */
+    /* 사용자: booking 사이트로 즉시 이동 (뒤로가기 방지, 화면은 이미 숨겨진 상태) */
     window.location.replace('https://booking.aboutfishing.kr');
+  } else {
+    /* 크롤러: 숨긴 화면 복원 후 전체 SEO/AEO/GEO 콘텐츠 색인 */
+    document.documentElement.style.display = '';
   }
-  /* 크롤러: 이 파일의 전체 SEO/AEO/GEO 콘텐츠를 그대로 색인 */
 })();
 </script>
 
