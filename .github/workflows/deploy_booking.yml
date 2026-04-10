@@ -12,6 +12,7 @@ on:
       - 'data/investor_metrics.json'
       - 'investor/**'
       - 'dashboard/**'
+      - 'images/**'
 
 jobs:
   deploy:
@@ -44,12 +45,21 @@ jobs:
                  cp index_google.html gs://booking-redirect-aboutfishing-kr/index_google.html
           echo "✅ index.html + index_google.html 배포 완료"
 
-      - name: images/hero_girl.webp → GCS 업로드
+      - name: images/ → GCS 업로드
         run: |
           gsutil -h "Content-Type:image/webp" \
                  -h "Cache-Control:public, max-age=86400" \
                  cp images/hero_girl.webp gs://booking-redirect-aboutfishing-kr/images/hero_girl.webp
-          echo "✅ hero_girl.webp 배포 완료"
+          gsutil -h "Content-Type:image/svg+xml" \
+                 -h "Cache-Control:public, max-age=86400" \
+                 cp images/logo.svg gs://booking-redirect-aboutfishing-kr/images/logo.svg
+          gsutil -h "Content-Type:image/png" \
+                 -h "Cache-Control:public, max-age=86400" \
+                 cp images/logo_192.png gs://booking-redirect-aboutfishing-kr/images/logo_192.png
+          gsutil -h "Content-Type:image/png" \
+                 -h "Cache-Control:public, max-age=86400" \
+                 cp images/logo_og.png gs://booking-redirect-aboutfishing-kr/images/logo_og.png
+          echo "✅ images/ 배포 완료"
 
       - name: af-agent/index.html → GCS 업로드
         run: |
